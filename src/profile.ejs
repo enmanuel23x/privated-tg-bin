@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport">
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<div id="wrapper" class="toggled">
+
+	<aside id="sidebar-wrapper">
+	  <div class="sidebar-brand">
+		<h2>Logo</h2>
+	  </div>
+	  <ul class="sidebar-nav" id="sidebar-nav">
+		<li >
+		  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+			</li>
+		<li>
+		  <a href="/proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+			</li>
+		<li >
+		  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+			</li>
+		<li class="active">
+			<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+            </li>
+        <% if(type==1){ %>
+		<li>
+			<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+			</li>
+		<% } %>
+		<li>
+			<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+			</li>
+	  </ul>
+	</aside>
+  
+	<div id="navbar-wrapper">
+	  <nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+		  <div class="navbar-header">
+			<a href="" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+		  </div>
+		</div>
+	  </nav>
+	</div>
+  
+	<section id="content-wrapper">
+		<h1>PERFIL</h1>
+		<% console.log(rows[0].id) %>
+        <form class="profile">
+            <label for="name" class="label">Nombres:</label>
+				<input name="name" id="name" type="text" class="prof" required disabled value=<%= rows[0].nombres %>>
+				<br>
+			<label for="name2" class="label">Apellidos</label>
+                <input name="name2" id="name2" type="text" class="prof" required disabled value=<%= rows[0].apellidos %>>
+                <br>
+            <label for="user" class="label">Correo:</label>
+				<input name="user" id="" type="text" class="prof"  required disabled value=<%= rows[0].correo %>>
+				<br>
+			<label for="type" class="label">Tipo de usuario:</label>
+			<% if(rows[0].rol=="1"){ %>
+				<input name="type" id="type" type="text" class="prof"  required disabled value="Desarrollador">
+				<% }else{ %>
+					<input name="type" id="type" type="text" class="prof"  required disabled value="Administrador">
+				<% } %>
+				<br>
+			<label for="pass" class="label">Contraseña:</label>
+				<input name="pass" id="pass" type="text" class="prof"  required disabled value=<%= rows[0].contraseña %>>
+				<br>
+            </form>
+	</section>
+  
+  </div>
+<body>
+	
+</body>
+<script>
+
+	$("#sidebar-toggle").click(function(e) {
+    e.preventDefault();
+	$("#wrapper").toggleClass("toggled");
+    });
+
+	</script>
+</html>

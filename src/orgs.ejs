@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport">
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<div id="wrapper" class="toggled">
+
+	<aside id="sidebar-wrapper">
+	  <div class="sidebar-brand">
+		<h2>Logo</h2>
+	  </div>
+	  <ul class="sidebar-nav" id="sidebar-nav">
+		<li >
+		  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+			</li>
+		<li>
+		  <a href="/proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+			</li>
+		<li class="active">
+		  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+			</li>
+		<li>
+			<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+			</li>
+		<% if(type==1){ %>
+		<li>
+			<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+			</li>
+		<% } %>
+		<li>
+			<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+			</li>
+	  </ul>
+	</aside>
+  
+	<div id="navbar-wrapper">
+	  <nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+		  <div class="navbar-header">
+			<a href="" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+		  </div>
+		</div>
+	  </nav>
+	</div>
+  
+	<section id="content-wrapper">
+		<h1>ORGANIZACION</h1>
+		<% if(rows.length!=0){ %>
+			<h2 style="text-align: center;"><%= name %></h2>
+			<table>
+				<thead>
+					<tr><td>#</td><td>Nombre</td><td>Rol</td>
+			<% if(type==2){ %>
+				<td>Accion</td></tr></thead><tbody>
+					<% for(i=0;i<rows.length;i++){ %>
+						<tr>
+							<td><%= i %></td>
+							<td><%= rows[i].nombres %></td>
+							<td><%= rows[i].rol %></td>
+							<td>
+								<% if(grade>=3 && id!=rows[i].id_usuario){ %>
+								<% if(rows[i].rol=="Administrador:1"){ %>
+									<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
+									<% }else if(rows[i].rol=="Administrador:2" && grade<=3){ %>
+										<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;"><i class="fas fa-level-down-alt"></i></button></form>
+									<% }else if(rows[i].rol=="Administrador:2" && grade==4){ %>
+										<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
+										<% } %>
+									<% }else{ %>
+										<% if(rows[i].rol=="Administrador:1"){ %>
+											<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;" disabled><i class="fas fa-level-up-alt"></i></button></form>
+											<% }else if(rows[i].rol=="Administrador:2"){ %>
+												<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;" disabled><i class="fas fa-level-down-alt"></i></button></form>
+											<% }%>
+										<% }%>
+								<% if(grade==1 || id==rows[i].id_usuario || rows[i].rol=="Lider"){ %>
+									<button style="background-color: red;" disabled><i class="fas fa-user-minus"></i></button>
+									<% }else{ %>
+										<form method="POST" action='/eliminar_user_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: red;"><i class="fas fa-user-minus"></i></button></form>
+									<% }%>
+							</td>
+						</tr>
+						<% } %>
+						<tr>
+							<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
+							<td style="border: none;">
+								<form action="/anadir_usuario" method="GET">
+									<% if(grade==1){ %>
+										<button type="submit" style="background-color: green;" disabled><i class="fas fa-user-plus"></i></button>
+										<% }else{ %>
+											<button type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i></button>
+										<% }%>
+									
+								</form>
+							</td>
+						</tr>
+				<% } else { %>
+				</tr></thead><tbody>
+					<% for(i=0;i<rows.length;i++){ %>
+						<tr>
+							<td><%= i %></td>
+							<td><%= rows[i].nombres %></td>
+							<td><%= rows[i].rol %></td>
+						</tr>
+						<% } %>
+				<% }%>
+			</tbody></table>
+			<form action="/getout_org" method="POST" style="text-align: center;">
+				<input name="band" id="band" type="text" style="display: none;" value="1">
+				<button type="submit" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+					<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
+				  </button>
+				</form>
+			<% }else if(type==2){ %>
+				<form action="/new_org" method="GET">
+					<button type="submit" style="background: dodgerblue;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+						<i class="fas fa-plus"></i> Crear
+				  	</button>
+					</form>
+			<% } %>
+		<% if(rows2.length!=0 && rows.length==0){%>
+			<h2 style="text-align: center;">Invitaciones</h2>
+			<table>
+				<thead>
+					<tr><td>Fecha</td><td>Descripcion</td><td>Accion</td></tr>
+					</thead>
+					<tbody>
+					<% for(i=0;i<rows2.length;i++){ %>
+						<tr>
+							<td><%= rows2[i].fecha %></td>
+							<td>Invitacion de <%= rows2[i].nombre_emisor %></td>
+							<td>
+								<form method="POST" action='/aceptar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i].id %>><button type="submit" style="background: green;border-radius: 17px;color: white;">Aceptar</button></form>
+								<form method="POST" action='/rechazar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i].id %>><button type="submit" style="background: red;border-radius: 17px;color: white;">Rechazar</button></form>
+								</td>
+							</tr>
+						<% } %>
+					</tbody>
+					</table>
+			<% } %>
+	</section>
+  
+  </div>
+<body>
+	
+</body>
+<script>
+	
+	$("#sidebar-toggle").click(function(e) {
+    e.preventDefault();
+	$("#wrapper").toggleClass("toggled");
+	});
+	</script>
+<script>
+	
+	</script>
+</html>

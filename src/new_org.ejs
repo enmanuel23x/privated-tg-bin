@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="css/login.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="login-wrap" style="min-height: 390px;height: 390px;">
+        <div class="login-html">
+            <label for="tab-1" class="tab">Añadir organizacion</label>
+            <div class="login-form" style="color: white;">
+                    <form method="POST" action="/add_org">
+                    <div class="group">
+                        <label for="name" class="label">Nombre: </label>
+                        <input name="name" id="name" type="text" class="input" placeholder="Nombre..." required value=<%=name%> >
+                    </div>
+                    <div class="group">
+                        <button class="button">Registrar</button>
+                    </div>
+                    <div class="hr"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div id="status" style="display: none;"><%= status %></div>
+</body>
+<script type="text/javascript">
+    var error =  document.getElementById('status').innerHTML
+    console.log(status)
+    if(error!=1){
+        alert("Nombre en uso actualmente")
+    }
+</script>
+</html>
