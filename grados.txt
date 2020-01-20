@@ -1,0 +1,30 @@
+Administrador del sistema:
+-->Activar/Desactivar plataforma
+-->Activar/Desactivar usuarios
+-->Disolver organizacion
+-->Disolver proyectos
+-->Registros de terminal
+-->Otorgar permisos para editar aptitudes
+-->Visualizacion de aptitudesde usuarios (a detalle)
+
+Administrador(Project Manager)
+->1 Fundador
+-->Designar grado de administradores 
+->2 Lider
+-->Añadir o Eliminar usuarios de grado menor
+->3 Administrador
+-->Generar proyectos
+-->Visualizacion de solicitud de validacion de progreso en proyecto
+-->Aceptar/Rechazar solicitud de validacion de progreso en proyecto
+-->Visualizacion de ticket de soporte en proyecto
+-->Cambio de status de ticket de soporte en proyecto
+-->Visualizacion de solicitud de organizacion
+-->Aceptar/Rechazar solicitud de organizacion
+-->Salir de la organizacion
+
+Desarrolladores(Developer)4:
+-->Aceptar/Rechazar solicitud de organizacion
+-->Salir de la organizacion
+-->Generar solicitud de validacion de progreso en proyecto
+-->Generar solicitud de ticket de soporte en proyecto
+-->Visualizacion general de proyectos en los que participe

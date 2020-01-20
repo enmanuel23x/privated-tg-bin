@@ -3,7 +3,6 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport">
-	<link href="css/main.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
 	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -12,16 +11,16 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	
+	<link href="css/main.css" rel="stylesheet" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
 </head>
 <div id="wrapper" class="toggled">
 
 	<aside id="sidebar-wrapper">
-	  <div class="sidebar-brand">
-		<h2>Logo</h2>
-	  </div>
+        <div class="sidebar-brand" style="text-align: left;">
+            <img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+          </div>
 	  <ul class="sidebar-nav" id="sidebar-nav">
 		<li >
 		  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
@@ -59,31 +58,6 @@
         <h1>Aptitudes</h1>
         <% if(rows==undefined){ %>
             <form action="/apt" method="POST">
-                <h4>Calidad de codigo</h4>
-                <div class="range-slider">
-                    <input name="dev_quality" class="range-slider__range" type="range" value="0" min="0" max="100">
-                    <span class="range-slider__value">0</span>
-                    </div> 
-                <h4>Experiencia</h4>
-                <div class="range-slider">
-                    <input name="dev_exp" class="range-slider__range" type="range" value="0" min="0" max="100">
-                    <span class="range-slider__value">0</span>
-                    </div>
-                <h4>Tiempos de entrega</h4>
-                <div class="range-slider">
-                    <input name="dev_on_time" class="range-slider__range" type="range" value="0" min="0" max="100">
-                    <span class="range-slider__value">0</span>
-                    </div> 
-                <h4>Trabajo en equipo</h4>
-                <div class="range-slider">
-                    <input name="team_chemistry" class="range-slider__range" type="range" value="0" min="0" max="100">
-                    <span class="range-slider__value">0</span>
-                    </div>  
-                <h4>Errores</h4>
-                <div class="range-slider">
-                    <input name="dev_errors" class="range-slider__range" type="range" value="0" min="0" max="100">
-                    <span class="range-slider__value">0</span>
-                    </div>  
                 <h4>Python</h4>
                 <div class="range-slider">
                     <input name="exp_python" class="range-slider__range" type="range" value="0" min="0" max="100">
@@ -96,7 +70,7 @@
                     </div> 
                 <h4>C++</h4>
                 <div class="range-slider">
-                    <input name="exp_c++" class="range-slider__range" type="range" value="0" min="0" max="100">
+                    <input name="exp_cpp" class="range-slider__range" type="range" value="0" min="0" max="100">
                     <span class="range-slider__value">0</span>
                     </div> 
                 <h4>PHP</h4>
@@ -182,32 +156,7 @@
                 <input type="submit" value="Guardar">
             </form>
         <% }else{ %>
-            <form action="/apt" method="POST">
-                <h4>Calidad de codigo</h4>
-                <div class="range-slider">
-                    <input name="dev_quality" class="range-slider__range" type="range" value=<%= rows.dev_quality %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.dev_quality %></span>
-                    </div> 
-                <h4>Experiencia</h4>
-                <div class="range-slider">
-                    <input name="dev_exp" class="range-slider__range" type="range" value=<%= rows.dev_exp %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.dev_exp %></span>
-                    </div>
-                <h4>Tiempos de entrega</h4>
-                <div class="range-slider">
-                    <input name="dev_on_time" class="range-slider__range" type="range" value=<%= rows.dev_on_time %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.dev_on_time %></span>
-                    </div> 
-                <h4>Trabajo en equipo</h4>
-                <div class="range-slider">
-                    <input name="team_chemistry" class="range-slider__range" type="range" value=<%= rows.team_chemistry %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.team_chemistry %></span>
-                    </div>  
-                <h4>Errores</h4>
-                <div class="range-slider">
-                    <input name="dev_errors" class="range-slider__range" type="range" value=<%= rows.dev_errors %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.dev_errors %></span>
-                    </div>  
+            <form>
                 <h4>Python</h4>
                 <div class="range-slider">
                     <input name="exp_python" class="range-slider__range" type="range" value=<%= rows.exp_python %> min="0" max="100" disabled>
@@ -220,8 +169,8 @@
                     </div> 
                 <h4>C++</h4>
                 <div class="range-slider">
-                    <input name="exp_c++" class="range-slider__range" type="range" value=<%= rows.exp_c++ %> min="0" max="100" disabled>
-                    <span class="range-slider__value"><%= rows.exp_c++ %></span>
+                    <input name="exp_cpp" class="range-slider__range" type="range" value=<%= rows.exp_cpp %> min="0" max="100" disabled>
+                    <span class="range-slider__value"><%= rows.exp_cpp %></span>
                     </div> 
                 <h4>PHP</h4>
                 <div class="range-slider">
@@ -303,7 +252,7 @@
                 <input name="exp_html_css" class="range-slider__range" type="range" value=<%= rows.exp_html_css %> min="0" max="100" disabled>
                 <span class="range-slider__value"><%= rows.exp_html_css %></span>
                 </div>
-                <input type="submit" value="Guardar" disabled>
+                <input type="button" value="Guardar" disabled>
             </form>
         <% } %>
 	</section>
@@ -313,23 +262,18 @@
 	
 </body>
 <script>
-
 	$("#sidebar-toggle").click(function(e) {
     e.preventDefault();
 	$("#wrapper").toggleClass("toggled");
     });
     // I've added annotations to make this easier to follow along at home. Good luck learning and check out my other pens if you found this useful
-
-
 // First let's set the colors of our sliders
 const settings={
   fill: '#1abc9c',
   background: '#d7dcdf'
 }
-
 // First find all our sliders
 const sliders = document.querySelectorAll('.range-slider');
-
 // Iterate through that list of sliders
 // ... this call goes through our array of sliders [slider1,slider2,slider3] and inserts them one-by-one into the code block below with the variable name (slider). We can then access each of wthem by calling slider
 Array.prototype.forEach.call(sliders,(slider)=>{
@@ -344,7 +288,6 @@ Array.prototype.forEach.call(sliders,(slider)=>{
   // Don't wait for the listener, apply it now!
   applyFill(slider.querySelector('input'));
 });
-
 // This function applies the fill to our sliders by using a linear gradient background
 function applyFill(slider) {
   // Let's turn our value into a percentage to figure out how far it is in between the min and max of our input
@@ -355,6 +298,5 @@ function applyFill(slider) {
   slider.style.background = bg;
   console.log(percentage)
 }
-
 	</script>
 </html>

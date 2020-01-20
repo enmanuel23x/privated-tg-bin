@@ -6,10 +6,10 @@ SET character_set_client = utf8mb4 ;
 /*Tabla usuario*/
 CREATE TABLE IF NOT EXISTS `usuario` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombres` varchar(20) NOT NULL,
-  `apellidos` varchar(20) NOT NULL,
-  `correo` varchar(20) NOT NULL,
-  `contraseña` varchar(20) NOT NULL,
+  `nombres` varchar(30) NOT NULL,
+  `apellidos` varchar(30) NOT NULL,
+  `correo` varchar(30) NOT NULL,
+  `contraseña` varchar(30) NOT NULL,
   `rol` int(2) NOT NULL,
   `inicializado` int(2) NOT NULL,
   PRIMARY KEY (`id`)
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 /*Tabla organizacion*/
 CREATE TABLE IF NOT EXISTS `organizacion` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(20) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
   `id_jefe` int(11) NOT NULL,
   FOREIGN KEY (`id_jefe`) REFERENCES `usuario` (`id`),
   PRIMARY KEY (`id`)
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `integrantes_organizacion` (
   `id_usuario` int(11) NOT NULL,
   `nombres` varchar(40) NOT NULL,
   `id_organizacion` int(11) NOT NULL,
-  `rol` varchar(20) NOT NULL,
+  `rol` varchar(30) NOT NULL,
   `activo` int(2) NOT NULL,
   FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   FOREIGN KEY (`id_organizacion`) REFERENCES `organizacion` (`id`),
@@ -117,8 +117,8 @@ CREATE TABLE IF NOT EXISTS `notificaciones` (
   `nombre_receptor` varchar(40) NOT NULL,
   `tipo` int(4) NOT NULL,
   `status` int(4) NOT NULL,
-  `fecha` varchar(20) NOT NULL,
-  `hora` varchar(20) NOT NULL,
+  `fecha` varchar(30) NOT NULL,
+  `hora` varchar(30) NOT NULL,
   FOREIGN KEY (`id_user_emisor`) REFERENCES `usuario` (`id`),
   FOREIGN KEY (`id_user_receptor`) REFERENCES `usuario` (`id`),
   PRIMARY KEY (`id`)

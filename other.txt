@@ -1,0 +1,12 @@
+Organizacion:
+    -Solo los administradores pueden añador Organizacion
+    -El boton de añadir Organizacion solo se mostrara cuando el usuario no pertenezca a una
+    -El usuario puede pertenecer a un maximo de 1 Organizacion
+    -El jefe de una Organizacion se considera fundador o la autoridad maxima de la misma
+    -Aunque el usuario pertenezca a una Organizacion puede recibir y visualizar invitaciones de otras Organizaciones
+    -Al aceptar una invitacion se desplegara un modal para comfirmar y en caso de ya pertenecer a una Organizacion el
+    mismo añadira la alerta de que saldra de la Organizacion de la cual formaba parte
+    -Al pertenecer a una Organizacionse podra apreciar un resumen de los integrantes, lo cual incluira lo siguiente
+        -->ID en la Organizacion, Rol que desempeña en la misma, correo y acciones(Solo usuario con permiso)
+        -->Un boton al final de la lista para enviar invitacion(Solo usuario con permiso)
+    -Al salir de una Organizacion se desligara al usuario de los proyectos activos a los que pertenezca

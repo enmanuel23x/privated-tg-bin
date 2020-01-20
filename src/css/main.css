@@ -2,6 +2,8 @@ body {
   padding-bottom: 30px;
   position: relative;
   min-height: 100%;
+  background-color: #111;
+  color: white;
 }
 
 a {
@@ -27,7 +29,7 @@ a:focus {
   margin-left: -250px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: #222;
+  background: black;
   transition: all 0.5s ease;
 }
 
@@ -41,6 +43,11 @@ a:focus {
   width: 250px;
   text-align: center;
   padding: 20px 0;
+  background-color: black;
+    text-align: left;
+    max-height: 58px;
+    margin: 0;
+    padding: 0;
 }
 .sidebar-brand h2 {
   margin: 0;
@@ -72,7 +79,7 @@ a:focus {
 .sidebar-nav > li.active > a {
   text-decoration: none;
   color: #fff;
-  background: dodgerblue;
+  background: #41E23F;
 }
 .sidebar-nav > li > a i.fa {
   font-size: 24px;
@@ -83,6 +90,8 @@ a:focus {
     width: 100%;
     position: absolute;
     z-index: 2;
+    height: 58px;
+    background-color: black;
 }
 #wrapper.toggled #navbar-wrapper {
     position: absolute;
@@ -90,7 +99,7 @@ a:focus {
 }
 #navbar-wrapper .navbar {
   border-width: 0 0 0 0;
-  background-color: #eee;
+  background-color: black;
   font-size: 24px;
   margin-bottom: 0;
   border-radius: 0;
@@ -99,7 +108,7 @@ a:focus {
   color: #757575;
 }
 #navbar-wrapper .navbar a:hover {
-  color: dodgerblue;
+  color: #41E23F;
 }
 
 #content-wrapper {
@@ -201,15 +210,15 @@ a:focus {
 
 @media (max-width: 767px) {
   #wrapper {
-    padding-left: 0;
+    padding-left: 250px;
   }
 
   #sidebar-wrapper {
-    width: 0;
+    width: 250px;
   }
 
   #wrapper.toggled #sidebar-wrapper {
-    width: 250px;
+    width: 60px;
   }
   #wrapper.toggled #navbar-wrapper {
     position: absolute;
@@ -226,7 +235,7 @@ a:focus {
   }
 
   #wrapper.toggled {
-    padding-left: 250px;
+    padding-left: 60px;
   }
 
   #content-wrapper {

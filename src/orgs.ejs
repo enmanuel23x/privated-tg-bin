@@ -3,7 +3,6 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport">
-	<link href="css/main.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
 	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -12,16 +11,16 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	
+	<link href="css/main.css" rel="stylesheet" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
 </head>
 <div id="wrapper" class="toggled">
 
 	<aside id="sidebar-wrapper">
-	  <div class="sidebar-brand">
-		<h2>Logo</h2>
-	  </div>
+		<div class="sidebar-brand" style="text-align: left;">
+			<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+		  </div>
 	  <ul class="sidebar-nav" id="sidebar-nav">
 		<li >
 		  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
@@ -62,7 +61,7 @@
 			<h2 style="text-align: center;"><%= name %></h2>
 			<table>
 				<thead>
-					<tr><td>#</td><td>Nombre</td><td>Rol</td>
+					<tr><td>#</td><td>Nombre</td><td>Rol</td><td>Correo</td>
 			<% if(type==2){ %>
 				<td>Accion</td></tr></thead><tbody>
 					<% for(i=0;i<rows.length;i++){ %>
@@ -70,23 +69,23 @@
 							<td><%= i %></td>
 							<td><%= rows[i].nombres %></td>
 							<td><%= rows[i].rol %></td>
+							<td><%= rows[i].correo %></td>
 							<td>
-								<% if(grade>=3 && id!=rows[i].id_usuario){ %>
-								<% if(rows[i].rol=="Administrador:1"){ %>
-									<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
-									<% }else if(rows[i].rol=="Administrador:2" && grade<=3){ %>
-										<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;"><i class="fas fa-level-down-alt"></i></button></form>
-									<% }else if(rows[i].rol=="Administrador:2" && grade==4){ %>
+								<% if(grade==1 && id!=rows[i].id_usuario){ %>
+									<% if(rows[i].rol==3){ %>
 										<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
+										<% }else if(rows[i].rol==2){ %>
+											<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;"><i class="fas fa-level-down-alt"></i></button></form>
+											<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
 										<% } %>
 									<% }else{ %>
-										<% if(rows[i].rol=="Administrador:1"){ %>
-											<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;" disabled><i class="fas fa-level-up-alt"></i></button></form>
-											<% }else if(rows[i].rol=="Administrador:2"){ %>
-												<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;" disabled><i class="fas fa-level-down-alt"></i></button></form>
+										<% if(rows[i].rol==3){ %>
+											<form method="POST" action='/'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;" disabled><i class="fas fa-level-up-alt"></i></button></form>
+											<% }else if(rows[i].rol==2){ %>
+												<form method="POST" action='/'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;" disabled><i class="fas fa-level-down-alt"></i></button></form>
 											<% }%>
 										<% }%>
-								<% if(grade==1 || id==rows[i].id_usuario || rows[i].rol=="Lider"){ %>
+								<% if(grade==3 || rows[i].rol<=2){ %>
 									<button style="background-color: red;" disabled><i class="fas fa-user-minus"></i></button>
 									<% }else{ %>
 										<form method="POST" action='/eliminar_user_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: red;"><i class="fas fa-user-minus"></i></button></form>
@@ -95,16 +94,15 @@
 						</tr>
 						<% } %>
 						<tr>
-							<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
+							<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
 							<td style="border: none;">
-								<form action="/anadir_usuario" method="GET">
-									<% if(grade==1){ %>
-										<button type="submit" style="background-color: green;" disabled><i class="fas fa-user-plus"></i></button>
-										<% }else{ %>
-											<button type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i></button>
-										<% }%>
+								<% if(grade>=3){ %>
+									<button type="submit" style="background-color: green;" disabled></button><i class="fas fa-user-plus"></i></button>
+									<% }else{ %>
+										<form action="/anadir_usuario" method="GET"><button type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i></button></form>
+									<% }%>
 									
-								</form>
+								
 							</td>
 						</tr>
 				<% } else { %>
@@ -114,16 +112,33 @@
 							<td><%= i %></td>
 							<td><%= rows[i].nombres %></td>
 							<td><%= rows[i].rol %></td>
+							<td><%= rows[i].correo %></td>
 						</tr>
 						<% } %>
 				<% }%>
 			</tbody></table>
-			<form action="/getout_org" method="POST" style="text-align: center;">
-				<input name="band" id="band" type="text" style="display: none;" value="1">
-				<button type="submit" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
-					<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
-				  </button>
-				</form>
+			<!-- Modales -->
+		<div class="wrap">
+			<div class="modalDialog" id=<%= rows2[i]._id %>>
+				<div class="popWrap">
+					   <h2 class="popTit">Alerta</h2>
+					<div class="popCont">
+						<p>¿Que hacer con la solicitud de <%= rows2[i].nombre_emisor %>?</p>
+						<p>Si perteneces a una organizacion seras eliminado de esta y de todos los proyectos activos</p>
+					</div>
+					<div class="popBtn type01">	
+						<form method="POST" action='/aceptar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: green;border-radius: 17px;color: white;">Aceptar</button></form>
+						<form method="POST" action='/rechazar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: red;border-radius: 17px;color: white;">Rechazar</button></form>
+					</div>
+					</div>
+			</div>
+		</div>
+		<!-- /Modales -->
+				<a id="OutDialog"  class="pop-btn" href="#OutDialog">
+					<button type="button" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+						<i class="fas fa-sign-out-alt"></i>Salir de la organizacion
+					</button>
+				</a>
 			<% }else if(type==2){ %>
 				<form action="/new_org" method="GET">
 					<button type="submit" style="background: dodgerblue;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
@@ -132,6 +147,29 @@
 					</form>
 			<% } %>
 		<% if(rows2.length!=0 && rows.length==0){%>
+			<!-- Modales -->
+		<div class="wrap">
+			<% for(i=0;i<rows2.length;i++){ %>
+			<div class="modalDialog" id="OutDialog">
+				<div class="popWrap">
+					   <h2 class="popTit">Alerta</h2>
+					<div class="popCont">
+						<p>¿Quieres salir de la organizacion?</p>
+						<p>Seras eliminado de esta y de todos los proyectos activos</p>
+					</div>
+					<div class="popBtn type01">	
+						<form action="/getout_org" method="POST" style="text-align: center;">
+							<input name="band" id="band" type="text" style="display: none;" value="1">
+							<button type="submit" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+								<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
+							  </button>
+							</form>
+					</div>
+					</div>
+			</div>
+			<% } %>
+		</div>
+		<!-- /Modales -->
 			<h2 style="text-align: center;">Invitaciones</h2>
 			<table>
 				<thead>
@@ -143,8 +181,8 @@
 							<td><%= rows2[i].fecha %></td>
 							<td>Invitacion de <%= rows2[i].nombre_emisor %></td>
 							<td>
-								<form method="POST" action='/aceptar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i].id %>><button type="submit" style="background: green;border-radius: 17px;color: white;">Aceptar</button></form>
-								<form method="POST" action='/rechazar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i].id %>><button type="submit" style="background: red;border-radius: 17px;color: white;">Rechazar</button></form>
+								<a id=<%= rows2[i]._id %>  class="pop-btn" href=<%= "#"+rows2[i]._id %><button type="button" style="background: green;border-radius: 17px;color: white;">Aceptar</button></a>
+								
 								</td>
 							</tr>
 						<% } %>

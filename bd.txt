@@ -1,0 +1,4 @@
+root 
+uJLzJOjlONYVVZJV
+cluster0-m5ujz.mongodb.net
+'mongodb+srv://root:uJLzJOjlONYVVZJV@cluster0-m5ujz.mongodb.net/test'

@@ -6,9 +6,27 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="css/login.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="css/modal.css" rel="stylesheet" />
     <title>Document</title>
 </head>
 <body>
+    <!-- Modales -->
+    <div class="wrap">
+        <a style="display: none;" id="modal1" href="#openModal01" class="pop-btn"></a> <br />
+        <div id="openModal01" class="modalDialog">
+            <div class="popWrap">
+                   <h2 class="popTit">Alerta</h2>
+                <div class="popCont">
+                    <p>Error en el inicio de sesion</p>
+                    <p><%= msg %></p>
+                </div>
+                <div class="popBtn type01">	
+                  <a href="#close" title="Close" class="cmnBtn">Ok</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- /Modales -->
     <div class="login-wrap" style="min-height: 390px;height: 390px;">
         <div class="login-html">
             <label for="tab-1" class="tab">Añadir organizacion</label>
@@ -28,13 +46,11 @@
         </div>
 
     </div>
-    <div id="status" style="display: none;"><%= status %></div>
 </body>
 <script type="text/javascript">
-    var error =  document.getElementById('status').innerHTML
-    console.log(status)
-    if(error!=1){
-        alert("Nombre en uso actualmente")
+    var err=<%- status %>
+    if(err==0){
+        document.getElementById("modal1").click();
     }
 </script>
 </html>

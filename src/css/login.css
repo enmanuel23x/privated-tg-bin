@@ -58,7 +58,7 @@ a{color:inherit;text-decoration:none}
 .login-html .sign-in:checked + .tab,
 .login-html .sign-up:checked + .tab{
 	color:#fff;
-	border-color:#1161ee;
+	border-color:#1abc9c;
 }
 .login-form{
 	min-height:345px;
@@ -180,9 +180,11 @@ select option{
   .autocomplete-items div:hover {
 	background-color: #e9e9e9; 
   }
-  
+  .login-html .tab:hover {
+	color: #1abc9c;
+}
   /*when navigating through the items using the arrow keys:*/
   .autocomplete-active {
-	background-color: DodgerBlue !important; 
+	background-color: #1abc9c !important; 
 	color: #ffffff; 
   }
