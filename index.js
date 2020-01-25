@@ -7,10 +7,10 @@ var fs = require("fs");
 var upload = multer({ dest: '/tmp' })
 app.use(bodyParser.urlencoded({ extended: false }))
 app.set('view engine','ejs')
-app.use('/css',express.static(__dirname+'/src/css'));
-app.use('/img',express.static(__dirname+'/src/img'));
-app.use('/js',express.static(__dirname+'/src/js'));
-app.use('/font',express.static(__dirname+'/src/font-awesome-4.7.0/css'));
+app.use('/css',express.static(__dirname+'/src/assets/css'));
+app.use('/img',express.static(__dirname+'/src/assets/img'));
+app.use('/js',express.static(__dirname+'/src/assets/js'));
+app.use('/font',express.static(__dirname+'/src/assets/font-awesome-4.7.0/css'));
 app.use(session({
 	name: "not",
   secret: 'keyboard cat',
@@ -55,7 +55,6 @@ const getConfig = function(db,req,res,next, callback) {
       return next();
       callback(rows);
     }else{
-      console.log(rows[0].status)
       res.render(__dirname+'/src/login',{err:3,mail:"",msg:undefined});
       callback(rows);
     }
@@ -118,7 +117,7 @@ const getInicio = function(db,req,res, callback) {
   // Get the documents collection
   const collection = db.collection('notificaciones');
   // Find some documents
-  collection.find({$and:[{tipo:{$ne:1}},{$or:[{id_user_emisor:req.session.userID},{id_user_receptor:req.session.userID}]}]}).toArray(function(err, rows) {
+  collection.find({$and:[{tipo:{$ne:1}},{$or:[{id_user_emisor:ObjectID(req.session.userID)},{id_user_receptor:ObjectID(req.session.userID)}]}]}).sort({_id:-1}).toArray(function(err, rows) {
     assert.equal(err, null);
     res.render(__dirname+'/src/home',{type:req.session.type,rows:rows,id:req.session.userID});
     callback(rows);
@@ -130,7 +129,6 @@ const getPerfil = function(db,req,res, callback) {
   // Find some documents
   collection.find({_id:ObjectID(req.session.userID)}).toArray(function(err, rows) {
     assert.equal(err, null);
-    console.log(rows)
     res.render(__dirname+'/src/profile',{rows: rows,type:req.session.type});
     callback(rows);
   });
@@ -175,16 +173,16 @@ const insertOrg = function(db,req,res, callback) {
   // Get the documents collection
   let collection = db.collection('organizacion');
   // Find some documents
-  collection.find({nombre:ObjectID(req.body.name)}).toArray(function(err, rows) {
+  collection.find({nombre:req.body.name}).toArray(function(err, rows) {
     assert.equal(err, null);
 			if(rows.length==0){
         collection.insertMany([
           {nombre:req.body.name,id_jefe:ObjectID(req.session.userID) }], function(err, result) {
           assert.equal(null, err);
-          collection.find({nombre:ObjectID(req.body.name)}).toArray(function(err, rows2) {
+          collection.find({nombre:req.body.name}).toArray(function(err, rows2) {
             collection = db.collection('integrantes_organizacion');
             collection.insertMany([{id_usuario:ObjectID(req.session.userID),nombres:req.session.names,
-              id_organizacion:rows2[0].id,rol:1,activo:1}], function(err, result2) {
+              id_organizacion:ObjectID(rows2[0]._id),rol:1,activo:1}], function(err, result2) {
                 res.redirect('/organizacion')
                 callback(result2);
               });
@@ -202,7 +200,7 @@ const newOrg = function(db,req,res, callback) {
   // Find some documents
   collection.find({id_usuario:ObjectID(req.session.userID)}).toArray(function(err, rows) {
     assert.equal(err, null);
-    if(rows.length!=0){
+    if(rows.length==0){
       res.render(__dirname+'/src/new_org',{status:"1",name:""})
     }else{
       res.redirect('/inicio')
@@ -242,9 +240,9 @@ const Org = function(db,req,res, callback) {
                 let l=[]
                 for(i=0;i<rows3.length;i++){
                   for(j=0;j<rows5.length;j++){
-                    if(rows3[i].id_usuario==rows5[j]._id){
+                    if(rows3[i].id_usuario.equals(rows5[j]._id)){
                       l.push({"id_usuario": rows3[i].id_usuario,"nombres": rows3[i].nombres,"rol": rows3[i].rol,"correo": rows5[j].correo})
-                    }
+                      }
                     }
                   }
                 //Renderizado de platilla orgs con atributos
@@ -273,22 +271,35 @@ const addUser2Org = function(db,req,res, callback) {
             assert.equal(err, null);
             db.collection('usuario').find({}).toArray(function(err, rows3) {
               assert.equal(err, null);
-              //Filtrado de usuarios no pertenecientes a la organizacion
-						  for(i=0;i<rows2.length;i++){
+              db.collection('notificaciones').find({$and:[{status:1},{tipo:1}]}).toArray(function(err, notificaciones) {
+                assert.equal(err, null);
+                //Filtrado de usuarios no pertenecientes a la organizacion
+						    for(i=0;i<rows2.length;i++){
+							    for(j=0;j<rows3.length;j++){
+									  if(rows2[i].id_usuario.equals(rows3[j]._id)){
+										  rows3.splice(j, 1);
+								  	  }
+								    }
+                  }
+                  //Filtrado de usuarios ya invitados
+                  if(notificaciones.length!=0){
+                    for(i=0;i<notificaciones.length;i++){
+                      for(j=0;j<rows3.length;j++){
+                        if(notificaciones[i].id_user_receptor.equals(rows3[j]._id)){
+                          rows3.splice(j, 1);
+                          }
+                        }
+                      }
+                  }
+							  //Generacion de lista solo con correos de usuarios no pertenecientes a la organizacion
+							  let list=[]
 							  for(j=0;j<rows3.length;j++){
-									if(rows2[i].id_usuario==rows3[j].id){
-										rows3.splice(j, 1);
-								  	}
-								  }
-							  }
-							//Generacion de lista solo con correos de usuarios no pertenecientes a la organizacion
-							let list=[]
-							for(j=0;j<rows3.length;j++){
-								list.push(rows3[j].correo)
-							  }
-							//Renderizado de platilla add_org_user con atributos
-							res.render(__dirname+'/src/add_org_user',{rows: list,error:0});
-              callback(rows);
+								  list.push(rows3[j].correo)
+                  }
+							  //Renderizado de platilla add_org_user con atributos
+							  res.render(__dirname+'/src/add_org_user',{rows: list,error:0});
+                callback(rows);
+                });
               });
             });
         }else{
@@ -344,14 +355,41 @@ const aceptar_org= function(db,req,res, callback) {
               assert.equal(err, null);
 						//Query a la tabla de notificaciones (añadir integrante a la organizacion organizacion)
 						let type=4
-						if(req.session.type==2){type=3}
+            if(req.session.type==2){type=3}
+            db.collection('integrantes_organizacion').deleteOne({id_usuario:ObjectID(req.session.userID)}, function(err, obj) {
+              if (err) throw err;
             db.collection('integrantes_organizacion').insertMany([{id_usuario:ObjectID(req.session.userID),nombres:req.session.names,
               id_organizacion:ObjectID(rows2[0].id_organizacion),rol:type,activo:1}], function(err, result) {
               assert.equal(null, err);
-							//Redirecciona a organizacion
-              res.redirect('/organizacion')
-              callback(rows);
-							});
+              //Query a la tabla organizacion con filtro id_jefe
+              db.collection('organizacion').find({id_jefe:ObjectID(req.session.userID)}).toArray(function(err, org) {
+                assert.equal(err, null);
+                if(org.length!=0){
+                  db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(org[0]._id)}).toArray(function(err, org2) {
+                    assert.equal(err, null);
+                    if(org2.length!=0){
+                      //Redirecciona a organizacion
+                      res.redirect('/organizacion')
+                      callback(rows);
+                      }else{
+                        //Eliminar organizacion vacia Revisar
+                        db.collection("organizacion").deleteOne({_id:ObjectID(org[0]._id)}, function(err, obj) {
+                          if (err) throw err;
+                          //Redirecciona a organizacion
+                          res.redirect('/organizacion')
+                          callback(rows);
+                          });
+                        }
+                      });
+                }else{
+                  //Redirecciona a organizacion
+                  res.redirect('/organizacion')
+                  callback(rows);
+                }
+                
+                });
+              });
+            });
 						});
 					
 					});
@@ -379,24 +417,29 @@ const anadir_usuario= function(db,req,res, callback) {
             assert.equal(null, err);
 						//Se filtran los usuarios que no forman parte de la organizacion
 						for(i=0;i<rows2.length;i++){for(j=0;j<rows3.length;j++){
-							if(rows2[i].id_usuario==rows3[j].id){
+							if(rows2[i].id_usuario.equals(rows3[j]._id)){
 										rows3.splice(j, 1);
 									}
-							}}
-							let band=0,temp
-							//Verifica que el correo seleccionado esta registrado (band=1)
-							for(j=0;j<rows3.length;j++){
-								if(req.body.name==rows3[j].correo){temp=rows3[j];band=1;break;}
-							}
-							if(band==0){
-								//Renderiza add_org_user con error en correo ingresado y lista de usuarios
-                res.render(__dirname+'/src/add_org_user',{rows: list,error:1});
-                callback(rows);
-								}else{
+              }}
+            //Generacion de lista solo con correos de usuarios no pertenecientes a la organizacion
+						let list=[]
+						for(j=0;j<rows3.length;j++){
+							list.push(rows3[j].correo)
+              }
+						let band=0,temp
+						//Verifica que el correo seleccionado esta registrado (band=1)
+						for(j=0;j<rows3.length;j++){
+							if(req.body.name==rows3[j].correo){temp=rows3[j];band=1;break;}
+              }
+						if(band==0){
+							//Renderiza add_org_user con error en correo ingresado y lista de usuarios
+              res.render(__dirname+'/src/add_org_user',{rows: list,error:1});
+              callback(rows);
+							}else{
                   //Query a la tabla de notificaciones (notificacion de invitacion de organizacion)
 									let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
 									db.collection('notificaciones').insertMany([{id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
-                    id_user_receptor:ObjectID(temp.id),nombre_receptor:temp.nombres+" "+temp.apellidos,tipo:1,status:1,fecha:dia,hora:hora}], function(err, result) {
+                    id_user_receptor:ObjectID(temp._id),nombre_receptor:temp.nombres+" "+temp.apellidos,tipo:1,status:1,fecha:dia,hora:hora}], function(err, result) {
                     assert.equal(null, err);
 										//Redirecciona a organizacion
                     res.redirect('/organizacion')
@@ -543,6 +586,7 @@ const eliminar_user_org= function(db,req,res, callback) {
   });
 }
 const getout_org= function(db,req,res, callback) {
+  //Mejorar
   if(req.body.band==1){
     db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray(function(err, rows) {
       assert.equal(err, null);
@@ -556,7 +600,7 @@ const getout_org= function(db,req,res, callback) {
 						db.collection('notificaciones').insertMany([{id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
               id_user_receptor:ObjectID(req.session.userID),nombre_receptor:req.session.names,tipo:8,status:0,fecha:dia,hora:hora}], function(err, result) {
               assert.equal(null, err);
-							if(rows2[0].id_jefe==req.session.userID){
+							if(rows2[0].id_jefe.equals(req.session.userID)){
                 db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(rows[0].id_organizacion)}).toArray(function(err, rows6) {
                   assert.equal(err, null);
 									if(rows6.length!=0){
@@ -684,7 +728,7 @@ app.get('/new_org',configStats, auth ,function(req,res) {
 });
 app.get('/proyectos',configStats, auth ,function(req,res) {
 	//Renderizado de platilla projects con atributos
-	res.render(__dirname+'/src/projects',{type:req.session.type});
+	res.sendFile(__dirname+'/src/projects.html');
 });
 app.get('/organizacion', auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {

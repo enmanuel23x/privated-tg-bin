@@ -88,11 +88,11 @@ a:active, a:hover{outline:0}
 .popCont p{white-space:pre-line;}
 .popCont.type02{text-align:left}
 .popBtn{text-align:center;background-color:#eceef1;overflow:hidden}
-.popBtn.type01{padding:10px 80px}
+.popBtn.type01{padding:10px 0px}
 .popBtn.type02{padding:10px}
 .popBtn.type02 .btnBx{display:block;float:left;width:50%}
 .popBtn.type02 .btnBx .btn{display:block;padding:0 5px}
-.popBtn .cmnBtn{height:35px;line-height:35px}
+.popBtn .cmnBtn{height:35px;line-height:35px;margin-bottom: 10px;}
 .cmnBtn{display:inline-block;width:100%;height:30px;line-height:30px;text-align:center;color:#7e7e7e !important;background-color:#f7f7f7;border:1px solid #d0d0d0;border-radius:3px;-moz-border-radius:3px;-webkit-border-radius:3px}
 .cmnBtn.on{color:#ff7573 !important;background-color:#fff;border:1px solid #ff7573}
 

@@ -11,6 +11,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="css/modal.css" rel="stylesheet" />
 	<link href="css/main.css" rel="stylesheet" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
@@ -57,6 +58,7 @@
   
 	<section id="content-wrapper">
 		<h1>ORGANIZACION</h1>
+		<% console.log(rows2) %>
 		<% if(rows.length!=0){ %>
 			<h2 style="text-align: center;"><%= name %></h2>
 			<table>
@@ -68,28 +70,73 @@
 						<tr>
 							<td><%= i %></td>
 							<td><%= rows[i].nombres %></td>
-							<td><%= rows[i].rol %></td>
+							<% if(rows[i].rol==1){ %>
+								<td>Dueño</td>
+								<% }else if(rows[i].rol==2){ %>
+									<td>Lider</td>
+								<% }else if(rows[i].rol==3){ %>
+									<td>Administrador</td>
+								<% }else if(rows[i].rol==4){ %>
+									<td>Dearrollador</td>
+								<% } %>
 							<td><%= rows[i].correo %></td>
 							<td>
-								<% if(grade==1 && id!=rows[i].id_usuario){ %>
-									<% if(rows[i].rol==3){ %>
-										<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
-										<% }else if(rows[i].rol==2){ %>
-											<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;"><i class="fas fa-level-down-alt"></i></button></form>
-											<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></form>
+								<% if(grade==1 && id!=rows[i].id_usuario && rows[i].rol==2){ %>
+									<a id="DownDialog" href=<%= "#Descend"+rows[i].id_usuario %>><button style="background-color: yellow;"><i class="fas fa-level-down-alt"></i></button></a>
+									<% } %>
+								<% if(grade==1 && id!=rows[i].id_usuario && rows[i].rol!=4){ %>
+									<a id="UpDialog" href=<%= "#Ascend"+rows[i].id_usuario %>><button style="background-color: green;"><i class="fas fa-level-up-alt"></i></button></a>
+									<% } %>
+								<% if(grade<=2 && id!=rows[i].id_usuario && rows[i].rol!=1){ %>
+									<a id="DeletDialog" href=<%= rows[i].id_usuario %>><button style="background-color: red;"><i class="fas fa-user-minus"></i></button></a>
+									<% } %>
+								<div class="wrap">
+									<% if(grade==1 && id!=rows[i].id_usuario && rows[i].rol==2){ %>
+										<div class="modalDialog" id=<%= "Descend"+rows[i].id_usuario %>>
+											<div class="popWrap">
+												   <h2 class="popTit">Alerta</h2>
+												<div class="popCont">
+													<p>¿Desea descender al usuario <%= rows[i].nombres %>?</p>
+												</div>
+												<div class="popBtn type01">	
+													<a href="#close" title="Close" class="cmnBtn">Canelar</a>
+													<form method="POST" action='/minus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;">Descender</button></form>
+												</div>
+												</div>
+										</div>
 										<% } %>
-									<% }else{ %>
-										<% if(rows[i].rol==3){ %>
-											<form method="POST" action='/'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;" disabled><i class="fas fa-level-up-alt"></i></button></form>
-											<% }else if(rows[i].rol==2){ %>
-												<form method="POST" action='/'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: yellow;" disabled><i class="fas fa-level-down-alt"></i></button></form>
-											<% }%>
-										<% }%>
-								<% if(grade==3 || rows[i].rol<=2){ %>
-									<button style="background-color: red;" disabled><i class="fas fa-user-minus"></i></button>
-									<% }else{ %>
-										<form method="POST" action='/eliminar_user_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: red;"><i class="fas fa-user-minus"></i></button></form>
-									<% }%>
+									<% if(grade==1 && id!=rows[i].id_usuario && rows[i].rol!=4){ %>
+										<div class="modalDialog" id=<%= "Ascend"+rows[i].id_usuario %>>
+											<div class="popWrap">
+												   <h2 class="popTit">Alerta</h2>
+												<div class="popCont">
+													<p>¿Desea ascender al usuario <%= rows[i].nombres %>?</p>
+													<% if(rows[i].rol==2){ %>
+														<p>Si asciende a este usuario su cuenta sera degradada al rango de lider en la organizacion</p>
+														<% } %>
+												</div>
+												<div class="popBtn type01">	
+													<a href="#close" title="Close" class="cmnBtn">Canelar</a>
+													<form method="POST" action='/plus_user'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: green;">Ascender</button></form>
+												</div>
+												</div>
+										</div>
+										<% } %>
+									<% if(grade<=2 && id!=rows[i].id_usuario && rows[i].rol!=1){ %>
+										<div class="modalDialog" id=<%= "Delete"+rows[i].id_usuario %>>
+											<div class="popWrap">
+												   <h2 class="popTit">Alerta</h2>
+												<div class="popCont">
+													<p>¿Desea eliminar al usuario <%= rows[i].nombres %>?</p>
+												</div>
+												<div class="popBtn type01">	
+													<a href="#close" title="Close" class="cmnBtn">Canelar</a>
+													<form method="POST" action='/eliminar_user_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows[i].id_usuario %>><button style="background-color: red;">Eliminar</button></form>
+												</div>
+												</div>
+										</div>
+										<% } %>
+								</div>
 							</td>
 						</tr>
 						<% } %>
@@ -97,7 +144,6 @@
 							<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
 							<td style="border: none;">
 								<% if(grade>=3){ %>
-									<button type="submit" style="background-color: green;" disabled></button><i class="fas fa-user-plus"></i></button>
 									<% }else{ %>
 										<form action="/anadir_usuario" method="GET"><button type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i></button></form>
 									<% }%>
@@ -111,62 +157,68 @@
 						<tr>
 							<td><%= i %></td>
 							<td><%= rows[i].nombres %></td>
-							<td><%= rows[i].rol %></td>
+							<% if(rows[i].rol==1){ %>
+								<td>Dueño</td>
+								<% }else if(rows[i].rol==2){ %>
+									<td>Lider</td>
+								<% }else if(rows[i].rol==3){ %>
+									<td>Administrador</td>
+								<% }else if(rows[i].rol==4){ %>
+									<td>Dearrollador</td>
+								<% } %>
 							<td><%= rows[i].correo %></td>
 						</tr>
 						<% } %>
 				<% }%>
 			</tbody></table>
-			<!-- Modales -->
-		<div class="wrap">
-			<div class="modalDialog" id=<%= rows2[i]._id %>>
-				<div class="popWrap">
-					   <h2 class="popTit">Alerta</h2>
-					<div class="popCont">
-						<p>¿Que hacer con la solicitud de <%= rows2[i].nombre_emisor %>?</p>
-						<p>Si perteneces a una organizacion seras eliminado de esta y de todos los proyectos activos</p>
-					</div>
-					<div class="popBtn type01">	
-						<form method="POST" action='/aceptar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: green;border-radius: 17px;color: white;">Aceptar</button></form>
-						<form method="POST" action='/rechazar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: red;border-radius: 17px;color: white;">Rechazar</button></form>
-					</div>
-					</div>
+			<div class="wrap">
+				<div class="modalDialog" id="OutDialog">
+					<div class="popWrap">
+						   <h2 class="popTit">Alerta</h2>
+						<div class="popCont">
+							<p>¿Quieres salir de la organizacion?</p>
+							<p>Seras eliminado de esta y de todos los proyectos activos</p>
+						</div>
+						<div class="popBtn type01">	
+							<form action="/getout_org" method="POST" style="text-align: center;">
+								<input name="band" id="band" type="text" style="display: none;" value="1">
+								<button type="submit" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 20px;">
+									<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
+								  </button>
+								</form>
+						</div>
+						</div>
+				</div>
 			</div>
-		</div>
-		<!-- /Modales -->
-				<a id="OutDialog"  class="pop-btn" href="#OutDialog">
-					<button type="button" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+				<a id="OutDialog" href="#OutDialog">
+					<button type="button" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 20px;">
 						<i class="fas fa-sign-out-alt"></i>Salir de la organizacion
 					</button>
 				</a>
 			<% }else if(type==2){ %>
 				<form action="/new_org" method="GET">
-					<button type="submit" style="background: dodgerblue;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
+					<button type="submit" style="height: 50px;background: #41E23F;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
 						<i class="fas fa-plus"></i> Crear
 				  	</button>
 					</form>
 			<% } %>
-		<% if(rows2.length!=0 && rows.length==0){%>
+		<% if(rows2.length!=0){%>
 			<!-- Modales -->
 		<div class="wrap">
 			<% for(i=0;i<rows2.length;i++){ %>
-			<div class="modalDialog" id="OutDialog">
-				<div class="popWrap">
-					   <h2 class="popTit">Alerta</h2>
-					<div class="popCont">
-						<p>¿Quieres salir de la organizacion?</p>
-						<p>Seras eliminado de esta y de todos los proyectos activos</p>
-					</div>
-					<div class="popBtn type01">	
-						<form action="/getout_org" method="POST" style="text-align: center;">
-							<input name="band" id="band" type="text" style="display: none;" value="1">
-							<button type="submit" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 35px;">
-								<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
-							  </button>
-							</form>
-					</div>
-					</div>
-			</div>
+				<div class="modalDialog" id=<%= rows2[i]._id %>>
+					<div class="popWrap">
+						   <h2 class="popTit">Alerta</h2>
+						<div class="popCont">
+							<p>¿Que hacer con la solicitud de <%= rows2[i].nombre_emisor %>?</p>
+							<p>Si perteneces a una organizacion seras eliminado de esta y de todos los proyectos activos</p>
+						</div>
+						<div class="popBtn type01">	
+							<form method="POST" action='/aceptar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: green;border-radius: 17px;color: white;">Aceptar</button></form>
+							<form method="POST" action='/rechazar_org'><input name="id" id="id" type="text" style="display: none;" value=<%= rows2[i]._id %>><button type="submit" style="background: red;border-radius: 17px;color: white;">Rechazar</button></form>
+						</div>
+						</div>
+				</div>
 			<% } %>
 		</div>
 		<!-- /Modales -->
@@ -181,7 +233,7 @@
 							<td><%= rows2[i].fecha %></td>
 							<td>Invitacion de <%= rows2[i].nombre_emisor %></td>
 							<td>
-								<a id=<%= rows2[i]._id %>  class="pop-btn" href=<%= "#"+rows2[i]._id %><button type="button" style="background: green;border-radius: 17px;color: white;">Aceptar</button></a>
+								<a id=<%= rows2[i]._id %> href=<%= "#"+rows2[i]._id %>><button type="button" style="background: green;border-radius: 17px;color: white;">Responder</button></a>
 								
 								</td>
 							</tr>
