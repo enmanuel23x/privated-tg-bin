@@ -1,3 +1,4 @@
+const assert = require('assert');
 module.exports = {
     insertOrg: function(db,req,res, callback) {
         let collection = db.collection('organizacion');
