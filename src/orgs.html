@@ -37,6 +37,9 @@
 			this.update()
 		},
         methods: {
+			sidebar(){
+				$("#wrapper").toggleClass("toggled");
+			},
 			progress(){
 				swal({
                 	title: "Cargando",
@@ -58,7 +61,6 @@
 				currentObj.$data.rows2=response.data.rows2
                 currentObj.$data.name=response.data.name
                 currentObj.$data.rol=response.data.rol
-                console.log(currentObj.$data)
 				swal.close();
 				})
                 .catch(function (error) {
@@ -325,7 +327,6 @@
   									icon: "warning"
 								    });
                               }else{
-                                  console.log(response)
                                 swal({
 									title: "Solicitud Enviada",
   									text: "",
@@ -352,7 +353,6 @@
 					axios.post('/add_org', {
                 	    name: name
   						}).then(function (response) {
-							  console.log(response.data)
                               if(response.data==1){
                                 swal({
 									title: "Alerta",
@@ -360,7 +360,6 @@
   									icon: "warning"
 								    });
                               }else{
-                                  console.log(response)
                                 swal({
 									title: "Realizado con exito",
   									text: "Nombre registrado",
@@ -393,7 +392,6 @@
 						axios.post('/getout_org', {
                 	    band: 1
   						}).then(function (response) {
-							  console.log(response.data)
                               if(response.data==1){
                                 swal({
 									title: "Alerta",
@@ -586,7 +584,7 @@
 		  <nav class="navbar navbar-inverse">
 			<div class="container-fluid">
 			  <div class="navbar-header">
-				<a href="" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+				<a @click="sidebar()" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
 			  </div>
 			</div>
 		  </nav>

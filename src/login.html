@@ -52,10 +52,17 @@
   						icon: "warning",
   						button: "Entendido",
 						})
-				}else{
+				}else if(response.data==3){
 					swal({
 						title: "Error",
   						text: '¡Correo no registrado!',
+  						icon: "warning",
+  						button: "Entendido",
+						})
+				}else{
+					swal({
+						title: "Error",
+  						text: '¡Sistema momentaneamente inactivo!',
   						icon: "warning",
   						button: "Entendido",
 						})

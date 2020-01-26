@@ -197,7 +197,7 @@ module.exports = {
               db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(rows[0].id_organizacion)}).toArray(function(err, rows2) {
                 assert.equal(null, err);
                 //Query a la tabla de usuario
-                db.collection('usuario').find({}).toArray(function(err, rows3) {
+                db.collection('usuario').find({rol:{$ne:0}}).toArray(function(err, rows3) {
                   assert.equal(null, err);
                               //Se filtran los usuarios que no forman parte de la organizacion
                               for(i=0;i<rows2.length;i++){for(j=0;j<rows3.length;j++){
@@ -452,13 +452,30 @@ module.exports = {
             bytes  = CryptoJS.AES.decrypt(rows[i].contraseña, 'devology secret key');
             pass2 = bytes.toString(CryptoJS.enc.Utf8);
                   if (rows[i].correo == user && pass2 == pass) {
-                      //Creacion de session
-                      req.session.userID = rows[i]._id
-                      req.session.names = rows[i].nombres + " " + rows[i].apellidos
-                      req.session.type=rows[i].rol
+                      if(rows[i].rol==0){
+                        //Creacion de session
+                        req.session.userID = rows[i]._id
+                        req.session.names = rows[i].nombres + " " + rows[i].apellidos
+                        req.session.type=rows[i].rol
                         req.session.act=rows[i].inicializado
-                      //Redireccion a inicio
-                      res.send("1");
+                        //Redireccion a inicio
+                        res.send("1");
+                        }else{
+                            db.collection('config').find({}).toArray(function(err, cfg) {
+                             assert.equal(err, null);
+                                if(cfg[0].status==1){
+                                    //Creacion de session
+                                    req.session.userID = rows[i]._id
+                                    req.session.names = rows[i].nombres + " " + rows[i].apellidos
+                                    req.session.type=rows[i].rol
+                                    req.session.act=rows[i].inicializado
+                                    //Redireccion a inicio
+                                    res.send("1");
+                                    }else{
+                                         res.send("4")
+                                    }
+                                });
+                         }
                       band=1;break;
                       }else if(rows[i].correo == user && pass2 != pass){
                         res.send("2");
@@ -470,5 +487,41 @@ module.exports = {
             res.send("3");
             }
         });
-      }
-}
+      },
+    getPanel: function(db,req,res, callback) {
+        db.collection('usuario').find({_id:ObjectID(req.session.userID)}).toArray(function(err, rows) {
+            if(rows.length!=0){
+                if(rows[0].rol==0){
+                    db.collection('config').find({}).toArray(function(err, rows2) {
+                        //devuelve tabla de configuracion
+                        res.json({config:rows2})
+                    });
+                    }else{
+                        //error no es admin del sistema
+                        res.send("2")
+                    }
+                }else{
+                    //error sesion no iniciada
+                    res.send("1")
+                }
+            });
+        },
+    change_status:function(db,req,res, callback) {
+        db.collection('usuario').find({_id:ObjectID(req.session.userID)}).toArray(function(err, rows) {
+            if(rows.length!=0){
+                if(rows[0].rol==0){
+                    db.collection('config').updateOne({_id: ObjectID(req.body.id)},{ $set:{status:req.body.status}}, function(err, result) {
+                        //devuelve tabla de configuracion
+                        res.json("0")
+                    });
+                    }else{
+                        //error no es admin del sistema
+                        res.send("2")
+                    }
+                }else{
+                    //error sesion no iniciada
+                    res.send("1")
+                }
+            });
+        }
+    }

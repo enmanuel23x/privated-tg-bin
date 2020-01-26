@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>AdminPanel</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script>
+    // some data we'll use
+    document.addEventListener('DOMContentLoaded', function () {
+      var v =new Vue({
+        el: '#sg1',
+        data: {
+            status:2,
+            config: []
+        },
+        methods: {
+            sidebar(){
+				$("#wrapper").toggleClass("toggled");
+            },
+            progress(){
+				swal({
+                	title: "Cargando",
+  					text: "Por Favor Espere",
+  					icon: "img/loader.gif",
+  					button: false,
+					allowOutsideClick: false,
+					closeOnClickOutside: false
+    				})
+			},
+			update(){
+				let currentObj = this;
+				axios.get('/data_panel', {
+  			})
+			.then(function (response) {
+                currentObj.$data.config=response.data.config
+                currentObj.$data.status=response.data.config[0].status
+				swal.close();
+				})
+                .catch(function (error) {
+                    console.log(error)
+                });
+            },
+            change(st){
+                let currentObj = this;
+                text="¿Quieres habilitar la plataforma?"
+                if(st==1){text="¿Quieres deshabilitar la plataforma?"}
+                swal({
+  				    title: text,
+				    text: "",
+  				    icon: "warning",
+  				    buttons: ["Cancelar","Confirmar"],
+  				    dangerMode: true,
+				    }).then((willDelete) => {
+  					    if (willDelete) {
+                            v.progress()
+                            stat=1
+                            if(st==1){stat=0}
+						    axios.post('/change_status', {
+                                id: currentObj.$data.config[0]._id,
+                	            status: stat
+  						        }).then(function (response) {
+                              if(response.data!=0){
+                                text="No se pudo habilitar la plataforma"
+                                if(st==1){text="No se pudo deshabilitar la plataforma"}
+                                swal({
+									title: "Alerta",
+  									text: text,
+  									icon: "warning"
+								    });
+                              }else{
+                                text="¡Plataforma habilitada con exito con exito!"
+                                if(st==1){text="¡Plataforma deshabilitada con exito con exito!"}
+								swal({
+									title:text,
+									text:"",
+      								icon: "success",
+    								}).then(value => {
+										v.progress()
+										v.update()
+										});
+							  }
+						    
+						}).catch(function (error) {
+                    	    console.log(error)
+                			});
+  						} else {
+    						swal.close();
+  						}
+					});
+            }
+        },
+        created: function(){
+			this.progress()
+			this.update()
+		},
+        mounted(){
+
+          }
+      })
+    })
+  </script>
+</head>
+<body>
+    <div id="sg1">
+        <div id="wrapper" class="toggled">
+
+		    <aside id="sidebar-wrapper">
+			<div class="sidebar-brand" style="text-align: left;">
+				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+			  </div>
+		  <ul class="sidebar-nav" id="sidebar-nav">
+			<li>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+				</li>
+		  </ul>
+		        </aside>
+	  
+		    <div id="navbar-wrapper">
+		  <nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<a @click="sidebar()" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+			  </div>
+			</div>
+		  </nav>
+                </div>
+            <h1 style="font-size: 5rem;">Panel de administrador</h1>
+            <div style="display: flex;">
+                <label for="type" class="label" style="margin-left:50px"><h1>Estado del sistema:</h1></label>
+                <h1 v-if="status==1" style="color: green;margin-left:15px">Activo</h1>
+                <h1 v-if="status==0" style="color:red;margin-left:15px">Inactivo</h1>
+                <button @click="change(status)">Cambiar</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

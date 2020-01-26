@@ -20,9 +20,22 @@ app.use(session({
   saveUninitialized: false,
   cookie: {name: "not",type:"" ,secure: false }
 }))
+var isSysAdmin = function(req, res, next) {
+	if (req.session.userID!=undefined){
+		if(req.session.type==0){
+      return next();
+		}else{
+			res.redirect('/inicio')
+		}
+  }else{
+    return res.redirect('/login')
+  }
+};
 var auth = function(req, res, next) {
 	if (req.session.userID!=undefined){
-		if(req.session.act==0 && req.session.type==1 && req.originalUrl!="/aptitudes"){
+    if(req.session.type==0){
+      res.redirect('/adminpanel')
+    }else if(req.session.act==0 && req.session.type==1 && req.originalUrl!="/aptitudes"){
 			res.redirect('/aptitudes')
 		}else{
 			return next();
@@ -62,25 +75,19 @@ const dbName = 'devology';
 /*  /Utilidades y librerias*/
 /* Conexiones a mongoDB */
 const getConfig = function(db,req,res,next, callback) {
-  // Get the documents collection
-  const collection = db.collection('config');
-  // Find some documents
-  collection.find({}).toArray(function(err, rows) {
+  db.collection('config').find({}).toArray(function(err, rows) {
     assert.equal(err, null);
     if(rows[0].status==1){
       return next();
-      callback(rows);
+    }else if(req.session.type==0){
+      return next();
     }else{
-      res.redirect("/login")
-      callback(rows);
+      res.redirect('/login')
     }
   });
 }
 const getInicio = function(db,req,res, callback) {
-  // Get the documents collection
-  const collection = db.collection('notificaciones');
-  // Find some documents
-  collection.find({$and:[{tipo:{$ne:1}},{$or:[{id_user_emisor:ObjectID(req.session.userID)},{id_user_receptor:ObjectID(req.session.userID)}]}]}).sort({_id:-1}).toArray(function(err, rows) {
+  db.collection('notificaciones').find({$and:[{tipo:{$ne:1}},{$or:[{id_user_emisor:ObjectID(req.session.userID)},{id_user_receptor:ObjectID(req.session.userID)}]}]}).sort({_id:-1}).toArray(function(err, rows) {
     assert.equal(err, null);
     res.render(__dirname+'/src/home',{type:req.session.type,rows:rows,id:req.session.userID});
     callback(rows);
@@ -140,7 +147,7 @@ app.get('/login',function(req,res) {
 	//Renderiza la plantilla Login-Register
   res.sendFile(__dirname+'/src/login.html')
 });
-app.post('/login',configStats,function(req,res) {
+app.post('/login', function(req,res) {
   //Verificacion de los datos para iniciar sesion
     MongoClient.connect(url, function(err, client) {
       assert.equal(null, err);
@@ -216,6 +223,17 @@ app.get('/data_organizacion', configStats, auth ,function(req,res) {
     });
   });
 });
+app.get('/data_panel', isSysAdmin ,function(req,res) {
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.getPanel(db,req,res, function() {
+    });
+  });
+});
+app.get('/adminpanel', isSysAdmin,function(req,res) {
+  res.sendFile(__dirname+'/src/adminpanel.html');
+});
 /* /GET METHODS */
 /* POST METHODS */
 app.post('/add_org',configStats, auth , isAdmin ,function(req,res) {
@@ -285,7 +303,14 @@ app.post('/eliminar_user_org', configStats, auth , isAdmin ,function(req,res) {
     });
   });
 });
-
+app.post('/change_status', isSysAdmin,function(req,res) {
+  MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.change_status(db,req,res, function() {
+    });
+  });
+});
 app.post('/getout_org', configStats, auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
