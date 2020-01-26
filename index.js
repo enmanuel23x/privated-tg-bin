@@ -145,7 +145,7 @@ app.post('/login',configStats,function(req,res) {
     MongoClient.connect(url, function(err, client) {
       assert.equal(null, err);
       const db = client.db(dbName);
-      getLogin(db,req,res, function() {
+      mongoUtil.getLogin(db,req,res, function() {
       });
     });
   });
@@ -155,7 +155,7 @@ app.post('/register',configStats,function(req,res){
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);
-    RegUser(db,req,res, function() {
+    mongoUtil.RegUser(db,req,res, function() {
       client.close();
     });
   });
