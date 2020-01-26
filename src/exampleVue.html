@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
   <script>
     // some data we'll use
     document.addEventListener('DOMContentLoaded', function () {
@@ -18,8 +19,18 @@
         data: {
         },
         methods: {
+          
+        },
+        mounted(){
 
-        }
+          // Encrypt
+          var ciphertext = CryptoJS.AES.encrypt('Leon2310', 'devology secret key').toString();
+          console.log(ciphertext);
+          // Decrypt
+          var bytes  = CryptoJS.AES.decrypt(ciphertext, 'devology secret key');
+          var originalText = bytes.toString(CryptoJS.enc.Utf8);
+          console.log(originalText); // 'my message'
+          }
       })
     })
   </script>

@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
   <script>
     // some data we'll use
     document.addEventListener('DOMContentLoaded', function () {
@@ -28,9 +29,10 @@
   allowOutsideClick: false,
   closeOnClickOutside: false
     });
+    let ciphertext = CryptoJS.AES.encrypt(e.target.elements[1].value, 'devology secret key').toString();
 			axios.post('/login', {
     			email: e.target.elements[0].value,
-    			password: e.target.elements[1].value
+    			password: ciphertext
   			})
 			.then(function (response) {
 				if(response.data==1){
@@ -72,12 +74,13 @@
   allowOutsideClick: false,
   closeOnClickOutside: false
     });
+    let ciphertext = CryptoJS.AES.encrypt(e.target.elements[3].value, 'devology secret key').toString();
 			axios.post('/Register', {
                 name: e.target.elements[0].value,
                 name2: e.target.elements[1].value,
     			email: e.target.elements[2].value,
-                password: e.target.elements[4].value,
-                type: e.target.elements[5].value
+                pass: ciphertext,
+                type: e.target.elements[4].value
   			})
 			.then(function (response) {
 				if(response.data==0){

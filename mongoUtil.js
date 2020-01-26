@@ -1,4 +1,6 @@
 const assert = require('assert');
+var CryptoJS = require("crypto-js");
+var ObjectID = require('mongodb').ObjectID;
 module.exports = {
     insertOrg: function(db,req,res, callback) {
         let collection = db.collection('organizacion');
@@ -443,21 +445,25 @@ module.exports = {
           //Variables
             let band=0
             //Variables del formulario
-          let pass = req.body.password,user= req.body.email
+          let pass = req.body.password,user= req.body.email,pass2=""
+          bytes  = CryptoJS.AES.decrypt(pass, 'devology secret key');
+          pass = bytes.toString(CryptoJS.enc.Utf8);
           for (i = 0; i < rows.length; i++) {
-                  if (rows[i].correo == user && rows[i].contraseña == pass) {
+            bytes  = CryptoJS.AES.decrypt(rows[i].contraseña, 'devology secret key');
+            pass2 = bytes.toString(CryptoJS.enc.Utf8);
+                  if (rows[i].correo == user && pass2 == pass) {
                       //Creacion de session
                       req.session.userID = rows[i]._id
                       req.session.names = rows[i].nombres + " " + rows[i].apellidos
                       req.session.type=rows[i].rol
-              req.session.act=rows[i].inicializado
+                        req.session.act=rows[i].inicializado
                       //Redireccion a inicio
                       res.send("1");
                       band=1;break;
-                      }else if(rows[i].correo == user && rows[i].contraseña != pass){
-                res.send("2");
-                band=1;break;
-                }
+                      }else if(rows[i].correo == user && pass2 != pass){
+                        res.send("2");
+                        band=1;break;
+                        }
                   }
               //Si los datos de inicio de sesion no coinciden con ningun usuario
               if(band==0){
