@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>Devology</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link href="css/login.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script>
+    // some data we'll use
+    document.addEventListener('DOMContentLoaded', function () {
+      new Vue({
+        el: '#sg1',
+        data: {
+          
+        },
+        methods: {
+          onLogin(e) {
+			swal({
+                title: "Iniciando Sesion",
+  text: "Por Favor Espere",
+  icon: "img/loader.gif",
+  button: false,
+  allowOutsideClick: false,
+  closeOnClickOutside: false
+    });
+			axios.post('/login', {
+    			email: e.target.elements[0].value,
+    			password: e.target.elements[1].value
+  			})
+			.then(function (response) {
+				if(response.data==1){
+                    swal({
+                title: "¡Inicio de Sesion Exitoso!",
+  text: "Por Favor Espere",
+  icon: "img/loader.gif",
+  button: false,
+  allowOutsideClick: false,
+  closeOnClickOutside: false
+    });
+					window.location.href = "/inicio";
+				}else if(response.data==2){
+					swal({
+						title: "Error",
+  						text: '¡Contraseña incorrecta!',
+  						icon: "warning",
+  						button: "Entendido",
+						})
+				}else{
+					swal({
+						title: "Error",
+  						text: '¡Correo no registrado!',
+  						icon: "warning",
+  						button: "Entendido",
+						})
+				}
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+          },
+          onRegister(e) {
+			swal({
+                title: "Registrando",
+  text: "Por Favor Espere",
+  icon: "img/loader.gif",
+  button: false,
+  allowOutsideClick: false,
+  closeOnClickOutside: false
+    });
+			axios.post('/Register', {
+                name: e.target.elements[0].value,
+                name2: e.target.elements[1].value,
+    			email: e.target.elements[2].value,
+                password: e.target.elements[4].value,
+                type: e.target.elements[5].value
+  			})
+			.then(function (response) {
+				if(response.data==0){
+                    swal({
+                        title: "¡Registro Exitoso!",
+                        text: "Por Favor Espere",
+                        icon: "img/loader.gif",
+                        button: false,
+                        allowOutsideClick: false,
+                        closeOnClickOutside: false
+                        });
+					window.location.href = "/inicio";
+				}else{
+					swal({
+						title: "Error",
+  						text: '¡Correo registrado!',
+                        icon: "warning",
+                        button: "Entendido",
+						})
+				}
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
+          }
+        },
+        
+      })
+    })
+  </script>
+</head>
+<body>
+  <div id="sg1">
+    <div class="login-wrap">
+        <div class="login-html">
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Ingresar</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Registrarse</label>
+            <div class="login-form">
+                <div class="sign-in-htm">
+                    <form v-on:submit.prevent="onLogin" method="POST">
+                    <div class="group">
+                        <label for="user" class="label">Correo</label>
+                        <input name="user" id="user" type="email" class="input" placeholder="Correo..." title="Direccion de correo invalida" required value="">
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Contraseña</label>
+                        <input name="pass" id="pass" type="password" class="input" data-type="password" placeholder="Contraseña..."  title="La contraseña debe tener 8 caracteres, incluyendo 1 letra mayúscula, 1 letra minúscula y caracteres numéricos." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" >
+                    </div>
+                    <div class="group">
+                        <input type="submit" class="button" value="Ingresar">
+                    </div>
+                    <div class="hr"></div>
+                    <div class="foot-lnk">
+                        <a href="#forgot">¿Olvidaste la Contraseña?</a>
+                    </div>
+                    </form>
+                </div>
+                <div class="sign-up-htm">
+                    <form v-on:submit.prevent="onRegister" method="POST">
+                    <div class="group">
+                        <label for="name" class="label">Nombres</label>
+                        <input name="name" id="name" type="text" class="input" placeholder="Nombres..." required>
+                    </div>
+                    <div class="group">
+                        <label for="name2" class="label">Apellidos</label>
+                        <input name="name2" id="name2" type="text" class="input" placeholder="Apellidos..." required>
+                    </div>
+                    <div class="group">
+                        <label for="user" class="label">Correo</label>
+                        <input name="user" id="user" type="email" class="input" placeholder="Correo..." required title="Direccion de correo invalida">
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Contraseña</label>
+                        <input name="pass" id="pass" type="password" class="input" data-type="password" placeholder="Contraseña..."  title="La contraseña debe tener 8 caracteres, incluyendo 1 letra mayúscula, 1 letra minúscula y caracteres numéricos." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" >
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Tipo</label>
+                        <select name="type" class="input" id="type">
+                            <option>Desarrollador</option>
+                            <option>Administrador</option>
+                        </select>
+                    </div>
+                    <div class="group">
+                        <input type="submit" class="button" value="Registrarse">
+                    </div>
+                    <div class="hr"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

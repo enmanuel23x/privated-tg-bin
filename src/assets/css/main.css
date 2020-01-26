@@ -255,12 +255,12 @@ a:focus {
   width: 60px;
 }
 /*organizacion*/
-td{
-  border: solid #222 1px;
+td,th{
+  border: solid white 1px;
 }
 table{
   width:calc(100% - (150px));
-  margin: 15px 0;
+  margin: 30px;
 }
 thead tr td{
   font-size: 35px;

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <title>Organizacion</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script>
+    // some data we'll use
+    document.addEventListener('DOMContentLoaded', function () {
+    let v = new Vue({
+        el: '#sg1',
+        data: {
+			rows:[],
+			rows2:[],
+			type:0,
+			id:0,
+            name,
+            rol:0
+		},
+		created: function(){
+			this.progress()
+			this.update()
+		},
+        methods: {
+			progress(){
+				swal({
+                	title: "Cargando",
+  					text: "Por Favor Espere",
+  					icon: "img/loader.gif",
+  					button: false,
+					allowOutsideClick: false,
+					closeOnClickOutside: false
+    				})
+			},
+			update(){
+				let currentObj = this;
+				axios.get('/data_organizacion', {
+  			})
+			.then(function (response) {
+				currentObj.$data.rows=response.data.rows
+				currentObj.$data.type=response.data.type
+				currentObj.$data.id=response.data.id
+				currentObj.$data.rows2=response.data.rows2
+                currentObj.$data.name=response.data.name
+                currentObj.$data.rol=response.data.rol
+                console.log(currentObj.$data)
+				swal.close();
+				})
+                .catch(function (error) {
+                    console.log(error)
+                });
+			},
+			Action(n,index){
+				let currentObj = this;
+				swal({
+						title: "Alerta",
+  						text: "¿Que hacer con "+n+"?",
+						  icon: "warning",
+  						buttons: {
+                            cancelar: "Cancelar",
+    						ascender: "Ascender",
+							descender: "Descender",
+							eliminar: "Eliminar"
+  						},
+					}).then((value) => {
+  						switch (value) {
+							case "ascender":
+								text="¿Desea ascender a "+n+"?"
+								for(i=0;i<this.$data.rows.length;i++){
+									if(this.$data.rows[i].rol==2 && index==this.$data.rows[i].id_usuario){
+										text+="\nSi asciende a este usuario su cuenta sera degradada al rango de lider en la organizacion"
+										}
+									}
+								swal({
+									title: "Alerta",
+  									text: text,
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										act: "Ascender"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "act":
+												v.progress()
+												let currentObj = this;
+												axios.post('/plus_user', {
+                									id: index
+  												}).then(function (response) {
+													v.update()
+												}).catch(function (error) {
+                    								console.log(error)
+                									});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+      							break;
+ 
+    						case "descender":
+								swal({
+									title: "Alerta",
+  									text: "¿Descender a "+n+"?",
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										descender: "Descender"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "descender":
+											v.progress()
+											let currentObj = this;
+											axios.post('/minus_user', {
+                								id: index
+  											}).then(function (response) {
+												v.update()
+											}).catch(function (error) {
+                    							console.log(error)
+                								});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+      							break;
+ 
+							case "eliminar":
+								swal({
+									title: "Alerta",
+  									text: "¿Eliminar a "+n+"?",
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										eliminar: "Eliminar"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "eliminar":
+											v.progress()
+											let currentObj = this;
+											axios.post('/eliminar_user_org', {
+                								id: index
+  											}).then(function (response) {
+												v.update()
+											}).catch(function (error) {
+                    							console.log(error)
+                								});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+								break;
+							default:
+								swal.close();
+								break
+  							}
+						});
+                },
+                Action2(n,index){
+				let currentObj = this;
+				swal({
+						title: "Alerta",
+  						text: "¿Que hacer con "+n+"?",
+  						icon: "warning",
+  						buttons: {
+    						cancelar: "Cancelar",
+							eliminar: "Eliminar"
+  						},
+					}).then((value) => {
+  						switch (value) { 
+							case "eliminar":
+								swal({
+									title: "Alerta",
+  									text: "¿Eliminar a "+n+"?",
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										eliminar: "Eliminar"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "eliminar":
+											v.progress()
+											let currentObj = this;
+											axios.post('/eliminar_user_org', {
+                								id: index
+  											}).then(function (response) {
+												v.update()
+											}).catch(function (error) {
+                    							console.log(error)
+                								});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+								break;
+							default:
+								swal.close();
+								break
+  							}
+						});
+				},
+				Action3(n,index){
+				let currentObj = this;
+				swal({
+						title: "Alerta",
+  						text: "¿Que hacer con "+n+"?",
+						  icon: "warning",
+  						buttons: {
+                            cancelar: "Cancelar",
+    						ascender: "Ascender",
+							eliminar: "Eliminar"
+  						},
+					}).then((value) => {
+  						switch (value) {
+							case "ascender":
+								text="¿Desea ascender a "+n+"?"
+								for(i=0;i<this.$data.rows.length;i++){
+									if(this.$data.rows[i].rol==2 && index==this.$data.rows[i].id_usuario){
+										text+="\nSi asciende a este usuario su cuenta sera degradada al rango de lider en la organizacion"
+									}
+								}
+								swal({
+									title: "Alerta",
+  									text: text,
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										act: "Ascender"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "act":
+												v.progress()
+												let currentObj = this;
+												axios.post('/plus_user', {
+                									id: index
+  												}).then(function (response) {
+													v.update()
+												}).catch(function (error) {
+                    								console.log(error)
+                									});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+      							break; 
+							case "eliminar":
+								swal({
+									title: "Alerta",
+  									text: "¿Eliminar a "+n+"?",
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										eliminar: "Eliminar"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "eliminar":
+											v.progress()
+											let currentObj = this;
+											axios.post('/eliminar_user_org', {
+                								id: index
+  											}).then(function (response) {
+												v.update()
+											}).catch(function (error) {
+                    							console.log(error)
+                								});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+								break;
+							default:
+								swal.close();
+								break
+  							}
+						});
+                },
+        addUser(){
+            swal({
+                text: 'Correo de usuario',
+                content: "input",
+                button: {
+                    text: "Añadir",
+                    closeModal: false,
+                    },
+                }).then(name => {
+                    if (!name) throw null;
+                    let currentObj = this;
+					axios.post('/anadir_usuario', {
+                	    email: name
+  						}).then(function (response) {
+                              if(response.data==1){
+                                swal({
+									title: "Alerta",
+  									text: "Usuario no encontrado o ya registrado en la organizacion",
+  									icon: "warning"
+								    });
+                              }else{
+                                  console.log(response)
+                                swal({
+									title: "Solicitud Enviada",
+  									text: "",
+  									icon: "success"
+								    });
+                              }
+						    
+						}).catch(function (error) {
+                    	    console.log(error)
+                			});
+                    })
+		},
+		addOrg(){
+            swal({
+                text: 'Nombre de organizacion',
+                content: "input",
+                button: {
+                    text: "Añadir",
+                    closeModal: false,
+                    },
+                }).then(name => {
+                    if (!name) throw null;
+                    let currentObj = this;
+					axios.post('/add_org', {
+                	    name: name
+  						}).then(function (response) {
+							  console.log(response.data)
+                              if(response.data==1){
+                                swal({
+									title: "Alerta",
+  									text: "Nombre de organizacion ya en uso",
+  									icon: "warning"
+								    });
+                              }else{
+                                  console.log(response)
+                                swal({
+									title: "Realizado con exito",
+  									text: "Nombre registrado",
+  									icon: "success"
+								    }).then(value => {
+										v.progress()
+										v.update()
+										});
+                              }
+						    
+						}).catch(function (error) {
+                    	    console.log(error)
+                			});
+                    })
+			},
+		getOut(){
+			let text =""
+			if(this.$data.role==1){
+				text="\nSe asignara otro dueño de la organizacion automaticamente"
+			}
+            swal({
+  				title: "¿Quieres salir de la organizacion?",
+				text: "Seras eliminado de esta y de todos los proyectos activos"+text,
+  				icon: "warning",
+  				buttons: ["Cancelar","Salir"],
+  				dangerMode: true,
+				}).then((willDelete) => {
+  					if (willDelete) {
+						v.progress()
+						axios.post('/getout_org', {
+                	    band: 1
+  						}).then(function (response) {
+							  console.log(response.data)
+                              if(response.data==1){
+                                swal({
+									title: "Alerta",
+  									text: "No pudo salir de la organizacion",
+  									icon: "warning"
+								    });
+                              }else if(response.data==0){
+								  swal({
+									title:"¡Eliminado con exito!",
+      								icon: "success",
+    								}).then(value => {
+										v.progress()
+										v.update()
+										});
+                              }else{
+								swal({
+									title:"¡Eliminado con exito!",
+									text:"La organizacion quedo vacia y fue eliminada",
+      								icon: "success",
+    								}).then(value => {
+										v.progress()
+										v.update()
+										});
+							  }
+						    
+						}).catch(function (error) {
+                    	    console.log(error)
+                			});
+  						} else {
+    						swal.close();
+  						}
+					});
+			},
+			act(){
+				v.progress()
+				v.update()
+			},
+			resInvitacion(index,name){
+				let currentObj = this;
+				swal({
+						title: "Alerta",
+  						text: "¿Que hacer con la invitacion de"+name+"?",
+						  icon: "warning",
+  						buttons: {
+							cancelar: "Cancelar",
+							rechazar: "Rechazar",
+    						aceptar: "Aceptar"
+  						},
+					}).then((value) => {
+  						switch (value) {
+							case "aceptar":
+								text="Si pertence a una organizacion saldra de esta y de todos los proyectos activos"
+								swal({
+									title: "¿Desea aceptar la invitacion de "+name+"?",
+  									text: text,
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										act: "Aceptar"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "act":
+												v.progress()
+												let currentObj = this;
+												axios.post('/aceptar_org', {
+                									id: index
+  												}).then(function (response) {
+													if(response.data!=3){
+														swal({
+															title:"¡Invitacion aceptada con exito!",
+															text:"",
+      														icon: "success",
+    														}).then((value) => {
+																v.progress()
+																v.update()
+																});
+													}else{
+														swal({
+															title:"¡Error!",
+															text:"No se pudo aceptar la invitacion",
+      														icon: "warning",
+															}).then((value) => {
+																v.progress()
+																v.update()
+																});
+													}
+												}).catch(function (error) {
+                    								console.log(error)
+                									});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+      							break;
+ 
+    						case "rechazar":
+								swal({
+									title: "¿Desea rechazar la invitacion de "+name+"?",
+  									text: "",
+  									icon: "warning",
+  									buttons: {
+    									cancelar: "Cancelar",
+										act: "Rechazar"
+  										},
+									}).then((value) => {
+  										switch (value) {
+											case "act":
+												v.progress()
+												let currentObj = this;
+												axios.post('/rechazar_org', {
+                									id: index
+  												}).then(function (response) {
+													if(response.data==0){
+														swal({
+															title:"¡Invitacion rechazada con exito!",
+															text:"",
+      														icon: "success",
+    														}).then((value) => {
+																v.progress()
+																v.update()
+																});
+													}else{
+														swal({
+															title:"¡Error!",
+															text:"No se pudo rechazar la invitacion",
+      														icon: "warning",
+															}).then((value) => {
+																v.progress()
+																v.update()
+																});
+													}
+												}).catch(function (error) {
+                    								console.log(error)
+                									});
+      											break;
+    										default:
+												swal.close();
+												break;
+  											}
+										});
+      							break;
+							default:
+								swal.close();
+								break
+  							}
+						});
+			}
+		},
+		mounted(){
+			
+		}
+      })
+    })
+  </script>
+</head>
+<body>
+  <div id="sg1">
+	<div id="wrapper" class="toggled">
+
+		<aside id="sidebar-wrapper">
+			<div class="sidebar-brand" style="text-align: left;">
+				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+			  </div>
+		  <ul class="sidebar-nav" id="sidebar-nav">
+			<li >
+			  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+				</li>
+			<li>
+			  <a href="/proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+				</li>
+			<li class="active">
+			  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+				</li>
+			<li>
+				<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+				</li>
+			<li v-if="type==1">
+				<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+				</li>
+			<li>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+				</li>
+		  </ul>
+		</aside>
+	  
+		<div id="navbar-wrapper">
+		  <nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<a href="" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+			  </div>
+			</div>
+		  </nav>
+		</div>
+		<div style="display: flex;">
+			<h1>Organizacion</h1>
+			<button style="    margin: 0 0 0 auto;" @click="act()">Refrescar</button>
+		</div>		
+		<div v-if="rows.length==0">
+			<button @click="addOrg()">Crear Organizacion</button>
+		</div>
+		<div v-if="rows.length!=0">
+			<h2 style="text-align: center;">{{ name }}</h2>
+			<table>
+				<thead>
+					<th>Id</th>
+					<th>Nombre</th>
+					<th>Rol</th>
+					<th>Correo</th>
+					<th v-if="type==2">Accion</th>
+				</thead>
+				<tbody>
+					<tr v-for="data in rows ">
+						<td>{{data.id_usuario}}</td>
+						<td>{{data.nombres}}</td>
+							<th v-if="data.rol==1">Dueño</th>
+							<th v-if="data.rol==2">Lider</th>
+							<th v-if="data.rol==3">Administrador</th>
+							<th v-if="data.rol==4">Desarrollador</th>
+						<td>{{data.correo}}</td>
+                            <th v-if="rol==1">
+								<button v-if="data.rol==2" @click="Action(data.nombres,data.id_usuario)">Acciones</button>
+								<button v-if="data.rol==3" @click="Action3(data.nombres,data.id_usuario)">Acciones</button>
+								<button v-if="data.rol==4" @click="Action2(data.nombres,data.id_usuario)">Acciones</button>
+								<button v-if="data.rol==1" disabled>Acciones</button>
+							</th>
+							<th v-if="rol==2">
+                                <button v-if="data.rol>=3" @click="Action2(data.nombres,data.id_usuario)">Acciones</button>
+                                <button v-if="data.rol<=2" disabled>Acciones</button>
+                                </th>
+                            <th v-if="rol==3"><button disabled>Acciones</button></th>
+					</tr>
+					<tr v-if="rol<=2">
+						<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
+						<td style="border: none;"><button @click="addUser()" type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i>Añadir</button></td>
+					</tr>
+				</tbody>
+			</table>
+			<button @click="getOut()" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 20px;">
+				<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
+			  </button>
+        </div>
+        <div v-if="rows2.length!=0">
+			<h2 style="text-align: center;">Invitaciones</h2>
+			<table>
+				<thead>
+					<tr><td>Fecha</td><td>Descripcion</td><td>Accion</td></tr>
+				</thead>
+				<tbody>
+					<tr v-for="data in rows2 ">
+						<td>{{data.fecha}}</td>
+						<td>Invitacion de {{data.nombre_emisor}}</td>
+						<td>
+							<button @click="resInvitacion(data._id,data.nombre_emisor)" type="button" style="background: green;border-radius: 17px;color: white;">Responder</button>
+							</td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	
+  </div>
+</body>
+</html>
