@@ -1,4 +1,15 @@
 let available_developers;
+let jokes = [];
+let dev_names = [];
+
+
+async function f(url) {
+    let respuesta = await fetch(url)
+    let json = await respuesta.json();
+
+    return  json
+}
+
 
 const vm = new Vue({
     el: '#projects',
@@ -25,7 +36,8 @@ const vm = new Vue({
         clojure: 0,
         perl: 0,
         rust: 0,
-        javascript: 0
+        javascript: 0,
+        info: []
     },
     mounted(){
         const settings={
@@ -58,7 +70,7 @@ const vm = new Vue({
                 }
             }
             // console.log(arr)
-            console.log(indexes)
+            // console.log(indexes)
             return indexes
         },
 
@@ -97,7 +109,7 @@ const vm = new Vue({
 
 
         checkDevelopers(){
-            let dev_names = [];
+
             let dev_apt = [];
             let apt_req = [];
             let dev_exp = []
@@ -124,28 +136,44 @@ const vm = new Vue({
             apt_req.push(dev_apt);
             return apt_req
         },
-        connectionToAPI(){
-            axios.get('https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?qy=23&tms=68&tch=53&sk=48&rqs=88'
-            ).then(function (response) {
-                console.log(response.data);
-            }).catch(function (error) {
-                console.log(error)
-            });
+        async connectionToAPI(){
+
+            let info_devs = this.checkDevelopers()[0];
+            // console.log(info_devs.length)
+            for (let i = 0; i < info_devs.length; i++) {
+                let qy = info_devs[i][0];
+                let tms = info_devs[i][1];
+                let tch = info_devs[i][2];
+                let sk = info_devs[i][3];
+                let rqs = info_devs[i][4];
+                let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?qy="+qy+"&tms="+tms+"&tch="+tch+"&sk="+sk+"&rqs="+rqs+"&num="+i+"";
+
+
+
+                jokes.push(await f(url))
+            }
+            return jokes
         },
-        createProject(){
-            console.log(this.connectionToAPI())
+        async createProject(){
+            let success = [];
+            let res_info = await this.connectionToAPI();
+            for (let i = 0; i < res_info.length ; i++) {
+                if (res_info[i].accomplishment === "1"){
+                    success.push([dev_names[i], res_info[i].accomplishment])
+                }
+            }
+            console.log(success)
         }
     },
     created(){
-        let currenObj=this
+        let currenObj = this;
         axios.get('/dev_data', {
         }).then(function (response) {
             available_developers = response.data;
-            currenObj.$data.type=response.data.type
+            currenObj.$data.type=response.data.type;
             console.log("ok")
         }).catch(function (error) {
                 console.log(error)
             });
-
     }
 });
