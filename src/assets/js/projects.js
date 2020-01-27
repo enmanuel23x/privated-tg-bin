@@ -50,14 +50,41 @@ const vm = new Vue({
         sidebar(){
             $("#wrapper").toggleClass("toggled");
         },
-        filterReqs(){
-            let reqs = [];
-            reqs.push(
+        getNotZerosIndex(arr){
+            let indexes = [];
+            for (let i = 0; i < arr.length ; i++) {
+                if (arr[i] !== 0) {
+                    indexes.push(i)
+                }
+            }
+            // console.log(arr)
+            console.log(indexes)
+            return indexes
+        },
+
+        getDevSkills(skills){
+            let sk = [];
+            let sum = 0;
+            let indexes = this.getNotZerosIndex(this.getProjectReqs());
+            // console.log(skills)
+            for (let i in indexes) {
+                sk.push(skills[i]);
+                sum += parseInt(skills[i]);
+            }
+            return sum / sk.length
+        },
+
+        getProjectReqs(){
+            let arr = [];
+            arr.push(
                 this.python, this.java, this.cpp, this.php, this.c, this.ruby, this.objective, this.golang, this.visual,
-                this.scala, this.sql, this.nosql, this.kotlin, this.r, this.swift, this.clojure, this.perl, this.rust,
-                this.javascript
+                this.scala, this.sql, this.nosql, this.kotlin, this.r, this.swift, this.clojure, this.perl, this.rust
             );
-            let filtered = reqs.filter((value, index, arr)=>{
+            return arr
+        },
+
+        filterReqs(arr){
+            let filtered = arr.filter((value, index, arr)=>{
                 return value >= 5
             });
             let sum = 0;
@@ -67,13 +94,46 @@ const vm = new Vue({
             return sum / filtered.length;
         },
 
-        checkDevelopers(){
-            return available_developers.apt[0]
 
+
+        checkDevelopers(){
+            let dev_names = [];
+            let dev_apt = [];
+            let apt_req = [];
+            let dev_exp = []
+            for (let i = 0; i < available_developers.devs.length ; i++) {
+                let skill = available_developers.apt[i][0];
+                dev_exp.push(
+                    skill.exp_python, skill.exp_java, skill.exp_cpp, skill.exp_php, skill.exp_c, skill.exp_ruby,
+                    skill.exp_objective, skill.exp_go, skill.exp_visual, skill.exp_scala, skill.exp_sql,
+                    skill.exp_nosql, skill.exp_kotlin, skill.exp_r, skill.exp_swift,
+                    skill.exp_clojure, skill.exp_perl, skill.exp_rust, skill.exp_html_css
+                );
+
+                dev_names.push(available_developers.devs[i].nombres);
+                dev_apt.push([
+                    available_developers.apt[i][0].dev_quality,
+                    available_developers.apt[i][0].dev_on_time,
+                    available_developers.apt[i][0].team_chemistry,
+                    this.getDevSkills(dev_exp),
+                    this.filterReqs(this.getProjectReqs())
+
+                ]);
+                dev_exp = []
+            }
+            apt_req.push(dev_apt);
+            return apt_req
+        },
+        connectionToAPI(){
+            axios.get('https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?qy=23&tms=68&tch=53&sk=48&rqs=88'
+            ).then(function (response) {
+                console.log(response.data);
+            }).catch(function (error) {
+                console.log(error)
+            });
         },
         createProject(){
-
-            console.log(this.checkDevelopers())
+            console.log(this.connectionToAPI())
         }
     },
     created(){
