@@ -523,5 +523,82 @@ module.exports = {
                     res.send("1")
                 }
             });
+        },
+    insertAPT: function(db,req,res, callback) {
+            db.collection('usuario').find({_id:ObjectID(req.session.userID)}).toArray(function(err, rows) {
+              if(rows[0].inicializado==0){
+                db.collection('aptitudes').insertMany([
+                  {id_usuario:ObjectID(req.session.userID),dev_quality:45,dev_exp:45,dev_on_time:45,team_chemistry:45,dev_errors:45,
+                    exp_python:req.body.apts[0],exp_java:req.body.apts[1],exp_cpp:req.body.apts[2],
+                    exp_php:req.body.apts[3],exp_c:req.body.apts[4],exp_ruby:req.body.apts[5],
+                    exp_objective:req.body.apts[6],exp_go:req.body.apts[7],exp_visual:req.body.apts[8],
+                    exp_scala:req.body.apts[9],exp_sql:req.body.apts[10],exp_nosql:req.body.apts[11],
+                    exp_kotlin:req.body.apts[12],exp_r:req.body.apts[13],exp_swift:req.body.apts[14],
+                    exp_clojure:req.body.apts[15],exp_perl:req.body.apts[16],exp_rust:req.body.apts[17],
+                    exp_html_css:req.body.apts[18]}
+                ], function(err, result) {
+                  assert.equal(null, err);
+                 db.collection('usuario').updateOne({ _id: ObjectID(req.session.userID) },{ $set:{inicializado:1}}, function(err, result) {
+                  if (err) throw err;
+                  req.session.act=1
+                  res.send("0")
+                  });
+                });
+              }else{
+                res.send("1")
+              }
+            });
+            
+        },
+    getPersonalApt: function(db,req,res, callback) {
+            // Get the documents collection
+            const collection = db.collection('aptitudes');
+            // Find some documents
+            collection.find({id_usuario:req.session.userID}).toArray(function(err, rows) {
+              assert.equal(err, null);
+              if(rows.length!=0){
+                      //Aptitudes inicializadas
+                      //Renderizado de aptitudes con atributos
+                      res.json({rows: rows[0],type:req.session.type});
+                  }else{
+                      //Aptitudes no inicializadas
+                      //Renderizado de aptitudes con atributos (aptitudes indefinidas)
+                      res.json({rows: [],type:req.session.type});
+                  }
+            });
+        },
+    getDev: function(db,req,res,next, callback) {
+            // Get the documents collection
+            let ids = [];
+            db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+                assert.equal(err, null);
+                if(rows.length!=0){
+                    db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, devs)=>{
+                        let ID_devs=[]
+                        if(devs.length!=0){
+                            let ID_devs=[]
+                            db.collection('integrantes_organizacion').find({rol: 4}).forEach(function(element){
+                                db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
+                                    ID_devs.push(apt)
+                                    if(ID_devs.length==devs.length){
+                                        res.json({devs:devs,apt:ID_devs})
+                                        }
+                                    });
+                                });
+                            }else{
+                                res.json({devs:[]})
+                            }
+                      })
+                }else{
+                    res.json({devs:[]})
+                }
+            });
+          }      
+    }
+    function ajuste(data){
+        if(data<10){
+            return "0"+data
+        }else{
+            return data
         }
     }

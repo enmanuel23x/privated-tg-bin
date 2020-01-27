@@ -291,7 +291,7 @@ h4{
 }
 .range-slider__range {
   -webkit-appearance: none;
-  width: calc(100% - (73px));
+  width: 150px;
   height: 10px;
   border-radius: 5px;
   background: #d7dcdf;
@@ -361,4 +361,7 @@ h4{
 }
 input::-moz-focus-inner, input::-moz-focus-outer {
   border: 0;
+}
+.aptDiv div{
+  margin-left: 20px;
 }

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Devology</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    let v = new Vue({
+        el: '#sg1',
+        data: {
+            rows:[],
+            sliderValues:[{exp_python:0,exp_java:0,exp_cpp:0,exp_php:0,exp_c:0,exp_ruby:0,exp_objective:0,
+                exp_go:0,exp_visual:0,exp_scala:0,exp_sql:0,exp_nosql:0,exp_kotlin:0,exp_r:0,exp_swift:0,
+                exp_clojure:0,exp_perl:0,exp_rust:0,exp_html_css:0}],
+            type:1,
+            polling: null
+		},
+		created: function(){
+			this.progress()
+            this.update()
+            this.$data.polling = setInterval(function () {
+                this.fill();}.bind(this), 0); 
+		},
+        methods: {
+            fill(){
+                let band=0;
+                const settings={
+                fill: '#1abc9c',
+                background: '#d7dcdf'
+                }
+            const sliders = document.querySelectorAll('.range-slider');
+            Array.prototype.forEach.call(sliders,(slider)=>{
+                applyFill(slider.querySelector('input'));
+                });
+            function applyFill(slider) {
+                const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
+                const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
+                slider.style.background = bg;
+                }
+                if(v.$data.rows.length!=0){
+                    clearInterval(v.$data.polling )
+                    }
+            },
+			sidebar(){
+				$("#wrapper").toggleClass("toggled");
+			},
+			progress(){
+				swal({
+                	title: "Cargando",
+  					text: "Por Favor Espere",
+  					icon: "img/loader.gif",
+  					button: false,
+					allowOutsideClick: false,
+					closeOnClickOutside: false
+    				})
+			},
+			update(){
+				let currentObj = this;
+				axios.get('/get_aptitudes', {
+  			})
+			.then(function (response) {
+				currentObj.$data.rows=response.data.rows
+                currentObj.$data.type=response.data.type
+                if(currentObj.$data.rows.length!=0){
+                    currentObj.$data.sliderValues=[]
+                    currentObj.$data.sliderValues.push(currentObj.$data.rows)
+                    }
+                swal.close();
+				})
+                .catch(function (error) {
+                    console.log(error)
+                });
+            },
+            onSubmit(e){
+                let currentObj = this;
+                if(currentObj.$data.rows.length==0){
+                    swal({
+  				title: "¿Quieres guardar estas aptitudes?",
+				text: "",
+  				icon: "warning",
+  				buttons: ["Cancelar","Confirmar"],
+  				dangerMode: true,
+				}).then((willDelete) => {
+  					if (willDelete) {
+                        v.progress()
+                        apts=[]
+                        for(i=0;i<e.target.elements.length-1;i++){
+                            apts.push(e.target.elements[i].value)
+                        }
+					    axios.post('/apt', {
+                            apts: apts
+  					        }).then(function (response) {
+                                if(response.data==1){
+                                    swal({
+									    title: "Alerta",
+  									    text: "No se puede procesar la solicitud",
+  									    icon: "warning"
+								        });
+                                    }else{
+                                        swal({
+									        title: "Registrado",
+  									        text: "",
+  									        icon: "success"
+                                    }).then(function (response) {
+                                        v.progress()
+                                        v.update()
+                                        });
+                                    }
+						        }).catch(function (error) {
+                    	            console.log(error)
+                	            	});
+                        }
+                    });
+                }
+            }
+		},
+		mounted(){
+            const settings={
+                fill: '#1abc9c',
+                background: '#d7dcdf'
+                }
+            const sliders = document.querySelectorAll('.range-slider');
+            Array.prototype.forEach.call(sliders,(slider)=>{
+                slider.querySelector('input').addEventListener('input', (event)=>{
+                    slider.querySelector('span').innerHTML = event.target.value;
+                    applyFill(event.target);
+                    });
+                applyFill(slider.querySelector('input'));
+                });
+            function applyFill(slider) {
+                const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
+                const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
+                slider.style.background = bg;
+                }
+		    }
+      })
+    })
+  </script>
+</head>
+<body>
+  <div id="sg1">
+    <div id="wrapper" class="toggled">
+
+		<aside id="sidebar-wrapper">
+			<div class="sidebar-brand" style="text-align: left;">
+				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+			  </div>
+		  <ul class="sidebar-nav" id="sidebar-nav">
+			<li >
+			  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+				</li>
+			<li>
+			  <a href="/proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+				</li>
+			<li>
+			  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+				</li>
+			<li>
+				<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+				</li>
+			<li class="active">
+				<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+				</li>
+			<li>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+				</li>
+		  </ul>
+		    </aside>
+	  
+		<div id="navbar-wrapper">
+		  <nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<a @click="sidebar()" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+			  </div>
+			</div>
+		  </nav>
+            </div>
+        <h1>Aptitudes</h1>
+        <form @submit.prevent="onSubmit">
+            <div class="aptDiv" style="display: flex;flex-wrap: wrap;">
+                <div style="display: block;">
+                    <h4>Python</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_python" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_python" class="range-slider__range" type="range" v-model="sliderValues[0].exp_python" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_python}}</span>
+                        </div> 
+                    </div>
+                <div style="display: block;">
+                    <h4>Java</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_java" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_java" class="range-slider__range" type="range" v-model="sliderValues[0].exp_java" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_java}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>C++</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_cpp" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_cpp" class="range-slider__range" type="range" v-model="sliderValues[0].exp_cpp" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_cpp}}</span>
+                        </div> 
+                    </div>
+                <div style="display: block;">
+                    <h4>PHP</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_php" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_php" class="range-slider__range" type="range" v-model="sliderValues[0].exp_php" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_php}}</span>
+                        </div> 
+                    </div>
+                <div style="display: block;">
+                    <h4>C#</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_c" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_c" class="range-slider__range" type="range" v-model="sliderValues[0].exp_c" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_c}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Ruby</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_ruby" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_ruby" class="range-slider__range" type="range" v-model="sliderValues[0].exp_ruby" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_ruby}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Objetive</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_objective" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_objective" class="range-slider__range" type="range" v-model="sliderValues[0].exp_objective" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_objective}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Go</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_go" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_go" class="range-slider__range" type="range" v-model="sliderValues[0].exp_go" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_go}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Visual</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_visual" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_visual" class="range-slider__range" type="range" v-model="sliderValues[0].exp_visual" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_visual}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Scala</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_scala" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_scala" class="range-slider__range" type="range" v-model="sliderValues[0].exp_scala" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_scala}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Sql</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_sql" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_sql" class="range-slider__range" type="range" v-model="sliderValues[0].exp_sql" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_sql}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Nosql</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_nosql" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_nosql" class="range-slider__range" type="range" v-model="sliderValues[0].exp_nosql" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_nosql}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Kotlin</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_kotlin" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_kotlin" class="range-slider__range" type="range" v-model="sliderValues[0].exp_kotlin" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_kotlin}}</span>
+                        </div> 
+                    </div>
+                <div style="display: block;">
+                    <h4>R</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_r" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_r" class="range-slider__range" type="range" v-model="sliderValues[0].exp_r" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_r}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Swift</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_swift" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_swift" class="range-slider__range" type="range" v-model="sliderValues[0].exp_swift" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_swift}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Clojure</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_clojure" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_clojure" class="range-slider__range" type="range" v-model="sliderValues[0].exp_clojure" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_clojure}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Perl</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_perl" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_perl" class="range-slider__range" type="range" v-model="sliderValues[0].exp_perl" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_perl}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Rust</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_rust" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_rust" class="range-slider__range" type="range" v-model="sliderValues[0].exp_rust" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_rust}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;">
+                    <h4>Html_Css</h4>
+                    <div class="range-slider">
+                        <input v-if="rows.length==0" name="exp_html_css" class="range-slider__range" type="range" value="0" min="0" max="100">
+                        <input v-if="rows.length!=0" name="exp_html_css" class="range-slider__range" type="range" v-model="sliderValues[0].exp_html_css" min="0" max="100" disabled>
+                        <span class="range-slider__value">{{sliderValues[0].exp_html_css}}</span>
+                        </div>
+                    </div>
+                <div style="display: block;text-align: center;width: 242.39px;">
+                    <button v-if="rows.length!=0" style="margin-top: 48px;" disabled>Guardar</button>
+                    <button type="submit" v-if="rows.length==0" style="margin-top: 48px;">Guardar</button>
+                    </div> 
+                </div>
+        </form>
+        </div>
+    </div>
+</body>
+</html>

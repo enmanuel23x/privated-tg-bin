@@ -48,14 +48,14 @@ var isDev = function(req, res, next) {
 	if(req.session.type==1){
     return next();
   }else{
-    return res.redirect('/redirect')
+    return res.redirect('/inicio')
   }
 };
 var isAdmin = function(req, res, next) {
 	if(req.session.type==2){
     return next();
   }else{
-    return res.redirect('/redirect')
+    return res.redirect('/inicio')
   }
 };
 var configStats = function(req, res, next) {
@@ -103,45 +103,6 @@ const getPerfil = function(db,req,res, callback) {
     callback(rows);
   });
 }
-const getAptitudes = function(db,req,res, callback) {
-  // Get the documents collection
-  const collection = db.collection('aptitudes');
-  // Find some documents
-  collection.find({id_usuario:req.session.userID}).toArray(function(err, rows) {
-    assert.equal(err, null);
-    if(rows.length!=0){
-			//Aptitudes inicializadas
-			//Renderizado de aptitudes con atributos
-			res.render(__dirname+'/src/aptitudes',{rows: rows[0],type:req.session.type});
-		}else{
-			//Aptitudes no inicializadas
-			//Renderizado de aptitudes con atributos (aptitudes indefinidas)
-			res.render(__dirname+'/src/aptitudes',{rows: undefined,type:req.session.type});
-		}
-    callback(rows);
-  });
-}
-const insertAPT= function(db,req,res, callback) {
-  const collection = db.collection('aptitudes');
-  collection.insertMany([
-    {id_usuario:req.session.userID,dev_quality:45,dev_exp:45,dev_on_time:45,team_chemistry:45,dev_errors:45,
-      exp_python:req.body.exp_python,exp_java:req.body.exp_java,exp_cpp:req.body.exp_cpp,exp_php:req.body.exp_php,
-      exp_c:req.body.exp_c,exp_ruby:req.body.exp_ruby,exp_objective:req.body.exp_objective,
-      exp_go:req.body.exp_go,exp_visual:req.body.exp_visual,exp_scala:req.body.exp_scala,exp_sql:req.body.exp_sql,
-      exp_nosql:req.body.exp_nosql,exp_kotlin:req.body.exp_kotlin,exp_r:req.body.exp_r,exp_swift:req.body.exp_swift,
-      exp_clojure:req.body.exp_clojure,exp_perl:req.body.exp_perl,exp_rust:req.body.exp_rust,exp_html_css:req.body.exp_html_css}
-  ], function(err, result) {
-    assert.equal(null, err);
-   db.collection('usuario').updateOne({ _id: ObjectID(req.session.userID) },{ $set:{inicializado:1}}, function(err, result) {
-    if (err) throw err;
-    res.redirect('/inicio')
-    callback(result);
-    });
-  });
-}
-/* Ajustadas a vue */
-
-/* /Ajustadas a vue */
 /* Login-Register */
 app.get('/login',function(req,res) {
 	//Renderiza la plantilla Login-Register
@@ -193,27 +154,32 @@ app.get('/perfil',configStats, auth ,function(req,res) {
   });
 });
 app.get('/aptitudes',configStats, auth , isDev,function(req,res) {
+	res.sendFile(__dirname+'/src/aptitudes.html');
+});
+app.get('/get_aptitudes',configStats, isDev,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);
-    getAptitudes(db,req,res, function() {
-      client.close();
+    mongoUtil.getPersonalApt(db,req,res, function() {
     });
   });
 });
 app.get('/test',configStats, auth ,function(req,res) {
-	//Renderizado de platilla projects con atributos
 	res.sendFile(__dirname+'/src/exampleVue.html');
 });
-app.get('/redirect', auth ,function(req,res) {
-  res.redirect('/inicio')
-});
 app.get('/proyectos',configStats, auth ,function(req,res) {
-	//Renderizado de platilla projects con atributos
 	res.sendFile(__dirname+'/src/projects.html');
 });
 app.get('/organizacion', configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/orgs.html');
+});
+app.get('/dev_data',configStats, isAdmin ,function(req,res) {
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.getDev(db,req,res, function() {
+    });
+  });
 });
 app.get('/data_organizacion', configStats, auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
@@ -246,12 +212,11 @@ app.post('/add_org',configStats, auth , isAdmin ,function(req,res) {
     });
 	}
 });
-app.post('/apt',configStats, auth , isDev ,function(req,res) {
+app.post('/apt',configStats , isDev ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);
-    insertAPT(db,req,res, function() {
-      client.close();
+    mongoUtil.insertAPT(db,req,res, function() {
     });
   });
 });
