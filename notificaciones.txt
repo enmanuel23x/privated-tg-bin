@@ -1,9 +1,0 @@
-1 invitacion org
-2 aceptar inv org
-3 rechazar inv org
-4 añadido a org
-5 sacado de org
-6 ascenso en org
-7 descenso en org
-8 Salir de org
-9 Ascender por salida de lider
