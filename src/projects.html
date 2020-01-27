@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="css/main.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/styles.min.css">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Pools</title>
+</head>
+	<div id="wrapper" class="toggled">
+		<aside id="sidebar-wrapper">
+			<div class="sidebar-brand" style="text-align: left;">
+				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+			  </div>
+		  <ul class="sidebar-nav" id="sidebar-nav">
+			<li >
+			  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+				</li>
+			<li class="active">
+			  <a href="proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+				</li>
+			<li>
+			  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+				</li>
+			<li>
+				<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+				</li>
+			<li>
+				<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+				</li>
+			<li>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+				</li>
+		  </ul>
+		</aside>
+		<div id="navbar-wrapper">
+		  <nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<a href="" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+			  </div>
+			</div>
+		  </nav>
+		</div>
+		<section id="content-wrapper">
+			<div id="projects">
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Historico</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" role="tabpanel" id="tab-1">
+						<form>
+							<fieldset>
+								<legend>Creacion de nuevo grupo</legend>
+								<div class="form-group row">
+									<label for="staticEmail" class="col-sm-2 col-form-label">Administrador:</label>
+									<div class="col-sm-10">
+										<input type="text" readonly="" class="form-control-plaintext" id="staticEmail" value="email@example.com">
+									</div>
+								</div>
+								<legend>Opciones de grupo</legend>
+								<div class="form-group">
+									<label><strong>Desarrolladores requeridos: </strong></label>
+									<input type="number" value="5" min="2" max="25" step="1"/>
+									<br>
+									<label><strong>Prioridad:   </strong></label>
+									<label class="radio-inline"><input type="radio" name="optradio">Baja</label>
+									<label class="radio-inline"><input type="radio" name="optradio" checked>Media</label>
+									<label class="radio-inline"><input type="radio" name="optradio">Alta</label>
+
+								</div>
+								<legend>Requerimientos</legend>
+								<div class="form-group">
+									<label>Tecnologias en uso</label>
+									<br>
+									<div class="range-slider">
+										<label for="sql">SQL</label>
+										<input id="sql" v-model="sql" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="nosql">NoSQL</label>
+										<input id="nosql" v-model="nosql" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="python">Python</label>
+										<input id="python" v-model="python" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="java">Java</label>
+										<input id="java" v-model="java" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<br>
+										<label for="javascript">Javascript</label>
+										<input id="javascript" v-model="javascript" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="cpp">C++</label>
+										<input id="cpp" v-model="cpp" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="php">PHP</label>
+										<input id="php" v-model="php" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="c">C</label>
+										<input id="c" v-model="c" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<br>
+										<label for="ruby">Ruby</label>
+										<input id="ruby" v-model="ruby" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="obj">Objective C</label>
+										<input id="obj" v-model="objective" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="go">Golang</label>
+										<input id="go" v-model="golang" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="visual">Visual</label>
+										<input id="visual" v-model="visual" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<br>
+										<label for="scala">Scala</label>
+										<input id="scala" v-model="scala" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="kotlin">Kotlin</label>
+										<input id="kotlin" v-model="kotlin" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="r">R</label>
+										<input id="r" v-model="r" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="swift">Swift</label>
+										<input id="swift" v-model="swift" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<br>
+										<label for="clojure">Clojure</label>
+										<input id="clojure" v-model="clojure" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="perl">Perl</label>
+										<input id="perl" v-model="perl" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+										<label for="rust">Rust</label>
+										<input id="rust" v-model="rust" class="range-slider__range col-sm-2 mr-5" type="range" value="0" min="0" max="100">
+									</div>
+								</div>
+
+								<fieldset class="form-group">
+									<legend>Opciones de creación</legend>
+									<div class="form-check">
+										<label class="form-check-label">
+											<input type="radio" v-model="mode" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="auto" checked="">
+											Seleccionar desarrolladores automaticamente (Recomendado).
+										</label>
+									</div>
+									<div class="form-check">
+										<label class="form-check-label">
+											<input type="radio" v-model="mode" class="form-check-input" name="optionsRadios" id="optionsRadios2" value="manually">
+											Seleccionar desarrolladores manualmente.
+										</label>
+									</div>
+								</fieldset>
+								<button class="btn btn-success" type="button" @click="createProject">
+									Crear proyecto
+								</button>
+							</fieldset>
+						</form>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-2">
+						<p>Content for tab 2.</p>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-3">
+						<p>Content for tab 3.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="js/toggle.js"></script>
+<script src="js/projects.js"></script>
+</html>
