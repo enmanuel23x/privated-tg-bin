@@ -3,6 +3,7 @@ let available_developers;
 const vm = new Vue({
     el: '#projects',
     data: {
+        type:2,
         // Automatic or manually
         mode: null,
         // Languages
@@ -26,7 +27,29 @@ const vm = new Vue({
         rust: 0,
         javascript: 0
     },
+    mounted(){
+        const settings={
+            fill: '#1abc9c',
+            background: '#d7dcdf'
+            }
+        const sliders = document.querySelectorAll('.range-slider');
+        Array.prototype.forEach.call(sliders,(slider)=>{
+            slider.querySelector('input').addEventListener('input', (event)=>{
+                slider.querySelector('span').innerHTML = event.target.value;
+                applyFill(event.target);
+                });
+            applyFill(slider.querySelector('input'));
+            });
+        function applyFill(slider) {
+            const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
+            const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
+            slider.style.background = bg;
+            }
+    },
     methods: {
+        sidebar(){
+            $("#wrapper").toggleClass("toggled");
+        },
         filterReqs(){
             let reqs = [];
             reqs.push(
@@ -54,9 +77,11 @@ const vm = new Vue({
         }
     },
     created(){
+        let currenObj=this
         axios.get('/dev_data', {
         }).then(function (response) {
             available_developers = response.data;
+            currenObj.$data.type=response.data.type
             console.log("ok")
         }).catch(function (error) {
                 console.log(error)

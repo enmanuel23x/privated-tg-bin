@@ -173,7 +173,7 @@ app.get('/proyectos',configStats, auth ,function(req,res) {
 app.get('/organizacion', configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/orgs.html');
 });
-app.get('/dev_data',configStats, isAdmin ,function(req,res) {
+app.get('/dev_data',configStats,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);

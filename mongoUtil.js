@@ -568,8 +568,6 @@ module.exports = {
             });
         },
     getDev: function(db,req,res,next, callback) {
-            // Get the documents collection
-            let ids = [];
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
                 if(rows.length!=0){
@@ -581,16 +579,16 @@ module.exports = {
                                 db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                     ID_devs.push(apt)
                                     if(ID_devs.length==devs.length){
-                                        res.json({devs:devs,apt:ID_devs})
+                                        res.json({devs:devs,apt:ID_devs,type:req.session.type})
                                         }
                                     });
                                 });
                             }else{
-                                res.json({devs:[]})
+                                res.json({devs:[],apt:[],type:req.session.type})
                             }
                       })
                 }else{
-                    res.json({devs:[]})
+                    res.json({devs:[],apt:[],type:req.session.type})
                 }
             });
           }      
