@@ -290,7 +290,7 @@ app.get('/*', function(req,res) {
 	res.redirect('/login')
 });
 //Define el puerto de la plataforma
-app.set('port', (process.env.PORT || 5000));
+app.set('port', (process.env.PORT || 80));
 app.listen(app.get('port'), function () {
 	//Comienza a ejecutar la plataforma
 	console.log('App listening on port '+app.get('port'));
