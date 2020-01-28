@@ -13,13 +13,96 @@
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+	<script src="https://cdn.rawgit.com/SSENSE/vue-carousel/6823411d/dist/vue-carousel.min.js"></script>
 	<link href="css/main.css" rel="stylesheet" />
 	<link href="css/modal.css" rel="stylesheet" />
 	<link rel="stylesheet" href="css/styles.min.css">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<style>
+		.VueCarousel-pagination{
+		  display: none;
+		}
+		.VueCarousel-slide {
+		  flex-shrink: 1;
+		}
+		h2{
+		  margin: 0;
+		}
+		.container {
+	  position: absolute;
+	  height: 300px;
+	  width: 600px;
+	  top: 60px;
+	  left: calc(50% - 300px);
+	  display: flex;
+	}
+	.tns-controls{
+	text-align: right;
+	}
+	.tns-controls button{
+	  font-size: 15px;
+		margin: 0 5px;
+		padding: 0 1em;
+		height: 2.5em;
+		background: white;
+		border-radius: 3px;
+		border: 0;
+		cursor: pointer;
+	}
+	.card {
+	  height: 400px;
+	  width: 300px;
+	  background-color: #17141d;
+	  border-radius: 10px;
+	  box-shadow: 0rem 0 3rem #000;
+	/*   margin-left: -50px; */
+	position: relative;
+	  transition: 0.4s ease-out;
+	  left: 0px;
+	}
+	
+	.card:not(:first-child) {
+		margin-left: -50px;
+	}
+	
+	.card:hover {
+	  left: -25%;
+	  transform: translateY(-20px);
+	  transition: 0.4s ease-out;
+	}
+	
+	.card:hover ~ .card {
+	  position: absolute;
+	  left: 50px;
+	  transition: 0.4s ease-out;
+	}
+	
+	.title {
+	  color: white;
+	  font-weight: 300;
+	  position: absolute;
+	  left: 20px;
+	  top: 15px;
+	}
+	.overlay{
+	  position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		text-align: center;
+		overflow-y: auto;
+		background-color: rgba(0,0,0,.4);
+		z-index: 10000;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity .3s;
+	}
+	  </style>
 	<title>Pools</title>
 </head>
 <div id="projects">
+	<div id="Nooverlay">
 	<div id="wrapper" class="toggled" >
 		<aside id="sidebar-wrapper">
 			<div class="sidebar-brand" style="text-align: left;">
@@ -67,7 +150,6 @@
 						<form>
 							<br>
 							<fieldset>
-
 								<legend>Creacion de nuevo grupo</legend>
 								<hr>
 								<legend>Opciones de grupo</legend>
@@ -264,6 +346,30 @@
 				</div>
 			</div>
 		</section>
+	</div>
+</div>
+	<div id="overlay" class="overlay">
+		<button @click="overlayActivator(0)">Ocultar</button>
+		<h2>Recomendados</h2>
+	  <div class="my-slider">
+		<carousel v-bind:navigation-enabled="true" :paginationEnabled="false">
+		<slide v-for="data in rows " v-if="data.status==1">
+		  <div class="card">
+			<h3 class="title">{{data.name}}</h3>
+			</div>
+		  </slide>
+		  </carousel>
+	  </div>
+	  <h2>No recomendados</h2>
+	  <div class="my-slider2">
+		<carousel v-bind:navigation-enabled="true" :paginationEnabled="false">
+		<slide v-for="data in rows" v-if="data.status==0">
+		  <div class="card">
+			<h3 class="title">{{data.name}}</h3>
+			</div>
+		  </slide>
+		  </carousel>
+	  </div>
 	</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>

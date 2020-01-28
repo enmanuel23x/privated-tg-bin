@@ -13,11 +13,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  
-  
+<script src="https://cdn.rawgit.com/SSENSE/vue-carousel/6823411d/dist/vue-carousel.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
   <style>
+    .VueCarousel-pagination{
+      display: none;
+    }
+    .VueCarousel-slide {
+      flex-shrink: 1;
+    }
     h2{
       margin: 0;
     }
@@ -96,12 +103,24 @@ position: relative;
     document.addEventListener('DOMContentLoaded', function () {
       var v= new Vue({
         el: '#sg1',
+        components: {
+    'carousel': VueCarousel.Carousel,
+    'slide': VueCarousel.Slide
+  },
         data: {
-
+          slider:"",
+          slider2:"",
+          rows:[
+            {name:"Alejandro",status:0},{name:"Jose",status:0},{name:"Jetro",status:0},{name:"Alexander",status:0},{name:"Luis",status:0},
+            {name:"Alejandro",status:1},{name:"Jose",status:1},{name:"Enmanuel",status:1},{name:"Cualquiera",status:1},{name:"no tengo mas nombres",status:1},
+            {name:"Alejandro",status:1},{name:"Jose",status:1},{name:"Enmanuel",status:1},{name:"Cualquiera",status:1},{name:"no tengo mas nombres",status:1}
+            ,{name:"Alejandro",status:1},{name:"Jose",status:1},{name:"Enmanuel",status:1},{name:"Cualquiera",status:1},{name:"no tengo mas nombres",status:1}
+          ],
         },
         methods: {
           overlayActivator(n){
             if(n==1){
+              this.$data.rows.push({name:"Alejandro",status:0},{name:"Jose",status:0},{name:"Jetro",status:0},{name:"Alexander",status:0},{name:"Luis",status:0},{name:"Alejandro",status:0},{name:"Jose",status:0},{name:"Jetro",status:0},{name:"Alexander",status:0},{name:"Luis",status:0})
               document.getElementById("Nooverlay").style.opacity = "0.3";
               document.getElementById("overlay").style.opacity = "1";
               document.getElementById("Nooverlay").style.pointerEvents = "none";
@@ -115,53 +134,11 @@ position: relative;
           }
         },
         mounted(){
-          
+        //var slider2 = tns({container: ".my-slider2","loop": false,"responsive": {"350": {"items": 1},"500": {"items": 3},"800": {"items": 8}},controlsText:["Anterior","Siguiente"],nav:false,controls:false,"mouseDrag": true,"edgePadding": 40,"lazyload": true,"lazyloadSelector": ".tns-lazy","swipeAngle": false,"speed": 400});
+        //var slider  = tns({container: ".my-slider","loop": false,"responsive": {"350": {"items": 1},"500": {"items": 3},"800": {"items": 8}},controlsText:["Anterior","Siguiente"],nav:false,controls:false,"mouseDrag": true,"edgePadding": 40,"lazyload": true,"lazyloadSelector": ".tns-lazy","swipeAngle": false,"speed": 400});
           },
         created(){
-          var slider2 = tns({
-    container: ".my-slider2",
-    "loop": false,
-  "responsive": {
-    "350": {
-      "items": 1
-    },
-    "500": {
-      "items": 3
-    },
-    "800": {
-      "items": 8
-    }
-  },
-  controlsText:["Anterior","Siguiente"],
-  nav:false,
-    "edgePadding": 40,
-  "lazyload": true,
-  "lazyloadSelector": ".tns-lazy",
-  "swipeAngle": false,
-  "speed": 400
-  });
-  var slider = tns({
-    container: ".my-slider",
-    "loop": false,
-  "responsive": {
-    "350": {
-      "items": 1
-    },
-    "500": {
-      "items": 3
-    },
-    "800": {
-      "items": 8
-    }
-  },
-  controlsText:["Anterior","Siguiente"],
-  nav:false,
-    "edgePadding": 40,
-  "lazyload": true,
-  "lazyloadSelector": ".tns-lazy",
-  "swipeAngle": false,
-  "speed": 400
-  });
+          
         }
       })
     })
@@ -176,99 +153,23 @@ position: relative;
       <button @click="overlayActivator(0)">Desactivar</button>
       <h2>Recomendados</h2>
     <div class="my-slider">
-      <div>
+      <carousel v-bind:navigation-enabled="true" :paginationEnabled="false">
+      <slide v-for="data in rows " v-if="data.status==1">
         <div class="card">
-          <h3 class="title">Card 1</h3>
+          <h3 class="title">{{data.name}}</h3>
           </div>
-        </div>
-        <div>
-          <div class="card">
-            <h3 class="title">Card 2</h3>
-            </div>
-          </div>
-          <div>
-            <div class="card">
-              <h3 class="title">Card 3</h3>
-              </div>
-            </div>
-            <div>
-              <div class="card">
-                <h3 class="title">Card 4</h3>
-                </div>
-              </div>
-              <div>
-                <div class="card">
-                  <h3 class="title">Card 5</h3>
-                  </div>
-                </div>
-                <div>
-                  <div class="card">
-                    <h3 class="title">Card 6</h3>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="card">
-                      <h3 class="title">Card 7</h3>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="card">
-                        <h3 class="title">Card 8</h3>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="card">
-                          <h3 class="title">Card 9</h3>
-                          </div>
-                        </div>
+        </slide>
+        </carousel>
     </div>
     <h2>No recomendados</h2>
     <div class="my-slider2">
-      <div>
+      <carousel v-bind:navigation-enabled="true" :paginationEnabled="false">
+      <slide v-for="data in rows" v-if="data.status==0">
         <div class="card">
-          <h3 class="title">Card 1</h3>
+          <h3 class="title">{{data.name}}</h3>
           </div>
-        </div>
-        <div>
-          <div class="card">
-            <h3 class="title">Card 2</h3>
-            </div>
-          </div>
-          <div>
-            <div class="card">
-              <h3 class="title">Card 3</h3>
-              </div>
-            </div>
-            <div>
-              <div class="card">
-                <h3 class="title">Card 4</h3>
-                </div>
-              </div>
-              <div>
-                <div class="card">
-                  <h3 class="title">Card 5</h3>
-                  </div>
-                </div>
-                <div>
-                  <div class="card">
-                    <h3 class="title">Card 6</h3>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="card">
-                      <h3 class="title">Card 7</h3>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="card">
-                        <h3 class="title">Card 8</h3>
-                        </div>
-                      </div>
-                      <div>
-                        <div class="card">
-                          <h3 class="title">Card 9</h3>
-                          </div>
-                        </div>
+        </slide>
+        </carousel>
     </div>
   </div>
     </div>

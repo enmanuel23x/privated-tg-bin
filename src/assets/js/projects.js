@@ -13,7 +13,12 @@ async function f(url) {
 
 const vm = new Vue({
     el: '#projects',
+    components: {
+        'carousel': VueCarousel.Carousel,
+        'slide': VueCarousel.Slide
+      },
     data: {
+        rows:[],
         type:2,
         // Automatic or manually
         mode: null,
@@ -59,6 +64,19 @@ const vm = new Vue({
             }
     },
     methods: {
+        overlayActivator(n){
+            if(n==1){
+              document.getElementById("Nooverlay").style.opacity = "0.3";
+              document.getElementById("overlay").style.opacity = "1";
+              document.getElementById("Nooverlay").style.pointerEvents = "none";
+              document.getElementById("overlay").style.pointerEvents= "auto";
+            }else{
+              document.getElementById("Nooverlay").style.opacity = "1";
+              document.getElementById("overlay").style.opacity = "0";
+              document.getElementById("Nooverlay").style.pointerEvents = "auto";
+              document.getElementById("overlay").style.pointerEvents= "none";
+            }
+          },
         sidebar(){
             $("#wrapper").toggleClass("toggled");
         },
@@ -153,14 +171,17 @@ const vm = new Vue({
             return jokes
         },
         async createProject(){
-            let success = [];
+            let success = [],evalued=[];
             let res_info = await this.connectionToAPI();
             for (let i = 0; i < res_info.length ; i++) {
+                evalued.push({name:dev_names[i], status:res_info[i].accomplishment})
                 if (res_info[i].accomplishment === "1"){
-                    success.push([dev_names[i], res_info[i].accomplishment])
+                    success.push({name:dev_names[i], status:res_info[i].accomplishment})
                 }
             }
-            console.log(success)
+            vm.$data.rows=evalued
+            console.log(vm.$data.rows)
+            vm.overlayActivator(1)
         }
     },
     created(){
