@@ -62,6 +62,8 @@ const vm = new Vue({
         sidebar(){
             $("#wrapper").toggleClass("toggled");
         },
+
+
         getNotZerosIndex(arr){
             let indexes = [];
             for (let i = 0; i < arr.length ; i++) {
@@ -74,6 +76,7 @@ const vm = new Vue({
             return indexes
         },
 
+
         getDevSkills(skills){
             let sk = [];
             let sum = 0;
@@ -85,6 +88,7 @@ const vm = new Vue({
             }
             return sum / sk.length
         },
+
 
         getProjectReqs(){
             let arr = [];
@@ -107,9 +111,7 @@ const vm = new Vue({
         },
 
 
-
         checkDevelopers(){
-
             let dev_apt = [];
             let apt_req = [];
             let dev_exp = []
@@ -137,7 +139,6 @@ const vm = new Vue({
             return apt_req
         },
         async connectionToAPI(){
-
             let info_devs = this.checkDevelopers()[0];
             // console.log(info_devs.length)
             for (let i = 0; i < info_devs.length; i++) {
@@ -147,9 +148,6 @@ const vm = new Vue({
                 let sk = info_devs[i][3];
                 let rqs = info_devs[i][4];
                 let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?qy="+qy+"&tms="+tms+"&tch="+tch+"&sk="+sk+"&rqs="+rqs+"&num="+i+"";
-
-
-
                 jokes.push(await f(url))
             }
             return jokes
@@ -166,14 +164,41 @@ const vm = new Vue({
         }
     },
     created(){
-        let currenObj = this;
-        axios.get('/dev_data', {
-        }).then(function (response) {
-            available_developers = response.data;
-            currenObj.$data.type=response.data.type;
-            console.log("ok")
-        }).catch(function (error) {
-                console.log(error)
-            });
+        let timerInterval
+        Swal.fire({
+            title: 'Espera un segundo',
+            html: ' Buscando desarrolladores diponibles...',
+            timer: 5000,
+            timerProgressBar: true,
+            onBeforeOpen: () => {
+                let currenObj = this;
+                axios.get('/dev_data', {
+                }).then(function (response) {
+                    available_developers = response.data;
+                    currenObj.$data.type=response.data.type;
+                    console.log("ok")
+                }).catch(function (error) {
+                    console.log(error)
+                });
+                Swal.showLoading()
+                timerInterval = setInterval(() => {
+                    const content = Swal.getContent()
+                    if (content) {
+                        const b = content.querySelector('b')
+                        if (b) {
+                            b.textContent = Swal.getTimerLeft()
+                        }
+                    }
+                }, 250)
+            },
+            onClose: () => {
+                clearInterval(timerInterval)
+            }
+        }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+                console.log('I was closed by the timer')
+            }
+        })
     }
 });

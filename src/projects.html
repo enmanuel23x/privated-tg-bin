@@ -12,6 +12,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
 	<link href="css/main.css" rel="stylesheet" />
 	<link href="css/modal.css" rel="stylesheet" />
 	<link rel="stylesheet" href="css/styles.min.css">
@@ -64,14 +65,11 @@
 				<div class="tab-content">
 					<div class="tab-pane active" role="tabpanel" id="tab-1">
 						<form>
+							<br>
 							<fieldset>
+
 								<legend>Creacion de nuevo grupo</legend>
-								<div class="form-group row">
-									<label for="staticEmail" class="col-sm-2 col-form-label">Administrador:</label>
-									<div class="col-sm-10">
-										<input type="text" readonly="" class="form-control-plaintext" id="staticEmail" value="email@example.com">
-									</div>
-								</div>
+								<hr>
 								<legend>Opciones de grupo</legend>
 								<div class="form-group">
 									<label><strong>Desarrolladores requeridos: </strong></label>
@@ -83,6 +81,7 @@
 									<label class="radio-inline"><input type="radio" name="optradio">Alta</label>
 
 								</div>
+								<hr>
 								<legend>Requerimientos</legend>
 								<div class="form-group">
 									<label>Tecnologias en uso</label>
@@ -221,14 +220,25 @@
 												<span class="range-slider__value">0</span>
 												</div>
 											</div>
+										<div style="display: block;">
+											<h4>Javascript</h4>
+											<div class="range-slider">
+												<input name="exp_html_css" class="range-slider__range" type="range" value="0" min="0" max="100">
+												<span class="range-slider__value">0</span>
+												</div>
+											</div>
 										</div>
 								</div>
-
+								<hr>
 								<fieldset class="form-group">
 									<legend>Opciones de creación</legend>
+
+<!--									-->
+
+<!--									-->
 									<div class="form-check">
 										<label class="form-check-label">
-											<input type="radio" v-model="mode" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="auto" checked="">
+											<input type="radio" v-model="mode" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="auto" checked>
 											Seleccionar desarrolladores automaticamente (Recomendado).
 										</label>
 									</div>
