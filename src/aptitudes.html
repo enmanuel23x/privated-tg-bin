@@ -13,8 +13,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet" />
+	<link href="css/main.css" rel="stylesheet" />
 	<link href="css/modal.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -27,7 +26,7 @@
             rows:[],
             sliderValues:[{exp_python:0,exp_java:0,exp_cpp:0,exp_php:0,exp_c:0,exp_ruby:0,exp_objective:0,
                 exp_go:0,exp_visual:0,exp_scala:0,exp_sql:0,exp_nosql:0,exp_kotlin:0,exp_r:0,exp_swift:0,
-                exp_clojure:0,exp_perl:0,exp_rust:0,exp_html_css:0}],
+                exp_clojure:0,exp_perl:0,exp_rust:0,exp_html_css:0,exp_js:0}],
             type:1,
             polling: null
 		},
@@ -81,6 +80,7 @@
                     currentObj.$data.sliderValues=[]
                     currentObj.$data.sliderValues.push(currentObj.$data.rows)
                     }
+                    console.log(currentObj.$data.rows)
                 swal.close();
 				})
                 .catch(function (error) {
@@ -347,7 +347,15 @@
                         <span class="range-slider__value">{{sliderValues[0].exp_html_css}}</span>
                         </div>
                     </div>
-                <div style="display: block;text-align: center;width: 242.39px;">
+                <div style="display: block;">
+                        <h4>JavaScript</h4>
+                        <div class="range-slider">
+                            <input v-if="rows.length==0" name="exp_js" class="range-slider__range" type="range" value="0" min="0" max="100">
+                            <input v-if="rows.length!=0" name="exp_js" class="range-slider__range" type="range" v-model="sliderValues[0].exp_js" min="0" max="100" disabled>
+                            <span class="range-slider__value">{{sliderValues[0].exp_js}}</span>
+                            </div>
+                        </div>
+                <div style="display: block;text-align: center;width: calc(100% - (60px));">
                     <button v-if="rows.length!=0" style="margin-top: 48px;" disabled>Guardar</button>
                     <button type="submit" v-if="rows.length==0" style="margin-top: 48px;">Guardar</button>
                     </div> 

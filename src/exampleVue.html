@@ -8,32 +8,270 @@
 	<link href="css/main.css" rel="stylesheet" />
 	<link href="css/modal.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/tiny-slider.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  
+  
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <style>
+    h2{
+      margin: 0;
+    }
+    .container {
+  position: absolute;
+  height: 300px;
+  width: 600px;
+  top: 60px;
+  left: calc(50% - 300px);
+  display: flex;
+}
+.tns-controls{
+text-align: right;
+}
+.tns-controls button{
+  font-size: 15px;
+    margin: 0 5px;
+    padding: 0 1em;
+    height: 2.5em;
+    background: white;
+    border-radius: 3px;
+    border: 0;
+    cursor: pointer;
+}
+.card {
+  height: 400px;
+  width: 300px;
+  background-color: #17141d;
+  border-radius: 10px;
+  box-shadow: 0rem 0 3rem #000;
+/*   margin-left: -50px; */
+position: relative;
+  transition: 0.4s ease-out;
+  left: 0px;
+}
+
+.card:not(:first-child) {
+    margin-left: -50px;
+}
+
+.card:hover {
+  left: -25%;
+  transform: translateY(-20px);
+  transition: 0.4s ease-out;
+}
+
+.card:hover ~ .card {
+  position: absolute;
+  left: 50px;
+  transition: 0.4s ease-out;
+}
+
+.title {
+  color: white;
+  font-weight: 300;
+  position: absolute;
+  left: 20px;
+  top: 15px;
+}
+.overlay{
+  position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    overflow-y: auto;
+    background-color: rgba(0,0,0,.4);
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s;
+}
+  </style>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       var v= new Vue({
         el: '#sg1',
         data: {
+
         },
         methods: {
-          
+          overlayActivator(n){
+            if(n==1){
+              document.getElementById("Nooverlay").style.opacity = "0.3";
+              document.getElementById("overlay").style.opacity = "1";
+              document.getElementById("Nooverlay").style.pointerEvents = "none";
+              document.getElementById("overlay").style.pointerEvents= "auto";
+            }else{
+              document.getElementById("Nooverlay").style.opacity = "1";
+              document.getElementById("overlay").style.opacity = "0";
+              document.getElementById("Nooverlay").style.pointerEvents = "auto";
+              document.getElementById("overlay").style.pointerEvents= "none";
+            }
+          }
         },
         mounted(){
-          axios.get('/dev_data', {
-  			    }).then(function (response) {
-              console.log(response.data)
-				      }).catch(function (error) {
-                console.log(error)
-                });
-          }
+          
+          },
+        created(){
+          var slider2 = tns({
+    container: ".my-slider2",
+    "loop": false,
+  "responsive": {
+    "350": {
+      "items": 1
+    },
+    "500": {
+      "items": 3
+    },
+    "800": {
+      "items": 8
+    }
+  },
+  controlsText:["Anterior","Siguiente"],
+  nav:false,
+    "edgePadding": 40,
+  "lazyload": true,
+  "lazyloadSelector": ".tns-lazy",
+  "swipeAngle": false,
+  "speed": 400
+  });
+  var slider = tns({
+    container: ".my-slider",
+    "loop": false,
+  "responsive": {
+    "350": {
+      "items": 1
+    },
+    "500": {
+      "items": 3
+    },
+    "800": {
+      "items": 8
+    }
+  },
+  controlsText:["Anterior","Siguiente"],
+  nav:false,
+    "edgePadding": 40,
+  "lazyload": true,
+  "lazyloadSelector": ".tns-lazy",
+  "swipeAngle": false,
+  "speed": 400
+  });
+        }
       })
     })
   </script>
 </head>
 <body>
   <div id="sg1">
-
+    <div id="Nooverlay">
+      <button @click="overlayActivator(1)">Activar</button>
+    </div>
+    <div id="overlay" class="overlay">
+      <button @click="overlayActivator(0)">Desactivar</button>
+      <h2>Recomendados</h2>
+    <div class="my-slider">
+      <div>
+        <div class="card">
+          <h3 class="title">Card 1</h3>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 class="title">Card 2</h3>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <h3 class="title">Card 3</h3>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <h3 class="title">Card 4</h3>
+                </div>
+              </div>
+              <div>
+                <div class="card">
+                  <h3 class="title">Card 5</h3>
+                  </div>
+                </div>
+                <div>
+                  <div class="card">
+                    <h3 class="title">Card 6</h3>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="card">
+                      <h3 class="title">Card 7</h3>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="card">
+                        <h3 class="title">Card 8</h3>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="card">
+                          <h3 class="title">Card 9</h3>
+                          </div>
+                        </div>
+    </div>
+    <h2>No recomendados</h2>
+    <div class="my-slider2">
+      <div>
+        <div class="card">
+          <h3 class="title">Card 1</h3>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 class="title">Card 2</h3>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <h3 class="title">Card 3</h3>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <h3 class="title">Card 4</h3>
+                </div>
+              </div>
+              <div>
+                <div class="card">
+                  <h3 class="title">Card 5</h3>
+                  </div>
+                </div>
+                <div>
+                  <div class="card">
+                    <h3 class="title">Card 6</h3>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="card">
+                      <h3 class="title">Card 7</h3>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="card">
+                        <h3 class="title">Card 8</h3>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="card">
+                          <h3 class="title">Card 9</h3>
+                          </div>
+                        </div>
+    </div>
   </div>
+    </div>
+    
 </body>
 </html>

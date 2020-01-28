@@ -535,7 +535,7 @@ module.exports = {
                     exp_scala:req.body.apts[9],exp_sql:req.body.apts[10],exp_nosql:req.body.apts[11],
                     exp_kotlin:req.body.apts[12],exp_r:req.body.apts[13],exp_swift:req.body.apts[14],
                     exp_clojure:req.body.apts[15],exp_perl:req.body.apts[16],exp_rust:req.body.apts[17],
-                    exp_html_css:req.body.apts[18]}
+                    exp_html_css:req.body.apts[18],exp_js:req.body.apts[19]}
                 ], function(err, result) {
                   assert.equal(null, err);
                  db.collection('usuario').updateOne({ _id: ObjectID(req.session.userID) },{ $set:{inicializado:1}}, function(err, result) {
@@ -551,10 +551,7 @@ module.exports = {
             
         },
     getPersonalApt: function(db,req,res, callback) {
-            // Get the documents collection
-            const collection = db.collection('aptitudes');
-            // Find some documents
-            collection.find({id_usuario:req.session.userID}).toArray(function(err, rows) {
+            db.collection('aptitudes').find({id_usuario:ObjectID(req.session.userID)}).toArray(function(err, rows) {
               assert.equal(err, null);
               if(rows.length!=0){
                       //Aptitudes inicializadas
