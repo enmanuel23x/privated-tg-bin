@@ -20,6 +20,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {name: "not",type:"" ,secure: false }
 }))
+//Validadores de sesion
 var isSysAdmin = function(req, res, next) {
 	if (req.session.userID!=undefined){
 		if(req.session.type==0){
@@ -58,6 +59,7 @@ var isAdmin = function(req, res, next) {
     return res.redirect('/inicio')
   }
 };
+//Estado del servidor
 var configStats = function(req, res, next) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
@@ -66,14 +68,14 @@ var configStats = function(req, res, next) {
       client.close();
     });
   });
-	};
+  };
+  /* Conexiones a mongoDB */
 const MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 const assert = require('assert');
 const url = 'mongodb+srv://root:uJLzJOjlONYVVZJV@cluster0-m5ujz.mongodb.net/test';
 const dbName = 'devology';
-/*  /Utilidades y librerias*/
-/* Conexiones a mongoDB */
+//Validacion de estado del servidor
 const getConfig = function(db,req,res,next, callback) {
   db.collection('config').find({}).toArray(function(err, rows) {
     assert.equal(err, null);
@@ -169,6 +171,12 @@ app.get('/test',configStats, auth ,function(req,res) {
 });
 app.get('/proyectos',configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/projects.html');
+});
+app.get('/tabs',configStats ,function(req,res) {
+	res.sendFile(__dirname+'/src/tabs.html');
+});
+app.get('/detalles*',configStats ,function(req,res) {
+	res.sendFile(__dirname+'/src/detalles.html');
 });
 app.get('/organizacion', configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/orgs.html');
@@ -290,7 +298,7 @@ app.get('/*', function(req,res) {
 	res.redirect('/login')
 });
 //Define el puerto de la plataforma
-app.set('port', (process.env.PORT || 80));
+app.set('port', (process.env.PORT || 8888));
 app.listen(app.get('port'), function () {
 	//Comienza a ejecutar la plataforma
 	console.log('App listening on port '+app.get('port'));

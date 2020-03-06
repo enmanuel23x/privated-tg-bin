@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+	<script src="https://cdn.rawgit.com/SSENSE/vue-carousel/6823411d/dist/vue-carousel.min.js"></script>
+	<link href="css/main.css" rel="stylesheet" />
+  <link href="css/modal.css" rel="stylesheet" />
+  <link href="css/tabs.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/styles.min.css">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<style>
+		.VueCarousel-pagination{
+		  display: none;
+		}
+		.VueCarousel-slide {
+		  flex-shrink: 1;
+		}
+		h2{
+		  margin: 0;
+		}
+		.container {
+	  position: absolute;
+	  height: 300px;
+	  width: 600px;
+	  top: 60px;
+	  left: calc(50% - 300px);
+	  display: flex;
+	}
+	.tns-controls{
+	text-align: right;
+	}
+	.tns-controls button{
+	  font-size: 15px;
+		margin: 0 5px;
+		padding: 0 1em;
+		height: 2.5em;
+		background: white;
+		border-radius: 3px;
+		border: 0;
+		cursor: pointer;
+	}
+	.card {
+	  height: 400px;
+	  width: 300px;
+	  background-color: #17141d;
+	  border-radius: 10px;
+	  box-shadow: 0rem 0 3rem #000;
+	/*   margin-left: -50px; */
+	position: relative;
+	  transition: 0.4s ease-out;
+	  left: 0px;
+	}
+	
+	.card:not(:first-child) {
+		margin-left: -50px;
+	}
+	
+	.card:hover {
+	  left: -25%;
+	  transform: translateY(-20px);
+	  transition: 0.4s ease-out;
+	}
+	
+	.card:hover ~ .card {
+	  position: absolute;
+	  left: 50px;
+	  transition: 0.4s ease-out;
+	}
+	
+	.title {
+	  color: white;
+	  font-weight: 300;
+	  position: absolute;
+	  left: 20px;
+	  top: 15px;
+	}
+	.overlay{
+	  position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		text-align: center;
+		overflow-y: auto;
+		background-color: rgba(0,0,0,.4);
+		z-index: 10000;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity .3s;
+	}
+	  </style>
+	<title>Pools</title>
+</head>
+<div id="projects">
+	<div id="Nooverlay">
+	<div id="wrapper" class="toggled" >
+		<aside id="sidebar-wrapper">
+			<div class="sidebar-brand" style="text-align: left;">
+				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+			  </div>
+		  <ul class="sidebar-nav" id="sidebar-nav">
+			<li >
+			  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+				</li>
+			<li class="active">
+			  <a href="proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+				</li>
+			<li>
+			  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+				</li>
+			<li>
+				<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+				</li>
+			<li v-if="type==1">
+				<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+				</li>
+			<li>
+				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+				</li>
+		  </ul>
+		</aside>
+		<div id="navbar-wrapper">
+		  <nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<a @click="sidebar()" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+			  </div>
+			</div>
+		  </nav>
+		</div>
+		<section id="content-wrapper">
+			<div >
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Por hacer</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">En proceso</a></li>
+          <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Completados</a></li>
+          <li class="nav-item"><a class="nav-link" style="background-color: green;padding: 5px;" ><i class="fas fa-plus"></i>Nuevo</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" role="tabpanel" id="tab-1">
+						<table>
+              <tbody>
+                <tr>
+					<td>
+						<a href="/detalles?id=1">
+							<div class="descTitle">
+							Item 
+							<div class="f">
+							<div class="desc">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+							<div class="btnAcc" ><button class="btn btn-success" type="button">Acciones</button>
+								</div>
+							</div>
+						</div>
+						</a>
+						</td>
+						</tr>
+              </tbody>
+            </table>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-2">
+						<p>Content for tab 2.</p>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-3">
+						<p>Content for tab 3.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+  let available_developers;
+let jokes = [];
+let dev_names = [];
+
+
+async function f(url) {
+    let respuesta = await fetch(url)
+    let json = await respuesta.json();
+
+    return  json
+}
+
+
+const vm = new Vue({
+    el: '#projects',
+    components: {
+        'carousel': VueCarousel.Carousel,
+        'slide': VueCarousel.Slide
+      },
+    data: {
+        type:2
+    },
+    mounted(){
+        const settings={
+            fill: '#1abc9c',
+            background: '#d7dcdf'
+            }
+        const sliders = document.querySelectorAll('.range-slider');
+        Array.prototype.forEach.call(sliders,(slider)=>{
+            slider.querySelector('input').addEventListener('input', (event)=>{
+                slider.querySelector('span').innerHTML = event.target.value;
+                applyFill(event.target);
+                });
+            applyFill(slider.querySelector('input'));
+            });
+        function applyFill(slider) {
+            const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
+            const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
+            slider.style.background = bg;
+            }
+    },
+    methods: {
+        sidebar(){
+            $("#wrapper").toggleClass("toggled");
+        },
+      },
+    created(){
+
+    }
+});
+
+</script>
+</html>
