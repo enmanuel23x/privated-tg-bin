@@ -8,7 +8,6 @@ var fs = require("fs");
 var upload = multer({ dest: '/tmp' })
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.set('view engine','ejs')
 app.use('/css',express.static(__dirname+'/src/assets/css'));
 app.use('/img',express.static(__dirname+'/src/assets/img'));
 app.use('/js',express.static(__dirname+'/src/assets/js'));
@@ -91,7 +90,7 @@ const getConfig = function(db,req,res,next, callback) {
 const getInicio = function(db,req,res, callback) {
   db.collection('notificaciones').find({$and:[{tipo:{$ne:1}},{$or:[{id_user_emisor:ObjectID(req.session.userID)},{id_user_receptor:ObjectID(req.session.userID)}]}]}).sort({_id:-1}).toArray(function(err, rows) {
     assert.equal(err, null);
-    res.render(__dirname+'/src/home',{type:req.session.type,rows:rows,id:req.session.userID});
+    res.json({type:req.session.type,rows:rows,id:req.session.userID});
     callback(rows);
   });
 }
@@ -101,7 +100,7 @@ const getPerfil = function(db,req,res, callback) {
   // Find some documents
   collection.find({_id:ObjectID(req.session.userID)}).toArray(function(err, rows) {
     assert.equal(err, null);
-    res.render(__dirname+'/src/profile',{rows: rows,type:req.session.type});
+    res.json({rows: rows,type:req.session.type});
     callback(rows);
   });
 }
@@ -137,7 +136,7 @@ app.get('/logout',function(req,res) {
 });
 /* /Login-Register */
 /* GET METHODS */
-app.get('/inicio',configStats, auth ,function(req,res) {
+app.get('/Datainicio',configStats, auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);
@@ -146,7 +145,10 @@ app.get('/inicio',configStats, auth ,function(req,res) {
     });
   });
 });
-app.get('/perfil',configStats, auth ,function(req,res) {
+app.get('/inicio',configStats, auth ,function(req,res) {
+  res.sendFile(__dirname+'/src/home.html')
+});
+app.get('/dataPerfil',configStats, auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);
     const db = client.db(dbName);
@@ -154,6 +156,9 @@ app.get('/perfil',configStats, auth ,function(req,res) {
       client.close();
     });
   });
+});
+app.get('/perfil',configStats, auth ,function(req,res) {
+  res.sendFile(__dirname+'/src/profile.html')
 });
 app.get('/aptitudes',configStats, auth , isDev,function(req,res) {
 	res.sendFile(__dirname+'/src/aptitudes.html');

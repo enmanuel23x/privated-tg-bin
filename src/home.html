@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<title>Devology</title>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
+	<link href="css/main.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var v= new Vue({
+        el: '#sg1',
+        data: {
+            type:1,
+            rows:[],
+            id:0
+        },
+        methods: {
+            sidebar(){
+				$("#wrapper").toggleClass("toggled");
+            },
+            progress(){
+				swal({
+                	title: "Cargando",
+  					text: "Por Favor Espere",
+  					icon: "img/loader.gif",
+  					button: false,
+					allowOutsideClick: false,
+					closeOnClickOutside: false
+    				})
+			},
+            update(){
+				let currentObj = this;
+				axios.get('/Datainicio', {
+  			})
+			.then(function (response) {
+				currentObj.$data.rows=response.data.rows
+                currentObj.$data.type=response.data.type
+                currentObj.$data.id=response.data.id
+				swal.close();
+				})
+                .catch(function (error) {
+					currentObj.$data.rows=[]
+                    console.log(error)
+                });
+			}
+        },
+        mounted(){
+            this.progress()
+			this.update()
+        },
+        created: function(){
+			this.progress()
+			this.update()
+		},
+      })
+    })
+  </script>
+</head>
+<body>
+    <div id="sg1">
+        <div id="wrapper" class="toggled">
+    
+            <aside id="sidebar-wrapper">
+                <div class="sidebar-brand" style="text-align: left;">
+                    <img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+                  </div>
+              <ul class="sidebar-nav" id="sidebar-nav">
+                <li class="active">
+                  <a  href="/inicio"><i class="fa fa-home"></i>Inicio</a>
+                    </li>
+                <li>
+                  <a href="/proyectos"><i class="fa fa-tasks"></i>Proyectos</a>
+                    </li>
+                <li>
+                  <a href="/organizacion"><i class="fa fa-building"></i>Organizacion</a>
+                    </li>
+                <li>
+                    <a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
+                    </li>
+                <li v-if="type==1">
+                    <a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+                    </li>
+                <li>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
+                    </li>
+              </ul>
+            </aside>
+          
+            <div id="navbar-wrapper">
+              <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                  <div class="navbar-header">
+                    <a @click="sidebar()" class="navbar-brand" id="sidebar-toggle"><i class="fa fa-bars"></i></a>
+                  </div>
+                </div>
+              </nav>
+            </div>
+            
+            <section id="content-wrapper">
+                <h1>Inicio</h1>
+                 <div v-if="rows.length!=0">
+                    <h2 style="text-align: center;">Notificaciones</h2>
+                    <div class="container">
+                        <table class="table table-dark">
+                            <thead>
+                                <tr><th scope="col">Descripcion</th><th scope="col">Fecha/Hora</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr scope="row" v-for="data in rows">
+                                        <td>
+                                            <div v-if="data.id_user_emisor==id">
+                                                <div v-if="data.tipo==2">Aceptaste la invitacion de {{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==3">Rechazaste la invitacion de {{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==4">Añadiste a {{data.nombre_receptor}}en la organizacion</div>
+                                                <div v-if="data.tipo==5">Sacaste a {{data.nombre_receptor}} de la organizacion</div>
+                                                <div v-if="data.tipo==6">Ascendiste a {{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==7">Descendiste a {{data.nombre_receptor}}</div>
+                                            </div>
+                                            <div v-else>
+                                                <div v-if="data.tipo==2">{{data.nombre_receptor}} acepto la invitacion</div>
+                                                <div v-if="data.tipo==3">{{data.nombre_receptor}} rechazo la invitacion</div>
+                                                <div v-if="data.tipo==4">Añadido a la organizacion por{{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==5">Sacado de la organizacion por {{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==6">Ascendido en la organizacion por {{data.nombre_receptor}}</div>
+                                                <div v-if="data.tipo==7">Descendido en la organizacion por {{data.nombre_receptor}}</div>
+                                            </div>
+                                            <div v-if="data.tipo==8 && data.id_user_receptor==id">Saliste de la organizacion</div>
+                                            <div v-if="data.tipo==9 && data.id_user_receptor==id">
+                                                Ahora eres dueño de la organizacion por la salida de {{data.nombre_emisor}}
+                                            </div>
+                                        </td>
+                                        <td>{{data.fecha}}-{{data.hora}}</td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                    </div>
+                 </div>
+            </section>
+        </div>
+        
+      </div>
+</body>
+</html>
