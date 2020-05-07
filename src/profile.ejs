@@ -14,7 +14,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
 	<link href="css/main.css" rel="stylesheet" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
+	<title>Devology</title>
 </head>
 <div id="wrapper" class="toggled">
 
@@ -59,24 +59,33 @@
 	<section id="content-wrapper">
 		<h1>PERFIL</h1>
         <form class="profile">
-            <label for="name" class="label">Nombres:</label>
-				<input name="name" id="name" type="text" class="prof" required disabled value=<%= rows[0].nombres %>>
-				<br>
-			<label for="name2" class="label">Apellidos</label>
-                <input name="name2" id="name2" type="text" class="prof" required disabled value=<%= rows[0].apellidos %>>
-                <br>
-            <label for="user" class="label">Correo:</label>
-				<input name="user" id="" type="text" class="prof"  required disabled value=<%= rows[0].correo %>>
-				<br>
-			<label for="type" class="label">Tipo de usuario:</label>
-			<% if(rows[0].rol=="1"){ %>
-				<input name="type" id="type" type="text" class="prof"  required disabled value="Desarrollador">
-				<% }else{ %>
-					<input name="type" id="type" type="text" class="prof"  required disabled value="Administrador">
-				<% } %>
-				<br>
-			<label for="pass" class="label">Contraseña:</label>
-				<input name="pass" id="pass" type="text" class="prof"  required disabled value=<%= rows[0].contraseña %>>
+			<ul class="list-group">
+				<li class="list-group-item list-group-item-dark">
+					<h3 class="list-group-item-heading">Foto de perfil:</h3>
+      <p class="list-group-item-text">Por implementar</p>
+				</li>
+				<li class="list-group-item list-group-item-dark">
+					<h3 class="list-group-item-heading">Nombres:</h3>
+      <p class="list-group-item-text"><%= rows[0].nombres %></p>
+				</li>
+				<li class="list-group-item list-group-item-dark">
+					<h3 class="list-group-item-heading">Apellidos:</h3>
+      <p class="list-group-item-text"><%= rows[0].apellidos %></p>
+				</li>
+				<li class="list-group-item list-group-item-dark">
+					<h3 class="list-group-item-heading">Correo:</h3>
+      <p class="list-group-item-text"><%= rows[0].correo %></p>
+				</li>
+				<li class="list-group-item list-group-item-dark">
+					<h3 class="list-group-item-heading">Tipo de usuario:</h3>
+      <p class="list-group-item-text"><% if(rows[0].rol=="1"){ %>
+		Desarrollador
+		<% }else{ %>
+			Administrador"
+		<% } %></p>
+					
+				</li>
+			  </ul>
 				<br>
             </form>
 	</section>

@@ -10,7 +10,6 @@
 	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
@@ -26,7 +25,7 @@
     let v = new Vue({
         el: '#sg1',
         data: {
-			rows:[],
+			rows:null,
 			rows2:[],
 			type:1,
 			id:0,
@@ -61,10 +60,11 @@
 				currentObj.$data.id=response.data.id
 				currentObj.$data.rows2=response.data.rows2
                 currentObj.$data.name=response.data.name
-                currentObj.$data.rol=response.data.rol
+				currentObj.$data.rol=response.data.rol
 				swal.close();
 				})
                 .catch(function (error) {
+					currentObj.$data.rows=[]
                     console.log(error)
                 });
 			},
@@ -592,68 +592,76 @@
 		</div>
 		<div style="display: flex;">
 			<h1>Organizacion</h1>
-			<button style="    margin: 0 0 0 auto;" @click="act()">Refrescar</button>
+			<button style="margin: 15px 15px 0px auto;
+			border-radius: 12px;
+			border: none;
+			min-height: 40px;
+			padding: 5px 15px 5px 0px;" @click="act()"><i class="fas fa-sync"></i>Refrescar</button>
 		</div>		
-		<div v-if="rows.length==0">
+		<div v-if="rows.length==0 && rows!=null">
 			<button @click="addOrg()">Crear Organizacion</button>
 		</div>
-		<div v-if="rows.length!=0">
+		<div v-if="rows.length!=0"  style="text-align: center;">
 			<h2 style="text-align: center;">{{ name }}</h2>
-			<table>
-				<thead>
-					<th>Id</th>
-					<th>Nombre</th>
-					<th>Rol</th>
-					<th>Correo</th>
-					<th v-if="type==2">Accion</th>
-				</thead>
-				<tbody>
-					<tr v-for="data in rows ">
-						<td>{{data.id_usuario}}</td>
-						<td>{{data.nombres}}</td>
-							<th v-if="data.rol==1">Dueño</th>
-							<th v-if="data.rol==2">Lider</th>
-							<th v-if="data.rol==3">Administrador</th>
-							<th v-if="data.rol==4">Desarrollador</th>
-						<td>{{data.correo}}</td>
-                            <th v-if="rol==1">
-								<button v-if="data.rol==2" @click="Action(data.nombres,data.id_usuario)">Acciones</button>
-								<button v-if="data.rol==3" @click="Action3(data.nombres,data.id_usuario)">Acciones</button>
-								<button v-if="data.rol==4" @click="Action2(data.nombres,data.id_usuario)">Acciones</button>
-								<button v-if="data.rol==1" disabled>Acciones</button>
-							</th>
-							<th v-if="rol==2">
-                                <button v-if="data.rol>=3" @click="Action2(data.nombres,data.id_usuario)">Acciones</button>
-                                <button v-if="data.rol<=2" disabled>Acciones</button>
-                                </th>
-                            <th v-if="rol==3"><button disabled>Acciones</button></th>
-					</tr>
-					<tr v-if="rol<=2">
-						<td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td><td style="border: none;"></td>
-						<td style="border: none;"><button @click="addUser()" type="submit" style="background-color: green;"><i class="fas fa-user-plus"></i>Añadir</button></td>
-					</tr>
-				</tbody>
-			</table>
-			<button @click="getOut()" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 20px;">
-				<i class="fas fa-sign-out-alt"></i> Salir de la organizacion
+			<div class="container">
+				<table class="table table-dark">
+					<thead>
+						<th scope="col">Nombre</th>
+						<th scope="col">Rol</th>
+						<th scope="col">Correo</th>
+						<th v-if="type==2" scope="col">Accion</th>
+					</thead>
+					<tbody>
+						<tr v-for="data in rows " scope="row">
+							<td>{{data.nombres}}</td>
+								<th v-if="data.rol==1">Dueño</th>
+								<th v-if="data.rol==2">Lider</th>
+								<th v-if="data.rol==3">Administrador</th>
+								<th v-if="data.rol==4">Desarrollador</th>
+								
+							<td>{{data.correo}}</td>
+								<th v-if="rol==1">
+									<a v-if="data.rol==2" @click="Action(data.nombres,data.id_usuario)"><i class="fas fa-caret-square-down"></i></a>
+									<a v-if="data.rol==3" @click="Action3(data.nombres,data.id_usuario)"><i class="fas fa-caret-square-down"></i></a>
+									<a v-if="data.rol==4" @click="Action2(data.nombres,data.id_usuario)"><i class="fas fa-caret-square-down"></i></a>
+								</th>
+								<th v-if="rol==2">
+									<button v-if="data.rol>=3" @click="Action2(data.nombres,data.id_usuario)">Acciones</button>
+									<button v-if="data.rol<=2" disabled>Acciones</button>
+									</th>
+								<th v-if="rol==3"><button disabled>Acciones</button></th>
+						</tr>
+						<tr v-if="rol<=2" style="background-color: #111;">
+							<td style="border-color: rgb(17,17,17);"></td><td style="border-color: rgb(17,17,17);"></td><td style="border-color: rgb(17,17,17);"></td>
+							<td style="border-color: rgb(17,17,17);"><button @click="addUser()" type="submit" style="background-color: #41E23F;border-radius: 12px;border: none;min-height: 40px;padding: 5px 15px 5px 0px;"><i class="fas fa-user-plus"></i>Añadir</button></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<button @click="getOut()" style="background: red;border-radius: 17px;color: white;width: 192px;font-size: 20px;border-radius: 12px;border: none;min-height: 40px;padding: 5px 15px 5px 0px;">
+				<i class="fas fa-sign-out-alt"></i> Salir
 			  </button>
         </div>
         <div v-if="rows2.length!=0">
 			<h2 style="text-align: center;">Invitaciones</h2>
-			<table>
-				<thead>
-					<tr><td>Fecha</td><td>Descripcion</td><td>Accion</td></tr>
-				</thead>
-				<tbody>
-					<tr v-for="data in rows2 ">
-						<td>{{data.fecha}}</td>
-						<td>Invitacion de {{data.nombre_emisor}}</td>
-						<td>
-							<button @click="resInvitacion(data._id,data.nombre_emisor)" type="button" style="background: green;border-radius: 17px;color: white;">Responder</button>
-							</td>
-						</tr>
-				</tbody>
-			</table>
+			<div class="container">
+				<table class="table table-dark">
+					<thead>
+						<tr><td  scope="col">Fecha</td><td scope="col">Descripcion</td><td scope="col">Accion</td></tr>
+					</thead>
+					<tbody>
+						<tr v-for="data in rows2 " scope="row">
+							<td>{{data.fecha}}</td>
+							<td>Invitacion de {{data.nombre_emisor}}</td>
+							<td>
+								<button @click="resInvitacion(data._id,data.nombre_emisor)" type="button" style="background-color: #41E23F;border-radius: 12px;border: 2px white solid;min-height: 40px;">Responder</button>
+								</td>
+							</tr>
+					</tbody>
+				</table>
+
+			</div>
 		</div>
 	</div>
 	

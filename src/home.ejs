@@ -15,7 +15,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
 	<link href="css/main.css" rel="stylesheet" />
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
+	<title>Devology</title>
 </head>
 <div id="wrapper" class="toggled">
 
@@ -61,62 +61,64 @@
 		<h1>Inicio</h1>
 		<% if(rows.length!=0){%>
 			<h2 style="text-align: center;">Notificaciones</h2>
-			<table>
-				<thead>
-					<tr><td>#</td><td>Descripcion</td><td>Fecha/Hora</td></tr>
-					</thead>
-					<tbody>
-					<% for(i=0;i<rows.length;i++){ %>
-							<% let temp="",band=0 %>
-							<% if(rows[i].id_user_emisor.equals(id)){%>
-								<% if(rows[i].tipo==2){%>
-									<% temp="Aceptaste la invitacion de "+rows[i].nombre_receptor %>
-									<% }else if(rows[i].tipo==3){%>
-										<% temp="Rechazaste la invitacion de "+rows[i].nombre_receptor %>
-										<% }else if(rows[i].tipo==4){%>
-											<% temp="Añadiste a "+rows[i].nombre_emisor+" la organizacion" %>
-										<% }else if(rows[i].tipo==5){%>
-											<% temp="Sacaste a "+rows[i].nombre_emisor+" de la organizacion" %>
-										<% }else if(rows[i].tipo==6){%>
-											<% temp="Ascendiste a "+rows[i].nombre_emisor+" en la organizacion" %>
-										<% }else if(rows[i].tipo==7){%>
-											<% temp="Descendiste a "+rows[i].nombre_emisor+"  en la organizacion" %>
-										<% } %>
-								<% }else{ %>
+			<div class="container">
+				<table class="table table-dark">
+					<thead>
+						<tr><th scope="col">Descripcion</th><th scope="col">Fecha/Hora</th></tr>
+						</thead>
+						<tbody>
+						<% for(i=0;i<rows.length;i++){ %>
+								<% let temp="",band=0 %>
+								<% if(rows[i].id_user_emisor.equals(id)){%>
 									<% if(rows[i].tipo==2){%>
-										<% temp=rows[i].nombre_emisor+" acepto la invitacion" %>
+										<% temp="Aceptaste la invitacion de "+rows[i].nombre_receptor %>
 										<% }else if(rows[i].tipo==3){%>
-											<% temp=rows[i].nombre_emisor+" rechazo la invitacion" %>
+											<% temp="Rechazaste la invitacion de "+rows[i].nombre_receptor %>
 											<% }else if(rows[i].tipo==4){%>
-												<% temp="Añadido a la organizacion por "+rows[i].nombre_receptor %>
+												<% temp="Añadiste a "+rows[i].nombre_emisor+" la organizacion" %>
 											<% }else if(rows[i].tipo==5){%>
-												<% temp="Sacado de la organizacion por "+rows[i].nombre_receptor %>
+												<% temp="Sacaste a "+rows[i].nombre_emisor+" de la organizacion" %>
 											<% }else if(rows[i].tipo==6){%>
-												<% temp="Ascendido en la organizacion por "+rows[i].nombre_receptor %>
+												<% temp="Ascendiste a "+rows[i].nombre_emisor+" en la organizacion" %>
 											<% }else if(rows[i].tipo==7){%>
-												<% temp="Descendido en la organizacion por "+rows[i].nombre_receptor %>
+												<% temp="Descendiste a "+rows[i].nombre_emisor+"  en la organizacion" %>
 											<% } %>
-								<% } %>
-							<% if(rows[i].tipo==8 && rows[i].id_user_receptor.equals(id)){%>
-								<% temp="Saliste de la organizacion" %>
-								<% }else if(rows[i].tipo==9){ %>
-									<%  if(rows[i].id_user_receptor.equals(id)){ %>
-										<% temp="Ahora eres dueño de la organizacion por la salida de "+rows[i].nombre_emisor %>
-										<% }else{ %>
-											<% band=1 %>
-										<% } %>
+									<% }else{ %>
+										<% if(rows[i].tipo==2){%>
+											<% temp=rows[i].nombre_emisor+" acepto la invitacion" %>
+											<% }else if(rows[i].tipo==3){%>
+												<% temp=rows[i].nombre_emisor+" rechazo la invitacion" %>
+												<% }else if(rows[i].tipo==4){%>
+													<% temp="Añadido a la organizacion por "+rows[i].nombre_receptor %>
+												<% }else if(rows[i].tipo==5){%>
+													<% temp="Sacado de la organizacion por "+rows[i].nombre_receptor %>
+												<% }else if(rows[i].tipo==6){%>
+													<% temp="Ascendido en la organizacion por "+rows[i].nombre_receptor %>
+												<% }else if(rows[i].tipo==7){%>
+													<% temp="Descendido en la organizacion por "+rows[i].nombre_receptor %>
+												<% } %>
 									<% } %>
-							<% if(band==0){ %>
-							<tr>
-								<td><%= i %></td>
-								<td><%= temp %></td>
-								<td><%= rows[i].fecha %>-<%= rows[i].hora %></td>
-								</tr>
-								
-						<% } %>
-						<% } %>
-					</tbody>
-					</table>
+								<% if(rows[i].tipo==8 && rows[i].id_user_receptor.equals(id)){%>
+									<% temp="Saliste de la organizacion" %>
+									<% }else if(rows[i].tipo==9){ %>
+										<%  if(rows[i].id_user_receptor.equals(id)){ %>
+											<% temp="Ahora eres dueño de la organizacion por la salida de "+rows[i].nombre_emisor %>
+											<% }else{ %>
+												<% band=1 %>
+											<% } %>
+										<% } %>
+								<% if(band==0){ %>
+								<tr scope="row">
+									<td><%= temp %></td>
+									<td><%= rows[i].fecha %>-<%= rows[i].hora %></td>
+									</tr>
+									
+							<% } %>
+							<% } %>
+						</tbody>
+						</table>
+			</div>
+			
 			<% } %>
 	</section>
   
