@@ -109,6 +109,10 @@ app.get('/login',function(req,res) {
 	//Renderiza la plantilla Login-Register
   res.sendFile(__dirname+'/src/login.html')
 });
+app.get('/', function(req,res) {
+    //Renderiza la plantilla index
+    res.sendFile(__dirname+'/src/index.html')
+});
 app.post('/login', function(req,res) {
   //Verificacion de los datos para iniciar sesion
     MongoClient.connect(url, function(err, client) {
@@ -300,7 +304,7 @@ app.post('/getout_org', configStats, auth ,function(req,res) {
 /* /POST METHODS */
 app.get('/*', function(req,res) {
 	//Redirecciona al login
-	res.redirect('/login')
+	res.redirect('/')
 });
 //Define el puerto de la plataforma
 app.set('port', (process.env.PORT || 8888));
