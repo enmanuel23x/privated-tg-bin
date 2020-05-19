@@ -165,7 +165,7 @@ const vm = new Vue({
                 let tch = info_devs[i][2];
                 let sk = info_devs[i][3];
                 let rqs = info_devs[i][4];
-                let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?qy="+qy+"&tms="+tms+"&tch="+tch+"&sk="+sk+"&rqs="+rqs+"&num="+i+"";
+                let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=1&arg1="+qy+"&arg2="+tms+"&arg3="+tch+"&arg4="+sk+"&arg5="+rqs+"&arg6="+i+"";
                 jokes.push(await f(url))
             }
             return jokes
@@ -174,9 +174,9 @@ const vm = new Vue({
             let success = [],evalued=[];
             let res_info = await this.connectionToAPI();
             for (let i = 0; i < res_info.length ; i++) {
-                evalued.push({name:dev_names[i], status:res_info[i].accomplishment})
-                if (res_info[i].accomplishment === "1"){
-                    success.push({name:dev_names[i], status:res_info[i].accomplishment})
+                evalued.push({name:dev_names[i], status:res_info[i].result})
+                if (res_info[i].result === "1"){
+                    success.push({name:dev_names[i], status:res_info[i].result})
                 }
             }
             vm.$data.rows=evalued
