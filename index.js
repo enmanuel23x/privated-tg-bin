@@ -304,7 +304,7 @@ app.post('/getout_org', configStats, auth ,function(req,res) {
 /* /POST METHODS */
 app.get('/*', function(req,res) {
 	//Redirecciona al login
-	res.redirect('/')
+    res.sendFile(__dirname+'/src/404.html');
 });
 //Define el puerto de la plataforma
 app.set('port', (process.env.PORT || 8888));
