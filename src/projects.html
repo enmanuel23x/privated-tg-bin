@@ -65,7 +65,11 @@
 	.card:not(:first-child) {
 		margin-left: -50px;
 	}
-	
+	.cActive{
+		left: -25%;
+	  transform: translateY(-20px);
+	  transition: 0.4s ease-out;
+	}
 	.card:hover {
 	  left: -25%;
 	  transform: translateY(-20px);
@@ -100,7 +104,7 @@
 		transition: opacity .3s;
 	}
 	  </style>
-	<title>Pools</title>
+	<title>Devology</title>
 </head>
 <div id="projects">
 	<div id="Nooverlay">
@@ -332,7 +336,10 @@
 										</label>
 									</div>
 								</fieldset>
-								<button class="btn btn-success" type="button" @click="createProject">
+								<button v-if="type==2" class="btn btn-success" type="button" @click="createProject">
+									Crear proyecto
+								</button>
+								<button v-else class="btn btn-success" type="button"  disabled>
 									Crear proyecto
 								</button>
 							</fieldset>

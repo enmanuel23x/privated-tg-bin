@@ -568,11 +568,11 @@ module.exports = {
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
                 if(rows.length!=0){
-                    db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, devs)=>{
+                    db.collection('integrantes_organizacion').find({rol: 4, activo:1}).toArray((err, devs)=>{
                         let ID_devs=[]
                         if(devs.length!=0){
                             let ID_devs=[]
-                            db.collection('integrantes_organizacion').find({rol: 4}).forEach(function(element){
+                            db.collection('integrantes_organizacion').find({rol: 4, activo:1}).forEach(function(element){
                                 db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                     ID_devs.push(apt)
                                     if(ID_devs.length==devs.length){
@@ -588,7 +588,18 @@ module.exports = {
                     res.json({devs:[],apt:[],type:req.session.type})
                 }
             });
-          }      
+          },      
+    projectsData: function(db,req,res, callback) {//Hay que editar
+      //Falta traer los projects
+      res.json({});
+    },
+    updateImg : function(db,req,res, nameImg){
+      db.collection('usuario').update({_id:ObjectID(req.session.userID) }, {$set : {'img': nameImg}}, function(err, result) {
+        //devuelve como realizado
+        console.log(nameImg)
+        res.json("0")
+    });
+    }
     }
     function ajuste(data){
         if(data<10){

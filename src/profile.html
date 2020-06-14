@@ -21,16 +21,50 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
   <script>
+    function previewImg(input, id) {
+              var d = window.document;
+              if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                /* set image as base64 */
+                var base64 = e.target.result;
+                d.getElementById(id).src = base64;
+              };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
     document.addEventListener('DOMContentLoaded', function () {
       var v= new Vue({
         el: '#sg1',
         data: {
           rows:[],
-          type:1
+          type:2,
+          file: null
         },
         methods: {
             sidebar(){
 				$("#wrapper").toggleClass("toggled");
+            },
+            onSelect(){
+              const file = this.$refs.file.files[0]
+              this.file = file;
+            },
+            async onSubmit(){
+              this.progress()
+              const formData = new FormData();
+              formData.append('file', this.file);
+              try{
+                const call = await axios.post('/changeImg', formData);
+                swal.close();
+                swal({title:"¡Imagen cargada con exito!",text:"",icon: "success"});
+                //good
+              }
+              catch(err){
+                swal.close();
+                swal({title:"¡Error al cargar la imagen!",text:"Por favor intente mas tarde \no contacte con soporte",icon: "warning"});
+                console.log(err)
+                //err
+              }
             },
             progress(){
 				swal({
@@ -47,7 +81,8 @@
 				axios.get('/dataPerfil', {
   			})
 			.then(function (response) {
-				currentObj.$data.rows=response.data.rows
+        currentObj.$data.rows=response.data.rows
+        console.log(currentObj.$data.rows[0].img)
 				currentObj.$data.type=response.data.type
 				swal.close();
 				})
@@ -110,11 +145,15 @@
             </div>
             <section id="content-wrapper">
                 <h1>PERFIL</h1>
-                <form v-if="rows.length!=0" class="profile">
+                <form v-if="rows.length!=0" class="profile" @submit.prevent="onSubmit" enctype="multipart/form-data">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-dark">
                             <h3 class="list-group-item-heading">Foto de perfil:</h3>
-              <p class="list-group-item-text">Por implementar</p>
+                            <img v-if="rows[0].img==undefined" id="image" src="img/profile/default.png" style="max-width: 250px;">
+                            <img v-else id="image" :src="rows[0].img" style="max-width: 300px;max-height: 300px;">
+                            <input type="file" id="form_image" onchange="previewImg(this, 'image');"
+                            ref="file" @change="onSelect">
+                            <button type="submit" id="upload_image">Subir imagen</button>
                         </li>
                         <li class="list-group-item list-group-item-dark">
                             <h3 class="list-group-item-heading">Nombres:</h3>

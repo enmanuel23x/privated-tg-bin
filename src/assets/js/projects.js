@@ -19,7 +19,7 @@ const vm = new Vue({
       },
     data: {
         rows:[],
-        type:2,
+        type:null,
         // Automatic or manually
         mode: null,
         // Languages
@@ -180,7 +180,6 @@ const vm = new Vue({
                 }
             }
             vm.$data.rows=evalued
-            console.log(vm.$data.rows)
             vm.overlayActivator(1)
         }
     },

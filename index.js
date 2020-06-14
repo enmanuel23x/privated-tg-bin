@@ -6,6 +6,7 @@ var bodyParser = require('body-parser')
 var multer = require('multer');
 var fs = require("fs");
 var upload = multer({ dest: '/tmp' })
+const path = require('path');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/css',express.static(__dirname+'/src/assets/css'));
@@ -175,6 +176,14 @@ app.get('/get_aptitudes',configStats, isDev,function(req,res) {
     });
   });
 });
+app.get('/DataProjects',configStats, auth ,function(req,res) {
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    projectData(db,req,res, function() {
+    });
+  });
+});
 app.get('/test',configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/exampleVue.html');
 });
@@ -219,6 +228,23 @@ app.get('/adminpanel', isSysAdmin,function(req,res) {
 });
 /* /GET METHODS */
 /* POST METHODS */
+app.post(
+  "/changeImg",
+  upload.single("file" /* name attribute of <file> element in your form */),
+  auth,(req, res) => {
+    const tempPath = req.file.path;
+    const targetPath = path.join(__dirname, "/src/assets/img/profile/"+req.session.userID+path.extname(req.file.originalname).toLowerCase());
+    const nameImg = "img/profile/"+req.session.userID+path.extname(req.file.originalname).toLowerCase()
+      fs.rename(tempPath, targetPath, err => {
+        if (err) return handleError(err, res);
+        MongoClient.connect(url, function(err, client) {
+          assert.equal(null, err);
+          const db = client.db(dbName);
+          mongoUtil.updateImg(db,req,res, nameImg);
+        });
+      });
+  }
+);
 app.post('/add_org',configStats, auth , isAdmin ,function(req,res) {
 	if(req.session.type==2){
 		MongoClient.connect(url, function(err, client) {
