@@ -1,4 +1,5 @@
 let available_developers;
+
 let jokes = [];
 let dev_names = [];
 
@@ -42,7 +43,19 @@ const vm = new Vue({
         perl: 0,
         rust: 0,
         javascript: 0,
-        info: []
+        html_css: 0,
+        info: [],
+        showModal: false,
+        test:[],
+        selected: [],
+        dev_ids: [],
+
+        org_id: "",
+
+        project_name: "",
+        project_desc : ""
+
+
     },
     mounted(){
         const settings={
@@ -110,6 +123,10 @@ const vm = new Vue({
 
         getProjectReqs(){
             let arr = [];
+
+            // Aqui quedaste alejandro, recuerda terminar de modificar esta funcion
+
+
             arr.push(
                 this.python, this.java, this.cpp, this.php, this.c, this.ruby, this.objective, this.golang, this.visual,
                 this.scala, this.sql, this.nosql, this.kotlin, this.r, this.swift, this.clojure, this.perl, this.rust
@@ -135,6 +152,8 @@ const vm = new Vue({
             let dev_exp = []
             for (let i = 0; i < available_developers.devs.length ; i++) {
                 let skill = available_developers.apt[i][0];
+                vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
+
                 dev_exp.push(
                     skill.exp_python, skill.exp_java, skill.exp_cpp, skill.exp_php, skill.exp_c, skill.exp_ruby,
                     skill.exp_objective, skill.exp_go, skill.exp_visual, skill.exp_scala, skill.exp_sql,
@@ -148,11 +167,13 @@ const vm = new Vue({
                     available_developers.apt[i][0].dev_on_time,
                     available_developers.apt[i][0].team_chemistry,
                     this.getDevSkills(dev_exp),
-                    this.filterReqs(this.getProjectReqs())
+                    this.filterReqs(this.getProjectReqs()),
+
 
                 ]);
                 dev_exp = []
             }
+
             apt_req.push(dev_apt);
             return apt_req
         },
@@ -171,8 +192,11 @@ const vm = new Vue({
             return jokes
         },
         async createProject(){
-            let success = [],evalued=[];
+            let skill_names = ["python", "java", "cpp", "php", "c", "ruby", "objective", "golang", "visual",
+                "scala", "sql", "nosql", "kotlin", "r", "swift", "clojure", "perl", "rust"]
+            let success = [], evalued=[];
             let res_info = await this.connectionToAPI();
+            console.log(res_info)
             for (let i = 0; i < res_info.length ; i++) {
                 evalued.push({name:dev_names[i], status:res_info[i].result})
                 if (res_info[i].result === "1"){
@@ -180,8 +204,54 @@ const vm = new Vue({
                 }
             }
             vm.$data.rows=evalued
-            vm.overlayActivator(1)
+            // vm.overlayActivator(1)
+            vm.$data.showModal = true;
+            this.test = evalued
+            console.log(evalued)
+            console.log("Poject created button pressed")
+            for (let i = 0; i < available_developers.length; i++) {
+                vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
+            }
+            vm.$data.org_id = available_developers.devs[0].id_organizacion
+
+
+            // Dev IDS
+            console.log(vm.$data.dev_ids)
+            // Org ID
+            console.log(vm.$data.org_id)
+
+
+            let metrics = this.getProjectReqs();
+            let indexes = [];
+            for (let i = 0; i < metrics.length; i++) {
+                if (metrics[i] !== 0){
+                    indexes.push(i)
+                }
+            }
+            console.log(indexes)
+            let reqs = []
+            for (let i = 0; i < indexes.length; i++) {
+                reqs.push([skill_names[indexes[i]], metrics[indexes[i]]])
+            }
+            console.log(reqs)
+
+
+
+        },
+
+        testing(){
+            console.log("ok")
+            // console.log(vm.$data.selected)
+            console.log(vm.$data.rows)
+        },
+
+        testing2(){
+
+            // Nombre y descripcion obtenida
+            console.log(vm.$data.project_name)
+            console.log(vm.$data.project_desc)
         }
+
     },
     created(){
         let timerInterval
@@ -197,6 +267,8 @@ const vm = new Vue({
                     available_developers = response.data;
                     currenObj.$data.type=response.data.type;
                     console.log("ok")
+                    console.log(available_developers)
+                    console.log(vm.$data.dev_ids)
                 }).catch(function (error) {
                     console.log(error)
                 });
