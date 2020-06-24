@@ -19,6 +19,7 @@ const vm = new Vue({
         'slide': VueCarousel.Slide
       },
     data: {
+        admin_id: 0,
         rows:[],
         type:null,
         // Automatic or manually
@@ -266,6 +267,7 @@ const vm = new Vue({
                 }).then(function (response) {
                     available_developers = response.data;
                     currenObj.$data.type=response.data.type;
+                    currenObj.$data.admin_id=response.data.admin_id;
                     console.log("ok")
                     console.log(available_developers)
                     console.log(vm.$data.dev_ids)
