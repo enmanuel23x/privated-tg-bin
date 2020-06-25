@@ -141,6 +141,13 @@ app.get('/logout',function(req,res) {
 });
 /* /Login-Register */
 /* GET METHODS */
+app.get('/getProjects',configStats, auth,function(req,res) {
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.getProjects(db,req,res);
+  });
+});
 app.get('/Datainicio',configStats, auth ,function(req,res) {
 	MongoClient.connect(url, function(err, client) {
     assert.equal(null, err);

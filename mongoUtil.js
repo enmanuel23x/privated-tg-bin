@@ -336,9 +336,7 @@ module.exports = {
                   assert.equal(null, err);
                   db.collection("integrantes_organizacion").deleteOne({id_usuario:ObjectID(req.body.id)}, function(err, obj) {
                     if (err) throw err;
-                      db.collection("integrantes_proyectos").deleteMany({$and:[{id_usuario:ObjectID(req.body.id)},{status:1}]}, function(err, obj2) {
-                        res.send("0")
-                        });
+                    res.send("0")
                     });
                   });
                 }else{
@@ -564,6 +562,17 @@ module.exports = {
                   }
             });
         },
+    getProjects:function(db,req,res,next) {
+      db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+        assert.equal(err, null);
+        db.collection('proyecto').find({Organizacion: ObjectID(rows[0].id_organizacion)}).toArray((err, projects)=>{
+          assert.equal(err, null);
+          console.log({Organizacion: rows[0].id_organizacion})
+          console.log(projects)
+          res.json({projects:projects})
+        });
+      });
+    },
     getDev: function(db,req,res,next, callback) {
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
@@ -600,22 +609,13 @@ module.exports = {
         res.json("0")
     });
     },
-    insertProject: function(db,req,res) {
+    insertProject: async function(db,req,res) {
       // Get the documents collection
       const collection = db.collection('proyecto');
-      const {adminID,DevsIDs,name, description, Requeriments, OrgID} = req.body
-      // Insert some documents
-      collection.insertMany([
-        {admin: adminID, Desarrolladores: DevsIDs, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
-      ], function(err, result) {
-          assert.equal(null, err);
-          res.send("0");
-      });
-      },
-    insertProject: function(db,req,res) {
-      // Get the documents collection
-      const collection = db.collection('proyecto');
-      const {adminID,DevsIDs,name, description, Requeriments, OrgID} = req.body
+      let {adminID,DevsIDs,name, description, Requeriments, OrgID} = req.body
+      OrgID= ObjectID(OrgID);
+      adminID= ObjectID(adminID);
+      DevsIDs= await JSON.stringify(JSON.parse(DevsIDs).map( (el)=> ObjectID(el)));
       // Insert some documents
       collection.insertMany([
         {admin: adminID, Desarrolladores: DevsIDs, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}

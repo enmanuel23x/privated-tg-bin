@@ -55,7 +55,8 @@ const vm = new Vue({
 
         project_name: "",
         project_desc : "",
-        id_organizacion: ""
+        id_organizacion: "",
+        projectsRows: []
 
 
     },
@@ -245,26 +246,23 @@ const vm = new Vue({
 
         testing(){
             if(vm.mode=='auto'){
-                swal({
+                Swal.fire({
                     title: "Alerta",
                       text: "¿Quiere realizar una prediccion del exito del proyecto?",
                       icon: "warning",
-                      buttons: {
-                        yes: "Realizar prediccion",
-                        no: "No realizar prediccion"
-                      },
-                }).then((value) => {
-                      switch (value) {
-                        case "yes":
-                            vm.progress();
+                      showCancelButton: true,
+                      confirmButtonText: 'Realizar prediccion',
+                      cancelButtonText: 'No realizar prediccion'
+                }).then((result) => {
+                    if (result.value) {
+                        vm.progress();
+                            //Primero funcion de prediccion
                             //Aqui modal con la predicion xd
                             //Recuerda dar la opcion de cancelar, que cierre el modal nada mas  ya los datos se reinician
-                            break;
-                        case "no":
-                            vm.insert()
-                            break;
-                      }
-                    });
+                    }else{
+                        vm.insert()
+                    }
+                  });
             }else{
                 vm.insert()
             }
@@ -281,26 +279,22 @@ const vm = new Vue({
             axios.post('/insertProject', {adminID: vm.$data.admin_id,DevsIDs: devs,name:vm.$data.project_name, description: vm.$data.project_desc, Requeriments: reqs, OrgID:vm.$data.id_organizacion})
                 .then((res)=>{
                     Swal.fire({title:"Exito!",text:"Proyecto inicializado con exito",icon:"success"})
+                    vm.fillData();
                 })
         },
         progress(){
             Swal.fire({
                 title: 'Espera un segundo',
-                html: ' Evaluando los desarrolladores diponibles...',
-                timerProgressBar: true,
-                button: false,
-                confirmButton: false,
-                allowOutsideClick: false,
-                closeOnClickOutside: false
+                html: 'Evaluando los desarrolladores diponibles...',
+                timer: 5000,
+                timerProgressBar: true
                 })
-        }
-
-    },
-    created(){
-        let timerInterval
+        },
+        fillData(){
+            let timerInterval
         Swal.fire({
             title: 'Espera un segundo',
-            html: ' Buscando desarrolladores diponibles...',
+            html: 'Evaluando la informacion diponible...',
             timer: 5000,
             timerProgressBar: true,
             onBeforeOpen: () => {
@@ -311,9 +305,11 @@ const vm = new Vue({
                     currenObj.$data.type=response.data.type;
                     currenObj.$data.admin_id=response.data.admin_id;
                     currenObj.$data.id_organizacion= response.data.id_organizacion
-                    console.log("ok")
-                    console.log(available_developers)
-                    console.log(vm.$data.dev_ids)
+                    axios.get('/getProjects', {
+                    }).then(function (res) {
+                        vm.$data.projectsRows = res.data.projects;
+                        console.log(res.data)
+                    });
                 }).catch(function (error) {
                     console.log(error)
                 });
@@ -337,5 +333,10 @@ const vm = new Vue({
                 console.log('I was closed by the timer')
             }
         })
+        }
+
+    },
+    created(){
+        this.fillData();
     }
 });
