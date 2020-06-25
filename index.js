@@ -228,6 +228,15 @@ app.get('/adminpanel', isSysAdmin,function(req,res) {
 });
 /* /GET METHODS */
 /* POST METHODS */
+app.post('/insertProject',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.insertProject(db,req,res);
+    });
+	}
+});
 app.post(
   "/changeImg",
   upload.single("file" /* name attribute of <file> element in your form */),

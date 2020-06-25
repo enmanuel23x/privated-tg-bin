@@ -25,7 +25,7 @@ const vm = new Vue({
         // Automatic or manually
         mode: null,
         // Languages
-        python: 0,
+        python: 10,
         java: 0,
         cpp: 0,
         php: 0,
@@ -54,7 +54,8 @@ const vm = new Vue({
         org_id: "",
 
         project_name: "",
-        project_desc : ""
+        project_desc : "",
+        id_organizacion: ""
 
 
     },
@@ -180,6 +181,7 @@ const vm = new Vue({
         },
         async connectionToAPI(){
             let info_devs = this.checkDevelopers()[0];
+            jokes= [];
             // console.log(info_devs.length)
             for (let i = 0; i < info_devs.length; i++) {
                 let qy = info_devs[i][0];
@@ -193,6 +195,8 @@ const vm = new Vue({
             return jokes
         },
         async createProject(){
+            vm.$data.project_desc = ""
+            vm.$data.project_name = ""
             let skill_names = ["python", "java", "cpp", "php", "c", "ruby", "objective", "golang", "visual",
                 "scala", "sql", "nosql", "kotlin", "r", "swift", "clojure", "perl", "rust"]
             let success = [], evalued=[];
@@ -213,7 +217,6 @@ const vm = new Vue({
             for (let i = 0; i < available_developers.length; i++) {
                 vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
             }
-            vm.$data.org_id = available_developers.devs[0].id_organizacion
 
 
             // Dev IDS
@@ -241,16 +244,55 @@ const vm = new Vue({
         },
 
         testing(){
-            console.log("ok")
-            // console.log(vm.$data.selected)
-            console.log(vm.$data.rows)
+            if(vm.mode=='auto'){
+                swal({
+                    title: "Alerta",
+                      text: "¿Quiere realizar una prediccion del exito del proyecto?",
+                      icon: "warning",
+                      buttons: {
+                        yes: "Realizar prediccion",
+                        no: "No realizar prediccion"
+                      },
+                }).then((value) => {
+                      switch (value) {
+                        case "yes":
+                            vm.progress();
+                            //Aqui modal con la predicion xd
+                            //Recuerda dar la opcion de cancelar, que cierre el modal nada mas  ya los datos se reinician
+                            break;
+                        case "no":
+                            vm.insert()
+                            break;
+                      }
+                    });
+            }else{
+                vm.insert()
+            }
         },
-
-        testing2(){
-
-            // Nombre y descripcion obtenida
-            console.log(vm.$data.project_name)
-            console.log(vm.$data.project_desc)
+        insert(){
+            vm.progress();
+            const devs = JSON.stringify(vm.$data.selected.map( (el)=> vm.$data.dev_ids[el]))
+            const reqs =JSON.stringify ({python: vm.$data.python, java: vm.$data.java, cpp: vm.$data.cpp,
+                        php: vm.$data.php, c: vm.$data.c, ruby: vm.$data.ruby, objective: vm.$data.objective,
+                        golang: vm.$data.golang, visual: vm.$data.visual, scala: vm.$data.scala,
+                        sql: vm.$data.sql, nosql: vm.$data.nosql, kotlin: vm.$data.kotlin,
+                        r: vm.$data.r, swift: vm.$data.swift, clojure: vm.$data.clojure,
+                        perl: vm.$data.perl, rust: vm.$data.rust, javascript: vm.$data.javascript, html_css: vm.$data.javascript});
+            axios.post('/insertProject', {adminID: vm.$data.admin_id,DevsIDs: devs,name:vm.$data.project_name, description: vm.$data.project_desc, Requeriments: reqs, OrgID:vm.$data.id_organizacion})
+                .then((res)=>{
+                    Swal.fire({title:"Exito!",text:"Proyecto inicializado con exito",icon:"success"})
+                })
+        },
+        progress(){
+            Swal.fire({
+                title: 'Espera un segundo',
+                html: ' Evaluando los desarrolladores diponibles...',
+                timerProgressBar: true,
+                button: false,
+                confirmButton: false,
+                allowOutsideClick: false,
+                closeOnClickOutside: false
+                })
         }
 
     },
@@ -268,6 +310,7 @@ const vm = new Vue({
                     available_developers = response.data;
                     currenObj.$data.type=response.data.type;
                     currenObj.$data.admin_id=response.data.admin_id;
+                    currenObj.$data.id_organizacion= response.data.id_organizacion
                     console.log("ok")
                     console.log(available_developers)
                     console.log(vm.$data.dev_ids)

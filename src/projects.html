@@ -269,7 +269,7 @@
 									</div>
 									<div class="modal-footer">
 										<button type="button" class="btn btn-secondary" data-dismiss="modal">Atras</button>
-										<button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target=".bd-example-modal-lg" @click="testing2">Siguiente</button>
+										<button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target=".bd-example-modal-lg">Siguiente</button>
 									</div>
 								</div>
 							</div>
@@ -293,14 +293,14 @@
 											<thead>
 											<tr>
 												<th >Nombre</th>
-												<th >Prediccion</th>
+												<th v-if="mode=='auto'">Prediccion</th>
 												<th >Seleccion</th>
 											</tr>
 											</thead>
 											<tbody>
 											<tr v-for="(row, index) in test" :key="index">
 												<td>{{row.name}}</td>
-												<td>{{row.status == 1 ? " Recomendado" : "No recomendado"}}</td>
+												<td v-if="mode=='auto'">{{row.status == 1 ? " Recomendado" : "No recomendado"}}</td>
 												<td><input class="form-check-input" type="checkbox" v-model="selected" :value="index" number></td>
 											</tr>
 											</tbody>
@@ -308,8 +308,8 @@
 
 									</div>
 									<div class="modal-footer">
-										<button type="button" class="btn btn-secondary" @click="showModal = false">Atrás</button>
-										<button type="button" class="btn btn-primary" @click="testing">Continuar</button>
+										<button type="button" class="btn btn-secondary" @click="showModal = false"  data-dismiss="modal">Atrás</button>
+										<button type="button" class="btn btn-primary" @click="testing"  data-dismiss="modal">Continuar</button>
 									</div>
 								</div>
 							</div>
@@ -501,7 +501,7 @@
 										</label>
 									</div>
 								</fieldset>
-								<button v-if="type==2" class="btn btn-success" type="button" @click="createProject" data-toggle="modal" data-target="#exampleModal">
+								<button v-if="type==2 && mode!=null" class="btn btn-success" type="button" @click="createProject" data-toggle="modal" data-target="#exampleModal">
 									Crear proyecto
 								</button>
 								<button v-else class="btn btn-success" type="button"  disabled>

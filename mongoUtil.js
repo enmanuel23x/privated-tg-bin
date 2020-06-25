@@ -576,7 +576,7 @@ module.exports = {
                                 db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                     ID_devs.push(apt)
                                     if(ID_devs.length==devs.length){
-                                        res.json({devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id})
+                                      res.json({devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion})
                                         }
                                     });
                                 });
@@ -600,6 +600,18 @@ module.exports = {
         res.json("0")
     });
     },
+    insertProject: function(db,req,res) {
+      // Get the documents collection
+      const collection = db.collection('proyecto');
+      const {adminID,DevsIDs,name, description, Requeriments, OrgID} = req.body
+      // Insert some documents
+      collection.insertMany([
+        {admin: adminID, Desarrolladores: DevsIDs, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
+      ], function(err, result) {
+          assert.equal(null, err);
+          res.send("0");
+      });
+      },
     insertProject: function(db,req,res) {
       // Get the documents collection
       const collection = db.collection('proyecto');
