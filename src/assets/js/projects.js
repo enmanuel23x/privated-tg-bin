@@ -202,7 +202,7 @@ const vm = new Vue({
                 "scala", "sql", "nosql", "kotlin", "r", "swift", "clojure", "perl", "rust"]
             let success = [], evalued=[];
             let res_info = await this.connectionToAPI();
-            console.log(res_info)
+            //console.log(res_info)
             for (let i = 0; i < res_info.length ; i++) {
                 evalued.push({name:dev_names[i], status:res_info[i].result})
                 if (res_info[i].result === "1"){
@@ -213,17 +213,17 @@ const vm = new Vue({
             // vm.overlayActivator(1)
             vm.$data.showModal = true;
             this.test = evalued
-            console.log(evalued)
-            console.log("Poject created button pressed")
+            //console.log(evalued)
+            //console.log("Poject created button pressed")
             for (let i = 0; i < available_developers.length; i++) {
                 vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
             }
 
 
             // Dev IDS
-            console.log(vm.$data.dev_ids)
+            //console.log(vm.$data.dev_ids)
             // Org ID
-            console.log(vm.$data.org_id)
+            //console.log(vm.$data.org_id)
 
 
             let metrics = this.getProjectReqs();
@@ -233,12 +233,12 @@ const vm = new Vue({
                     indexes.push(i)
                 }
             }
-            console.log(indexes)
+            //console.log(indexes)
             let reqs = []
             for (let i = 0; i < indexes.length; i++) {
                 reqs.push([skill_names[indexes[i]], metrics[indexes[i]]])
             }
-            console.log(reqs)
+            //console.log(reqs)
 
 
 
@@ -308,7 +308,6 @@ const vm = new Vue({
                     axios.get('/getProjects', {
                     }).then(function (res) {
                         vm.$data.projectsRows = res.data.projects;
-                        console.log(res.data)
                     });
                 }).catch(function (error) {
                     console.log(error)
@@ -330,9 +329,47 @@ const vm = new Vue({
         }).then((result) => {
             /* Read more about handling dismissals below */
             if (result.dismiss === Swal.DismissReason.timer) {
-                console.log('I was closed by the timer')
+                //console.log('I was closed by the timer')
             }
         })
+        },
+        viewProject(project){
+            const keys = Object.keys(JSON.parse(project.Requisitos));
+            const ColabsArr = JSON.parse(project.Desarrolladores);
+            let Colabs = [];
+            for (i=0;i<ColabsArr.length;i++) {
+                Colabs.push(available_developers.devs.filter( (el)=> el.id_usuario == ColabsArr[i])[0])
+            }
+            const ReqsArr = JSON.parse(project.Requisitos);
+            let Reqs = [];
+            for (let [key, value] of Object.entries(ReqsArr)) {
+                Reqs.push([key,value])
+            }
+            Reqs = Reqs.filter( (el)=> el[1]!=0);
+            const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
+            const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
+            const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
+            Swal.mixin({
+                confirmButtonText: 'Siguiente &rarr;',
+                showCancelButton: true,
+                cancelButtonText: "Cerrar",
+                progressSteps: ['1', '2']
+              }).queue([
+                {
+                  title: 'Requisitos',
+                  html: tHead1+'<th scope="col">Nombre</th><th scope="col">Nivel(%)</th>'+tHead2+tableReqs+tEnd
+                },
+                {
+                  title: 'Integrantes',
+                  html: tHead1+'<th scope="col">Nombre</th>'+tHead2+tableColabs+tEnd,
+                  confirmButtonText: 'Ver mas &rarr;'
+                }
+              ]).then((result) => {
+                if (result.value) {
+                  //Ver si mandar
+                  console.log("yes")
+                }
+              })
         }
 
     },

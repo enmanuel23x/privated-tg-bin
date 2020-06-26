@@ -567,8 +567,6 @@ module.exports = {
         assert.equal(err, null);
         db.collection('proyecto').find({Organizacion: ObjectID(rows[0].id_organizacion)}).toArray((err, projects)=>{
           assert.equal(err, null);
-          console.log({Organizacion: rows[0].id_organizacion})
-          console.log(projects)
           res.json({projects:projects})
         });
       });
