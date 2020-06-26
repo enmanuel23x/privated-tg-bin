@@ -195,16 +195,24 @@ app.get('/test',configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/exampleVue.html');
 });
 app.get('/proyectos',configStats, auth ,function(req,res) {
-	res.sendFile(__dirname+'/src/projects.html');
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.proyectos(db,req,res);
+  });
 });
 app.get('/tabs',configStats ,function(req,res) {
 	res.sendFile(__dirname+'/src/tabs.html');
 });
-app.get('/detalles*',configStats ,function(req,res) {
-	res.sendFile(__dirname+'/src/detalles.html');
-});
 app.get('/organizacion', configStats, auth ,function(req,res) {
 	res.sendFile(__dirname+'/src/orgs.html');
+});
+app.get('/detalles/:id',configStats, auth, function(req,res) {
+	MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    const db = client.db(dbName);
+    mongoUtil.detalles(db,req,res);
+  });
 });
 app.get('/dev_data',configStats,function(req,res) {
 	MongoClient.connect(url, function(err, client) {

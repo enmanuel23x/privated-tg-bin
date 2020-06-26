@@ -14,101 +14,24 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 	<link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
 	<script src="https://cdn.rawgit.com/SSENSE/vue-carousel/6823411d/dist/vue-carousel.min.js"></script>
-	<link href="css/main.css" rel="stylesheet" />
-  <link href="css/modal.css" rel="stylesheet" />
-  <link href="css/detalles.css" rel="stylesheet" />
-	<link rel="stylesheet" href="css/styles.min.css">
-    <link rel="shortcut icon" type="image/ico" href="img/favicon.ico"/>
+
+
+
+
+
+	<link href="http://localhost:8888/css/main.css" rel="stylesheet" />
+	<link href="http://localhost:8888/css/modal.css" rel="stylesheet" />
+	<link rel="stylesheet" href="http://localhost:8888/css/styles.min.css">
+	<link rel="shortcut icon" type="image/ico" href="http://localhost:8888/img/favicon.ico"/>
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<style>
-		.VueCarousel-pagination{
-		  display: none;
-		}
-		.VueCarousel-slide {
-		  flex-shrink: 1;
-		}
-		h2{
-		  margin: 0;
-		}
-		.container {
-	  position: absolute;
-	  height: 300px;
-	  width: 600px;
-	  top: 60px;
-	  left: calc(50% - 300px);
-	  display: flex;
-	}
-	.tns-controls{
-	text-align: right;
-	}
-	.tns-controls button{
-	  font-size: 15px;
-		margin: 0 5px;
-		padding: 0 1em;
-		height: 2.5em;
-		background: white;
-		border-radius: 3px;
-		border: 0;
-		cursor: pointer;
-	}
-	.card {
-	  height: 400px;
-	  width: 300px;
-	  background-color: #17141d;
-	  border-radius: 10px;
-	  box-shadow: 0rem 0 3rem #000;
-	/*   margin-left: -50px; */
-	position: relative;
-	  transition: 0.4s ease-out;
-	  left: 0px;
-	}
-	
-	.card:not(:first-child) {
-		margin-left: -50px;
-	}
-	
-	.card:hover {
-	  left: -25%;
-	  transform: translateY(-20px);
-	  transition: 0.4s ease-out;
-	}
-	
-	.card:hover ~ .card {
-	  position: absolute;
-	  left: 50px;
-	  transition: 0.4s ease-out;
-	}
-	
-	.title {
-	  color: white;
-	  font-weight: 300;
-	  position: absolute;
-	  left: 20px;
-	  top: 15px;
-	}
-	.overlay{
-	  position: fixed;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		text-align: center;
-		overflow-y: auto;
-		background-color: rgba(0,0,0,.4);
-		z-index: 10000;
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity .3s;
-	}
-	  </style>
-	<title>Pools</title>
+	<title>Devology</title>
 </head>
 <div id="projects">
 	<div id="Nooverlay">
 	<div id="wrapper" class="toggled" >
 		<aside id="sidebar-wrapper">
 			<div class="sidebar-brand" style="text-align: left;">
-				<img style="width: 58px;margin-left: 2px;" src="img/logo.jpg">
+				<img style="width: 58px;margin-left: 2px;" src="http://localhost:8888/img/logo.jpg">
 			  </div>
 		  <ul class="sidebar-nav" id="sidebar-nav">
 			<li >
@@ -124,7 +47,7 @@
 				<a href="/perfil"><i class="fa fa-user"></i>Perfil</a>
 				</li>
 			<li v-if="type==1">
-				<a href="/aptitudes"><i class="fas fa-chart-bar"></i></i>Aptitudes</a>
+				<a href="/aptitudes"><i class="fas fa-chart-bar"></i>Aptitudes</a>
 				</li>
 			<li>
 				<a href="/logout"><i class="fas fa-sign-out-alt"></i>Cerrar sesion</a>
@@ -141,87 +64,32 @@
 		  </nav>
 		</div>
 		<section id="content-wrapper">
-			<div class="task-manager">
-                <div class="page-content">
-                  <div class="header">Titulo del Sprint</div>
-                  <div class="content-categories">
-                    <div class="label-wrapper">
-                      <input class="nav-item" name="nav" type="radio" id="opt-1" checked>
-                      <label class="category" for="opt-1">Tareas</label>
-                    </div>
-                    <div class="label-wrapper">
-                      <input class="nav-item" name="nav" type="radio" id="opt-2">
-                      <label class="category" for="opt-2">Comentarios</label>
-                    </div>
-                    <div class="label-wrapper">
-                      <input class="nav-item" name="nav" type="radio" id="opt-3">
-                      <label class="category" for="opt-3">Anuncios</label>
-                    </div>
-                    <div class="label-wrapper">
-                      <input class="nav-item" name="nav" type="radio" id="opt-4">
-                      <label class="category" for="opt-4">Archivos</label>
-                    </div>
-                    <div class="label-wrapper">
-                        <input class="nav-item" name="nav" type="radio" id="opt-5">
-                        <label class="category" for="opt-5">Participantes</label>
-                      </div>
-                  </div>
-                  <div class="tasks-wrapper">
-                      <!-- Aqui va el contenido-->
-                  </div>
-                </div>
-                <div class="right-bar">
-                  <div class="top-part">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                      class="feather feather-users">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                    <div class="count">6</div>
-                  </div>
-                  <div class="header">Calendario</div>
-                  <div class="right-content">
-                    <div class="task-box yellow">
-                      <div class="description-task">
-                        <div class="time">08:00 - 09:00 AM</div>
-                        <div class="task-name">Product Review</div>
-                      </div>
-                    </div>
-                    <div class="task-box blue">
-                      <div class="description-task">
-                        <div class="time">10:00 - 11:00 AM</div>
-                        <div class="task-name">Design Meeting</div>
-                      </div>
-                    </div>
-                    <div class="task-box red">
-                      <div class="description-task">
-                        <div class="time">01:00 - 02:00 PM</div>
-                        <div class="task-name">Team Meeting</div>
-                      </div>
-                    </div>
-                    <div class="task-box green">
-                      <div class="description-task">
-                        <div class="time">03:00 - 04:00 PM</div>
-                        <div class="task-name">Release Event</div>
-                      </div>
-                    </div>
-                    <div class="task-box blue">
-                      <div class="description-task">
-                        <div class="time">08:00 - 09:00 PM</div>
-                        <div class="task-name">Release Event</div>
-                      </div>
-                    </div>
-                    <div class="task-box yellow">
-                      <div class="description-task">
-                        <div class="time">11:00 - 12:00 PM</div>
-                        <div class="task-name">Practise</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+			<div >
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Historico</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" role="tabpanel" id="tab-1">
+						<fieldset>
+							<legend>Tab 1</legend>
+							<hr>
+						</fieldset>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-2">
+						<fieldset>
+							<legend>Tab 2</legend>
+							<hr>
+						</fieldset>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-3">
+						<fieldset>
+							<legend>Tab 3</legend>
+							<hr>
+						</fieldset>
+				</div>
+			</div>
 		</section>
 	</div>
 </div>
@@ -230,46 +98,25 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script>
-const vm = new Vue({
-    el: '#projects',
-    components: {
-        'carousel': VueCarousel.Carousel,
-        'slide': VueCarousel.Slide
-      },
-    data: {
-        type:2
-    },
-    mounted(){
-        const settings={
-            fill: '#1abc9c',
-            background: '#d7dcdf'
-            }
-        const sliders = document.querySelectorAll('.range-slider');
-        Array.prototype.forEach.call(sliders,(slider)=>{
-            slider.querySelector('input').addEventListener('input', (event)=>{
-                slider.querySelector('span').innerHTML = event.target.value;
-                applyFill(event.target);
-                });
-            applyFill(slider.querySelector('input'));
-            });
-        function applyFill(slider) {
-            const percentage = 100*(slider.value-slider.min)/(slider.max-slider.min);
-            const bg = `linear-gradient(90deg, ${settings.fill} ${percentage}%, ${settings.background} ${percentage+0.1}%)`;
-            slider.style.background = bg;
-            }
-    },
-    methods: {
-        sidebar(){
-            $("#wrapper").toggleClass("toggled");
-        },
-      },
-    created(){
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const id = urlParams.get('id')
-        console.log(id)
-    }
-});
-
-</script>
+  const vm = new Vue({
+	  el: '#projects',
+	  components: {
+		  'carousel': VueCarousel.Carousel,
+		  'slide': VueCarousel.Slide
+		},
+	  data: {
+		  type:2
+	  },
+	  mounted(){
+	  },
+	  methods: {
+		  sidebar(){
+			  $("#wrapper").toggleClass("toggled");
+		  },
+		},
+	  created(){
+  
+	  }
+  });
+  </script>
 </html>

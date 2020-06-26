@@ -621,7 +621,33 @@ module.exports = {
           assert.equal(null, err);
           res.send("0");
       });
-      }
+      },
+      detalles: async function(db,req,res) {
+        const { id } = req.params
+        db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+          assert.equal(err, null);
+          db.collection('proyecto').find({_id: ObjectID(id)}).toArray((err, projects)=>{
+            assert.equal(err, null);
+            const ColabsArr = JSON.parse(projects[0].Desarrolladores);
+            const isDev = ColabsArr.includes(rows[0].id_usuario);
+            if(String(projects[0].admin) == String(rows[0]._id) || isDev){
+              res.sendFile(__dirname+'/src/detalles.html')
+            }else{
+              res.redirect('/inicio')
+            }
+          });
+        });
+      },
+      proyectos: function(db,req,res,next) {
+              db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+                  assert.equal(err, null);
+                  if(rows.length!=0){
+                    res.sendFile(__dirname+'/src/projects.html');
+                  }else{
+                      res.redirect('/inicio')
+                  }
+              });
+            }
     }
     function ajuste(data){
         if(data<10){

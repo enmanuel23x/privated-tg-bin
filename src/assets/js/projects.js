@@ -334,6 +334,7 @@ const vm = new Vue({
         })
         },
         viewProject(project){
+            let band = false;
             const keys = Object.keys(JSON.parse(project.Requisitos));
             const ColabsArr = JSON.parse(project.Desarrolladores);
             let Colabs = [];
@@ -349,6 +350,9 @@ const vm = new Vue({
             const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
             const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
             const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
+            if(ColabsArr.includes(vm.$data.admin_id) || project.admin == vm.$data.admin_id){
+                band= true;
+            }
             Swal.mixin({
                 confirmButtonText: 'Siguiente &rarr;',
                 showCancelButton: true,
@@ -366,8 +370,11 @@ const vm = new Vue({
                 }
               ]).then((result) => {
                 if (result.value) {
-                  //Ver si mandar
-                  console.log("yes")
+                    if(band){
+                        window.location.href = "/detalles/"+project._id
+                    }else{
+                        Swal.fire({title:"Advertencia",text:"No pertences a este proyecto,\npor lo tanto no tienes acceso a la\nla informacion interna del proyecto",icon:"warning"})
+                    }
                 }
               })
         }
