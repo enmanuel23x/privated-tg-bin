@@ -324,13 +324,12 @@
 								<hr>
 								<legend>Opciones de grupo</legend>
 								<div class="form-group">
-									<label><strong>Desarrolladores requeridos:</strong></label>
-									<input type="number" value="5" min="2" max="25" step="1"/>
+
 									<br>
 									<label><strong>Prioridad:   </strong></label>
-									<label class="radio-inline"><input type="radio" name="optradio">Baja</label>
-									<label class="radio-inline"><input type="radio" name="optradio" checked>Media</label>
-									<label class="radio-inline"><input type="radio" name="optradio">Alta</label>
+									<label class="radio-inline"><input type="radio" name="optradio" v-model="radio_btn1">Baja</label>
+									<label class="radio-inline"><input type="radio" name="optradio" checked v-model="radio_btn2">Media</label>
+									<label class="radio-inline"><input type="radio" name="optradio" v-model="radio_btn3">Alta</label>
 
 								</div>
 								<hr>

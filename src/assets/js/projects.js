@@ -56,7 +56,12 @@ const vm = new Vue({
         project_name: "",
         project_desc : "",
         id_organizacion: "",
-        projectsRows: []
+        projectsRows: [],
+        global_reqs: [],
+
+        radio_btn1: false,
+        radio_btn2: false,
+        radio_btn3: false,
 
 
     },
@@ -238,10 +243,123 @@ const vm = new Vue({
             for (let i = 0; i < indexes.length; i++) {
                 reqs.push([skill_names[indexes[i]], metrics[indexes[i]]])
             }
+            vm.$data.global_reqs = reqs
             //console.log(reqs)
 
 
 
+        },
+
+        predictSuccess(){
+            Swal.mixin({
+                input: 'text',
+                confirmButtonText: 'Next &rarr;',
+                showCancelButton: true,
+                progressSteps: ['1', '2', '3']
+            }).queue([
+                {
+                    title: 'Experiencia',
+                    text: 'Experiencia de Manager del equipo',
+                    input: 'select',
+                    inputOptions: {
+                        1: 'Muy Baja',
+                        2: 'Baja',
+                        3: 'Media',
+                        4: 'Alta',
+                        5: 'Muy Alta',
+                        }
+                },
+                {
+                    title: 'Duración del proyecto',
+                    text: 'Estimación de la duración del proyecto en horas',
+                    input: 'number',
+                    inputValue: 0
+                },
+                {
+                    title: 'Entidades',
+                    text: 'Estimación de entidades en la base de datos (En el caso de existencia)',
+                    input: 'number',
+                    inputValue: 0
+                },
+
+            ]).then(async (result) => {
+                if (result.value) {
+                    const answers = result.value
+                    console.log(vm.$data.global_reqs.length)
+                    const devs = vm.$data.selected.map( (el)=> vm.$data.dev_ids[el])
+                    console.log(devs)
+                    console.log(available_developers.apt)
+                    let experience = [];
+                    for (let i = 0; i < available_developers.apt.length; i++) {
+                        for (let j = 0; j < devs.length; j++) {
+                            if (devs[j] === available_developers.apt[i][0].id_usuario){
+                               experience.push(available_developers.apt[i][0].dev_exp)
+                            }
+                        }
+                    }
+
+
+                    console.log(answers)
+                    let mgr_exp = 0
+                    if (answers[0] === "1"){
+                        mgr_exp = 5
+                    } else if (answers[0] === "2"){
+                        mgr_exp = 10
+                    } else if (answers[0] === "3"){
+                        mgr_exp = 25
+                    } else if (answers[0] === "4"){
+                        mgr_exp = 35
+                    } else if (answers[0] === "5") {
+                        mgr_exp = 50
+
+                    }
+
+                    // console.log(experience)
+                    // console.log(answers[1])
+                    // console.log(answers[2])
+                    // console.log(vm.$data.radio_btn1)
+                    // console.log(vm.$data.radio_btn2)
+                    // console.log(vm.$data.radio_btn3)
+
+                    if (vm.$data.radio_btn1 === null){
+                        answers[1] = answers[1] * 1.1
+                        console.log("Way 1")
+                    }  else if (vm.$data.radio_btn3 === null){
+                        answers[1] = answers[1] * 0.9
+                        console.log("Way 2")
+
+                    }
+
+
+                    let total = 0;
+                    for (let i = 0; i < experience.length; i++) {
+                        total += experience[i];
+                    }
+                    let avg = total / experience.length;
+
+                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg+"&arg2="+mgr_exp+"&arg3="+answers[1]+"&arg4="+answers[2]+"&arg5="+vm.$data.global_reqs.length+"";
+                    let json = await f(url)
+                    console.log("Ingresado", answers[1])
+                    console.log("Calculado", json.result)
+                    if (answers[1] >= parseInt(json.result)){
+                        Swal.fire({
+                            title: 'Se estima un exito',
+                            html: `La duracion estimada del proyecto es ${answers[1]} y el valor predicho es ${json.result},
+                            tocarían ${ (parseInt(json.result) / experience.length)} Hrs por desarrollador
+                            `,
+                            confirmButtonText: 'ok'
+                        })
+                    } else {
+                        Swal.fire({
+                            title: 'Se estima un fracaso',
+                            html: `La duracion estimada del proyecto es ${answers[1]} Hrs y el valor predicho es ${json.result} Hrs`,
+                            confirmButtonText: 'ok'
+                        })
+                    }
+
+
+                }
+            })
         },
 
         testing(){
@@ -255,10 +373,12 @@ const vm = new Vue({
                       cancelButtonText: 'No realizar prediccion'
                 }).then((result) => {
                     if (result.value) {
-                        vm.progress();
+                        // vm.progress();
+                        this.predictSuccess()
                             //Primero funcion de prediccion
                             //Aqui modal con la predicion xd
                             //Recuerda dar la opcion de cancelar, que cierre el modal nada mas  ya los datos se reinician
+
                     }else{
                         vm.insert()
                     }
