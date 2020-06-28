@@ -143,6 +143,7 @@
                                                 <div v-if="data.tipo==12">{{data.nombre_emisor}} te envio una solicitud de evaluacion de tarea</div>
                                                 <div v-if="data.tipo==13">{{data.nombre_emisor}} aprobo el cumplimiento de la tarea</div>
                                                 <div v-if="data.tipo==14">{{data.nombre_emisor}} rechazo el cumplimiento de la tarea</div>
+                                                <div v-if="data.tipo==15">{{data.nombre_emisor}} elimino una tarea del proyecto en curso</div>
                                             </div>
                                             <div v-if="data.tipo==8 && data.id_user_receptor==id">Saliste de la organizacion</div>
                                             <div v-if="data.tipo==9 && data.id_user_receptor==id">
