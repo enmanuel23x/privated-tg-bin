@@ -51,6 +51,7 @@
 				currentObj.$data.rows=response.data.rows
                 currentObj.$data.type=response.data.type
                 currentObj.$data.id=response.data.id
+                console.log(response.data.rows)
 				swal.close();
 				})
                 .catch(function (error) {
@@ -121,7 +122,7 @@
                                 <tr><th scope="col">Descripcion</th><th scope="col">Fecha/Hora</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr scope="row" v-for="data in rows"  v-if="data.tipo == 12 || data.id_user_emisor!=id || data.id_user_emisor==id && !(data.tipo!=10 || data.tipo!=11 || data.tipo!=13 || data.tipo!=14 || data.tipo!=15)">
+                                    <tr scope="row" v-for="data in rows"  v-if="data.id_user_emisor!=id || data.id_user_emisor==id && !(data.tipo!=10 || data.tipo!=11 || data.tipo!=13 || data.tipo!=14 || data.tipo!=15)">
                                         <td>
                                             <div v-if="data.id_user_emisor==id && data.tipo!=10">
                                                 <div v-if="data.tipo==2">Aceptaste la invitacion de {{data.nombre_receptor}}</div>

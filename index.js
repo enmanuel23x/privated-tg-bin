@@ -380,7 +380,7 @@ app.get('/*', function(req,res) {
     res.sendFile(__dirname+'/src/404.html');
 });
 //Define el puerto de la plataforma
-app.set('port', (process.env.PORT || 8888));
+app.set('port', (process.env.PORT || 80));
 app.listen(app.get('port'), function () {
 	//Comienza a ejecutar la plataforma
 	console.log('App listening on port '+app.get('port'));
