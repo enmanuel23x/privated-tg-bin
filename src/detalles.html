@@ -69,23 +69,49 @@
 					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Historico</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Info</a></li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" role="tabpanel" id="tab-1">
 						<fieldset>
-							<legend>Tab 1</legend>
+							<legend>Creacion de tareas</legend>
 							<hr>
+							<form>
+							<div class="form-group">
+								<label for="exampleFormControlInput1">Nombre de tarea</label>
+								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%">
+							</div>
+							<div class="form-group">
+								<label for="exampleFormControlInput2">Responsable</label>
+								<input type="text" class="form-control" id="exampleFormControlInput2" placeholder="..." style="width: 50%">
+							</div>
+
+							<div class="form-group">
+								<label for="exampleFormControlTextarea1">Descripcion de tarea</label>
+								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%"></textarea>
+							</div>
+								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask">
+									Crear tarea
+								</button>
+							</form>
 						</fieldset>
 					</div>
 					<div class="tab-pane" role="tabpanel" id="tab-2">
 						<fieldset>
 							<legend>Tab 2</legend>
 							<hr>
+
 						</fieldset>
 					</div>
 					<div class="tab-pane" role="tabpanel" id="tab-3">
 						<fieldset>
 							<legend>Tab 3</legend>
+							<hr>
+						</fieldset>
+				</div>
+					<div class="tab-pane" role="tabpanel" id="tab-4">
+						<fieldset>
+							<legend>Información del Proyecto</legend>
 							<hr>
 						</fieldset>
 				</div>
@@ -112,6 +138,10 @@
 	  methods: {
 		  sidebar(){
 			  $("#wrapper").toggleClass("toggled");
+		  },
+
+		  createTask(){
+		  	console.log("Ok")
 		  },
 		},
 	  created(){
