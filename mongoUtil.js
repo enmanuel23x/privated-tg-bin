@@ -692,16 +692,14 @@ module.exports = {
               db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
                   assert.equal(err, null);
                   not = [];
-                  //tipo 12 para evaluar
-                  //tipo 13 aprobada
-                  //tipo 14 rechazada
+                  console.log(status)
                   if(status==1 && req.session.userID == adminID){
                     not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
                       id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:14,status:0,fecha:dia,hora:hora
                       })
                   }else if(status==2){
                     not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
-                      id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:12,status:0,fecha:dia,hora:hora
+                      id_user_receptor:ObjectID(adminID),nombre_receptor:"",tipo:12,status:0,fecha:dia,hora:hora
                       })
                     }else if(status==3){
                     not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
@@ -712,6 +710,7 @@ module.exports = {
                       id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:15,status:0,fecha:dia,hora:hora
                       })
                   }
+                  console.log(not)
                   if(not.length != 0){
                     db.collection('notificaciones').insertMany(not, function(err, result) {
                       assert.equal(null, err);
