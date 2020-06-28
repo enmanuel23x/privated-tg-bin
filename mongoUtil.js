@@ -624,7 +624,7 @@ module.exports = {
       }
       // Insert some documents
       db.collection('proyecto').insertMany([
-        {admin: adminID, Desarrolladores: str, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
+        {admin: adminID, Desarrolladores: str, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0,  github: ""}
       ], function(err, result) {
           assert.equal(null, err);
           db.collection('notificaciones').insertMany(nots, function(err, result) {
@@ -670,7 +670,7 @@ module.exports = {
               });
             },
       insertTask: function(db,req,res,next) {
-        const {projectID, name, description, colabID} = req.body
+        const {projectID, name, description, colabID, cantidad, projectID} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
           //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
               db.collection('tareas').insertMany([{id_proyecto: ObjectID(projectID), nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: 0}], function(err, result) {
@@ -681,12 +681,17 @@ module.exports = {
                     }];
                   db.collection('notificaciones').insertMany(not, function(err, result) {
                     assert.equal(null, err);
-                    res.send("0")
+                    db.collection('proyecto').updateOne(
+                      {_id: ObjectID(projectID)},{ $set:{tareas: cantidad}}
+                    , function(err, result) {
+                        assert.equal(null, err);
+                        res.send("0")
+                    });
                   });
               });
             },
       updateTask: function(db,req,res,next) {
-        const {id, name, description, colabID, status, adminID} = req.body
+        const {id, name, description, colabID, status, adminID, projectID, cantidad} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
           //Status=> 0:Asignado/rechazado, 1: en progreso, 2:Para evaluar, 3:Aprobado/finalizado, 4: eliminado
               db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
@@ -717,6 +722,13 @@ module.exports = {
                   }else{
                     res.send("0")
                   }
+                  if(status ==3 || status == 4){
+                    db.collection('proyecto').updateOne(
+                      {_id: ObjectID(projectID)},{ $set:{tareas: cantidad}}
+                    , function(err, result) {
+                        assert.equal(null, err);
+                    });
+                  }
               });
             },
       getTaskInProject: function(db,req,res,next) {
@@ -733,6 +745,49 @@ module.exports = {
               });
             });
           });
+        });
+            },
+            editProject: async function(db,req,res) {
+      let {ProjectID,DevsIDs,Requeriments, prevDevsIDs} = req.body
+      let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
+      OrgID= ObjectID(OrgID);
+      adminID= ObjectID(req.session.userID);
+      DevsIDs= JSON.parse(DevsIDs);
+      str= JSON.stringify(await DevsIDs.map( (el)=> ObjectID(el)));
+      let nots = []
+      for(i=0;i<DevsIDs.length;i++){
+        nots.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+          id_user_receptor:ObjectID(DevsIDs[i]),nombre_receptor:"",tipo:10,status:0,fecha:dia,hora:hora
+          })
+      }
+      db.collection('proyecto').updateOne(
+        {_id: ObjectID(projectID)},{ $set:{Desarrolladores: str, Requisitos: Requeriments}}
+      , function(err, result) {
+          assert.equal(null, err);
+          db.collection('notificaciones').insertMany(nots, function(err, result) {
+            assert.equal(null, err);
+            res.send("0")
+            for(i=0;i<prevDevsIDs.length;i++){
+              db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(prevDevsIDs[i]) },{ $set:{activo:1}}, function(err, result) {
+                if (err) throw err;
+                if(i ==(prevDevsIDs.length-1) ){
+                  for(j=0;j<DevsIDs.length;j++){
+                    db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[j]) },{ $set:{activo:0}}, function(err, result) {
+                      if (err) throw err;
+                    });
+                  };
+                }
+              });
+            };
+          });
+        });
+      },
+      setGitUrl: function(db,req,res,next) {
+        const {projectID, url} = req.body
+        db.collection('proyecto').updateOne(
+          {_id: ObjectID(projectID)},{ $set:{github: url}}
+        , function(err, result) {
+            assert.equal(null, err);
         });
             },
     }

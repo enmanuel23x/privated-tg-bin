@@ -242,7 +242,25 @@ app.get('/adminpanel', isSysAdmin,function(req,res) {
   res.sendFile(__dirname+'/src/adminpanel.html');
 });
 /* /GET METHODS */
-/* POST METHODS */
+/* POST METHODS */setGitUrl
+app.post('/setGitUrl',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.setGitUrl(db,req,res);
+    });
+	}
+});
+app.post('/editProject',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.editProject(db,req,res);
+    });
+	}
+});
 app.post('/insertTask',configStats, auth , isAdmin ,function(req,res) {
 	if(req.session.type==2){
 		MongoClient.connect(url, function(err, client) {

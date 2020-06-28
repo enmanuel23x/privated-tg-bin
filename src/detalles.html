@@ -199,7 +199,7 @@
 					</div>
 					<div class="tab-pane" role="tabpanel" id="tab-3">
 						<fieldset>
-							<legend>Tab 3</legend>
+							<legend>Eliminadas</legend>
 							<hr>
 						</fieldset>
 				</div>
@@ -265,6 +265,7 @@
 		  AllUsers:[],
 		  colab_id: "",
 		  userID: 0,
+		  advancePerc: 0
 	  },
 	  mounted(){
 	  },
@@ -277,11 +278,14 @@
 
 			},
 		  createTask(){
+			vm.$data.advancePerc = (vm.projectData.tareas+1)/(vm.data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)
 			  axios.post('/insertTask', {
 			  	  projectID: this.project_id,
 				  name:vm.$data.task_name,
 				  description: vm.$data.task_description,
 				  colabID: vm.$data.colab_id,
+				  cantidad: vm.$data.tasks.length+1, 
+				  projectID: vm.$data.projectData._id, advance: vm.$data.advancePerc
 			  })
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Proyecto inicializado con exito",icon:"success"})
@@ -290,7 +294,10 @@
 
 		  },
 		  init(task){
-			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 1, adminID: vm.$data.projectData.admin}
+			vm.$data.advancePerc = (vm.projectData.tareas)/(vm.data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)
+			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 1, adminID: vm.$data.projectData.admin,
+				  cantidad: vm.$data.tasks.length, 
+				  projectID: vm.$data.projectData._id, advance: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Ahora la tarea esta en progreso de desarrollo",icon:"success"})
@@ -298,7 +305,10 @@
 					  })
 		},
 		advance(task){
-			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 2, adminID: vm.$data.projectData.admin}
+			vm.$data.advancePerc = (vm.projectData.tareas)/(vm.data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)
+			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 2, adminID: vm.$data.projectData.admin,
+				  cantidad: vm.$data.tasks.length, 
+				  projectID: vm.$data.projectData._id, advance: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Solicitud de revision enviada con exito",icon:"success"})
