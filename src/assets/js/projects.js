@@ -271,7 +271,7 @@ const vm = new Vue({
                 },
                 {
                     title: 'Duración del proyecto',
-                    text: 'Estimación de la duración del proyecto en horas',
+                    text: 'Estimación de la duración del proyecto en dias',
                     input: 'number',
                     inputValue: 0
                 },
@@ -285,7 +285,6 @@ const vm = new Vue({
             ]).then(async (result) => {
                 if (result.value) {
                     const answers = result.value
-                    console.log(vm.$data.global_reqs.length)
                     const devs = vm.$data.selected.map( (el)=> vm.$data.dev_ids[el])
                     console.log(devs)
                     console.log(available_developers.apt)
@@ -336,26 +335,25 @@ const vm = new Vue({
                         total += experience[i];
                     }
                     let avg = total / experience.length;
-
-                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg+"&arg2="+mgr_exp+"&arg3="+answers[1]+"&arg4="+answers[2]+"&arg5="+vm.$data.global_reqs.length+"";
+                    console.log(avg)
+                    let avg2 = 0;
+                    for(let i = 0; i<vm.$data.global_reqs.length;i++){
+                        avg2+=vm.$data.global_reqs[i][1];
+                    }
+                    avg2 = avg2/vm.$data.global_reqs.length
+                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(answers[1]/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
                     let json = await f(url)
                     console.log("Ingresado", answers[1])
                     console.log("Calculado", json.result)
-                    if (answers[1] >= parseInt(json.result)){
-                        Swal.fire({
-                            title: 'Se estima un exito',
-                            html: `La duracion estimada del proyecto es ${answers[1]} y el valor predicho es ${json.result},
-                            tocarían ${ (parseInt(json.result) / experience.length)} Hrs por desarrollador
-                            `,
-                            confirmButtonText: 'ok'
-                        })
-                    } else {
-                        Swal.fire({
-                            title: 'Se estima un fracaso',
-                            html: `La duracion estimada del proyecto es ${answers[1]} Hrs y el valor predicho es ${json.result} Hrs`,
-                            confirmButtonText: 'ok'
-                        })
-                    }
+                    //Se estimo que el proyecto tendría una duración de 538 horas, contando con los 2 desarrolladores trabajando 8h al dia se estiman 34 dias apox
+                    Swal.fire({
+                        title: 'Se estima un exito',
+                        html: `La duracion estimada del proyecto por el usuario es ${answers[1]} dias y el valor predicho es ${json.result} horas,
+                        teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round((json.result/8)/experience.length)}.
+                        Esto basado en el estandar de 8 horas de trabajo al dia.
+                        `,
+                        confirmButtonText: 'ok'
+                    })
 
 
                 }
