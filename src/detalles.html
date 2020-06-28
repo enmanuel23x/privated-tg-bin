@@ -25,6 +25,63 @@
 	<link rel="shortcut icon" type="image/ico" href="http://localhost:8888/img/favicon.ico"/>
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Devology</title>
+
+
+	<style>
+		.board-container {
+			display: table;
+			width: 100%;
+			height: 100%;
+			border-spacing: 16px;
+		}
+
+		.completed {
+			font-size: 16px;
+			font-weight: 400;
+			opacity: 0.5;
+		}
+
+		ul.column {
+			display: table-cell;
+			list-style-type: none;
+			margin: 0px;
+			padding: 16px;
+			background: #ddd;
+			min-width: 200px;
+			border-radius: 10px
+		}
+		ul.column li {
+			display: block;
+			padding: 8px;
+			background: #eee;
+			border-radius: 10px;
+			margin-bottom: 8px;
+		}
+		ul.column li.title {
+			background: #ddd;
+		}
+		ul.column li.card {
+			min-height: 100px;
+			box-shadow: 1px 2px 0px #aaa;
+		}
+
+		ul.tasks-list {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			display: block;
+		}
+		ul.tasks-list > li.task {
+			display: block;
+			padding: 0;
+			margin: 0;
+			padding-left: 8px;
+		}
+		li.task > input[type=checkbox]:checked + span {
+			font-style: italic;
+			text-decoration: line-through;
+		}
+	</style>
 </head>
 <div id="projects">
 	<div id="Nooverlay">
@@ -82,8 +139,10 @@
 								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%" v-model="task_name">
 							</div>
 							<div class="form-group">
-								<label for="exampleFormControlInput2">Responsable</label>
-								<input type="text" class="form-control" id="exampleFormControlInput2" placeholder="..." style="width: 50%" v-model="task_responsable">
+								<label for="exampleFormControlSelect1">Responsable</label>
+								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.selected">
+									<option v-for="user in colabs">{{ user }}</option>
+								</select>
 							</div>
 
 							<div class="form-group">
@@ -98,9 +157,38 @@
 					</div>
 					<div class="tab-pane" role="tabpanel" id="tab-2">
 						<fieldset>
-							<legend>Tab 2</legend>
+							<legend>Tares activas/pendientes</legend>
 							<hr>
+							<div class="board" property="board" mv-multiple v-for="user in users" v-if="user.rol == 4">
+								<h2 property="boardName">Tareas de: {{user.nombres}}</h2>
 
+								<div class="board-container">
+									<ul class="column">
+										<li class="title">Tareas nuevas/sin empezar</li>
+										<li class="card" property="todo" mv-multiple mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 0">
+											<strong>{{task.nombre}}</strong>.<br>{{task.descripcion}}
+										</li>
+									</ul>
+									<ul class="column">
+										<li class="title">En progreso</li>
+										<li class="card" property="in_progress" mv-multiple mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 1">
+											<p property="title">{{task.nombre}}</p>
+											<ul class="tasks-list">
+												<li class="task" mv-multiple="task" mv-initial-items="0">
+													<button>Solicitar revision</button>
+													<span property="task_name">{{task.descripcion}}</span>
+												</li>
+											</ul>
+										</li>
+									</ul>
+									<ul class="column">
+										<li class="title">Finalizadas</li>
+										<li class="card" property="completed" mv-multiple  mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 3">
+											<strong>{{task.nombre}}</strong>.<br>{{task.descripcion}}
+										</li>
+									</ul>
+								</div>
+							</div>
 						</fieldset>
 					</div>
 					<div class="tab-pane" role="tabpanel" id="tab-3">
@@ -161,7 +249,11 @@
 		  project_id: window.location.pathname.split('/')[2],
 		  projectData: null,
 		  tasks: [],
-		  users:[]
+		  users:[],
+		  colabs: [],
+		  colabs_ids: [],
+		  colab_id: "",
+		  userID: 0,
 	  },
 	  mounted(){
 	  },
@@ -169,11 +261,30 @@
 		  sidebar(){
 			  $("#wrapper").toggleClass("toggled");
 		  },
+			selected() {
+					console.log(vm.$data.colabs)
+					console.log(vm.$data.colabs_ids)
+					let index = this.colabs.indexOf(vm.$data.task_responsable)
+					vm.$data.colab_id = vm.$data.colabs_ids[index]
 
+			},
 		  createTask(){
 		  	console.log(vm.$data.task_name)
 		  	console.log(vm.$data.task_responsable)
 		  	console.log(vm.$data.task_description)
+		  	console.log(this.project_id)
+		  	console.log(this.users)
+			  axios.post('/insertTask', {
+			  	  projectID: this.project_id,
+				  name:vm.$data.task_name,
+				  description: vm.$data.task_description,
+				  colabID: vm.$data.colab_id,
+			  })
+					  .then((res)=>{
+						  Swal.fire({title:"Exito!",text:"Proyecto inicializado con exito",icon:"success"})
+						  vm.fillData();
+					  })
+
 		  },
 		},
 	  created(){
@@ -187,8 +298,16 @@
 			  this.projectData.Requisitos = Reqs
 			  this.tasks =	res.data.tasks;
 			  this.users = res.data.users;
+			  this.userID = res.data.userID
 			  console.log(this.users)
+			  for (let i = 0; i < this.users.length ; i++) {
+				  this.colabs.push(this.users[i].nombres)
+				  this.colabs_ids.push(this.users[i].id_usuario)
+			  }
 		  })
+
+
+
 	  }
   });
   </script>
