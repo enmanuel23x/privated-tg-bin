@@ -128,6 +128,7 @@
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Historico</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Info</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">Gestion</a></li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" role="tabpanel" id="tab-1">
@@ -231,6 +232,12 @@
 							</ul>
 						</fieldset>
 				</div>
+				<div class="tab-pane" role="tabpanel" id="tab-5">
+					<fieldset>
+						<legend>Gestion</legend>
+						<hr>
+					</fieldset>
+				</div>
 			</div>
 		</section>
 	</div>
@@ -266,17 +273,10 @@
 			  $("#wrapper").toggleClass("toggled");
 		  },
 			selected() {
-					console.log(vm.$data.task_responsable);
 					vm.$data.colab_id = vm.$data.users[vm.$data.task_responsable].id_usuario
 
 			},
 		  createTask(){
-		  	console.log({
-			  	  projectID: this.project_id,
-				  name:vm.$data.task_name,
-				  description: vm.$data.task_description,
-				  colabID: vm.$data.colab_id,
-			  })
 			  axios.post('/insertTask', {
 			  	  projectID: this.project_id,
 				  name:vm.$data.task_name,
@@ -290,21 +290,17 @@
 
 		  },
 		  init(task){
-			console.log(task)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 1, adminID: vm.$data.projectData.admin}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
-						  console.log(res)
 						  Swal.fire({title:"Exito!",text:"Ahora la tarea esta en progreso de desarrollo",icon:"success"})
 						  vm.fillData();
 					  })
 		},
 		advance(task){
-			console.log(task)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 2, adminID: vm.$data.projectData.admin}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
-						  console.log(res)
 						  Swal.fire({title:"Exito!",text:"Solicitud de revision enviada con exito",icon:"success"})
 						  vm.fillData();
 					  })
