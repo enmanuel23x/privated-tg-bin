@@ -50,7 +50,7 @@ const vm = new Vue({
         test:[],
         selected: [],
         dev_ids: [],
-
+        userID: 0,
         org_id: "",
 
         project_name: "",
@@ -430,6 +430,7 @@ const vm = new Vue({
                     currenObj.$data.type=response.data.type;
                     currenObj.$data.admin_id=response.data.admin_id;
                     currenObj.$data.id_organizacion= response.data.id_organizacion
+                    currenObj.$data.userID = response.data.userID
                     axios.get('/getProjects', {
                     }).then(function (res) {
                         vm.$data.projectsRows = res.data.projects;
@@ -472,11 +473,11 @@ const vm = new Vue({
                 Reqs.push([key,value])
             }
             Reqs = Reqs.filter( (el)=> el[1]!=0);
-            console.log(Colabs)
+            
             const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
             const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
             const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
-            if(ColabsArr.includes(vm.$data.admin_id) || project.admin == vm.$data.admin_id){
+            if(ColabsArr.includes(vm.$data.userID) || project.admin == vm.$data.admin_id){
                 band= true;
             }
             Swal.mixin({

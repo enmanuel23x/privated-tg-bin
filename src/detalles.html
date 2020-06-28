@@ -63,6 +63,7 @@
 		ul.column li.card {
 			min-height: 100px;
 			box-shadow: 1px 2px 0px #aaa;
+			color:black;
 		}
 
 		ul.tasks-list {
@@ -141,7 +142,7 @@
 							<div class="form-group">
 								<label for="exampleFormControlSelect1">Responsable</label>
 								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.selected">
-									<option v-for="user in colabs">{{ user }}</option>
+									<option v-for="(user, index) in users" v-if="user.rol == 4" v-bind:value="index">{{ user.nombres }}</option>
 								</select>
 							</div>
 
@@ -149,7 +150,10 @@
 								<label for="exampleFormControlTextarea1">Descripcion de tarea</label>
 								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%" v-model="task_description"></textarea>
 							</div>
-								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask">
+								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask" v-if="type ==2">
+									Crear tarea
+								</button>
+								<button  class="btn btn-success" type="button" v-else disabled>
 									Crear tarea
 								</button>
 							</form>
@@ -166,17 +170,18 @@
 									<ul class="column">
 										<li class="title">Tareas nuevas/sin empezar</li>
 										<li class="card" property="todo" mv-multiple mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 0">
-											<strong>{{task.nombre}}</strong>.<br>{{task.descripcion}}
+											<strong>{{task.nombre}}</strong>.<br>Descripcion: {{task.descripcion}}<br>
+											<button @click="init(task)" class="btn  btn-success" v-if="user.id_usuario == userID">Comenzar</button>
 										</li>
 									</ul>
 									<ul class="column">
 										<li class="title">En progreso</li>
 										<li class="card" property="in_progress" mv-multiple mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 1">
-											<p property="title">{{task.nombre}}</p>
+											<p property="title">{{task.nombre}}.</p>
 											<ul class="tasks-list">
 												<li class="task" mv-multiple="task" mv-initial-items="0">
-													<button>Solicitar revision</button>
-													<span property="task_name">{{task.descripcion}}</span>
+													<span property="task_name">Descripcion: {{task.descripcion}}</span><br>
+													<button class="btn  btn-success" v-if="user.id_usuario == userID" @click="advance(task)">Solicitar revision</button>
 												</li>
 											</ul>
 										</li>
@@ -184,7 +189,7 @@
 									<ul class="column">
 										<li class="title">Finalizadas</li>
 										<li class="card" property="completed" mv-multiple  mv-accepts="todo in_progress completed" v-for="task in tasks" v-if="user.id_usuario == task.id_desarrollador && task.status == 3">
-											<strong>{{task.nombre}}</strong>.<br>{{task.descripcion}}
+											<strong>{{task.nombre}}</strong>.<br>Descripcion: {{task.descripcion}}
 										</li>
 									</ul>
 								</div>
@@ -213,7 +218,7 @@
 								<li class="list-group-item list-group-item-dark">
 									<h3 class="list-group-item-heading">Integrantes del pryecto proyecto:</h3>
 									<ul>
-										<li v-for="user in users">{{user.nombres}} - {{ user.rol == 1 ? "Administrador" : "Desarrollador" }}</li>
+										<li v-for="user in users">{{user.nombres}} - {{ user.rol == 4 ? "Desarrollador" : "Administrador" }}</li>
 									</ul>
 								</li>
 								<li class="list-group-item list-group-item-dark">
@@ -242,7 +247,7 @@
 		  'slide': VueCarousel.Slide
 		},
 	  data: {
-		  type:2,
+		  type:0,
 		  task_name: "",
 		  task_responsable: "",
 		  task_description: "",
@@ -250,8 +255,7 @@
 		  projectData: null,
 		  tasks: [],
 		  users:[],
-		  colabs: [],
-		  colabs_ids: [],
+		  AllUsers:[],
 		  colab_id: "",
 		  userID: 0,
 	  },
@@ -262,18 +266,17 @@
 			  $("#wrapper").toggleClass("toggled");
 		  },
 			selected() {
-					console.log(vm.$data.colabs)
-					console.log(vm.$data.colabs_ids)
-					let index = this.colabs.indexOf(vm.$data.task_responsable)
-					vm.$data.colab_id = vm.$data.colabs_ids[index]
+					console.log(vm.$data.task_responsable);
+					vm.$data.colab_id = vm.$data.users[vm.$data.task_responsable].id_usuario
 
 			},
 		  createTask(){
-		  	console.log(vm.$data.task_name)
-		  	console.log(vm.$data.task_responsable)
-		  	console.log(vm.$data.task_description)
-		  	console.log(this.project_id)
-		  	console.log(this.users)
+		  	console.log({
+			  	  projectID: this.project_id,
+				  name:vm.$data.task_name,
+				  description: vm.$data.task_description,
+				  colabID: vm.$data.colab_id,
+			  })
 			  axios.post('/insertTask', {
 			  	  projectID: this.project_id,
 				  name:vm.$data.task_name,
@@ -286,28 +289,46 @@
 					  })
 
 		  },
+		  init(task){
+			console.log(task)
+			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 1, adminID: vm.$data.projectData.admin}
+			axios.post('/updateTask', params)
+					  .then((res)=>{
+						  console.log(res)
+						  Swal.fire({title:"Exito!",text:"Ahora la tarea esta en progreso de desarrollo",icon:"success"})
+						  vm.fillData();
+					  })
 		},
-	  created(){
-		  axios.post('/getTaskInProject', {projectID: this.project_id})
+		advance(task){
+			console.log(task)
+			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 2, adminID: vm.$data.projectData.admin}
+			axios.post('/updateTask', params)
+					  .then((res)=>{
+						  console.log(res)
+						  Swal.fire({title:"Exito!",text:"Solicitud de revision enviada con exito",icon:"success"})
+						  vm.fillData();
+					  })
+		},
+		fillData(){
+			axios.post('/getTaskInProject', {projectID: this.project_id})
 		  .then((res)=>{
 			  let Reqs= []
 			  this.projectData= res.data.project;
 			  for (let [key, value] of Object.entries(JSON.parse(this.projectData.Requisitos))) {
                 Reqs.push([key,value])
-            	}
+				}
+			  this.type = res.data.type
 			  this.projectData.Requisitos = Reqs
 			  this.tasks =	res.data.tasks;
-			  this.users = res.data.users;
+			  this.AllUsers = res.data.users;
+			  const devs = JSON.parse(res.data.project.Desarrolladores);
+			  this.users = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || el._id== res.data.project.admin)
 			  this.userID = res.data.userID
-			  console.log(this.users)
-			  for (let i = 0; i < this.users.length ; i++) {
-				  this.colabs.push(this.users[i].nombres)
-				  this.colabs_ids.push(this.users[i].id_usuario)
-			  }
 		  })
-
-
-
+		}
+		},
+	  created(){
+		  this.fillData()
 	  }
   });
   </script>

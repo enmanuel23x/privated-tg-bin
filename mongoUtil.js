@@ -585,7 +585,7 @@ module.exports = {
                                 db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                     ID_devs.push(apt)
                                     if(ID_devs.length==devs.length){
-                                      res.json({allDevs: allDevs, devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion})
+                                      res.json({allDevs: allDevs, devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion, userID: req.session.userID})
                                         }
                                     });
                                 });
@@ -606,7 +606,6 @@ module.exports = {
     updateImg : function(db,req,res, nameImg){
       db.collection('usuario').update({_id:ObjectID(req.session.userID) }, {$set : {'img': nameImg}}, function(err, result) {
         //devuelve como realizado
-        console.log(nameImg)
         res.json("0")
     });
     },
@@ -623,8 +622,6 @@ module.exports = {
           id_user_receptor:ObjectID(DevsIDs[i]),nombre_receptor:"",tipo:10,status:0,fecha:dia,hora:hora
           })
       }
-      console.log(nots)
-      console.log(DevsIDs)
       // Insert some documents
       db.collection('proyecto').insertMany([
         {admin: adminID, Desarrolladores: str, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
@@ -648,7 +645,12 @@ module.exports = {
           db.collection('proyecto').find({_id: ObjectID(id)}).toArray((err, projects)=>{
             assert.equal(err, null);
             const ColabsArr = JSON.parse(projects[0].Desarrolladores);
-            const isDev = ColabsArr.includes(rows[0].id_usuario);
+            let isDev = false;
+            ColabsArr.forEach(element => {
+              if(element == rows[0].id_usuario){
+                isDev = true
+              }
+            });
             if(String(projects[0].admin) == String(rows[0]._id) || isDev){
               res.sendFile(__dirname+'/src/detalles.html')
             }else{
@@ -710,10 +712,14 @@ module.exports = {
                       id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:15,status:0,fecha:dia,hora:hora
                       })
                   }
-                  db.collection('notificaciones').insertMany(not, function(err, result) {
-                    assert.equal(null, err);
+                  if(not.length != 0){
+                    db.collection('notificaciones').insertMany(not, function(err, result) {
+                      assert.equal(null, err);
+                      res.send("0")
+                    });
+                  }else{
                     res.send("0")
-                  });
+                  }
               });
             },
       getTaskInProject: function(db,req,res,next) {
@@ -726,7 +732,7 @@ module.exports = {
               assert.equal(err, null);
               db.collection('tareas').find({id_proyecto: ObjectID(projectID)}).toArray((err, tasks)=>{
                 assert.equal(err, null);
-                res.json({userID: req.session.userID,users: users, project: projects[0], tasks: tasks})
+                res.json({userID: req.session.userID,users: users, project: projects[0], tasks: tasks, type: req.session.type})
               });
             });
           });

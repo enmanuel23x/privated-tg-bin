@@ -252,7 +252,7 @@ app.post('/insertTask',configStats, auth , isAdmin ,function(req,res) {
     });
 	}
 });
-app.post('/updateTask',configStats, auth , isAdmin ,function(req,res) {
+app.post('/updateTask',configStats, auth ,function(req,res) {
 		MongoClient.connect(url, function(err, client) {
       assert.equal(null, err);
       const db = client.db(dbName);
