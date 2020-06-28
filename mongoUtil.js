@@ -576,7 +576,8 @@ module.exports = {
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
                 if(rows.length!=0){
-                    db.collection('integrantes_organizacion').find({rol: 4, activo:1}).toArray((err, devs)=>{
+                    db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, allDevs)=>{
+                      db.collection('integrantes_organizacion').find({rol: 4, activo:1}).toArray((err, devs)=>{
                         let ID_devs=[]
                         if(devs.length!=0){
                             let ID_devs=[]
@@ -584,13 +585,14 @@ module.exports = {
                                 db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                     ID_devs.push(apt)
                                     if(ID_devs.length==devs.length){
-                                      res.json({devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion})
+                                      res.json({allDevs: allDevs, devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion})
                                         }
                                     });
                                 });
                             }else{
                                 res.json({devs:[],apt:[],type:req.session.type})
                             }
+                      })
                       })
                 }else{
                     res.json({devs:[],apt:[],type:req.session.type})

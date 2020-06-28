@@ -464,7 +464,7 @@ const vm = new Vue({
             const ColabsArr = JSON.parse(project.Desarrolladores);
             let Colabs = [];
             for (i=0;i<ColabsArr.length;i++) {
-                Colabs.push(available_developers.devs.filter( (el)=> el.id_usuario == ColabsArr[i])[0])
+                Colabs.push(available_developers.allDevs.filter( (el)=> el.id_usuario == ColabsArr[i])[0])
             }
             const ReqsArr = JSON.parse(project.Requisitos);
             let Reqs = [];
@@ -472,6 +472,7 @@ const vm = new Vue({
                 Reqs.push([key,value])
             }
             Reqs = Reqs.filter( (el)=> el[1]!=0);
+            console.log(Colabs)
             const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
             const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
             const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
@@ -502,6 +503,49 @@ const vm = new Vue({
                     }
                 }
               })
+        },viewProject2(project){
+            let band = false;
+            const keys = Object.keys(JSON.parse(project.Requisitos));
+            const ColabsArr = JSON.parse(project.Desarrolladores);
+            let Colabs = [];
+            for (i=0;i<ColabsArr.length;i++) {
+                Colabs.push(available_developers.allDevs.filter( (el)=> el.id_usuario == ColabsArr[i])[0])
+            }
+            const ReqsArr = JSON.parse(project.Requisitos);
+            let Reqs = [];
+            for (let [key, value] of Object.entries(ReqsArr)) {
+                Reqs.push([key,value])
+            }
+            Reqs = Reqs.filter( (el)=> el[1]!=0);
+            console.log(Colabs)
+            const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
+            const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
+            const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
+            if(ColabsArr.includes(vm.$data.admin_id) || project.admin == vm.$data.admin_id){
+                band= true;
+            }
+            Swal.mixin({
+                confirmButtonText: 'Siguiente &rarr;',
+                showCancelButton: true,
+                cancelButtonText: "Cerrar",
+                progressSteps: ['1', '2','3']
+              }).queue([
+                {
+                  title: 'Requisitos',
+                  html: tHead1+'<th scope="col">Nombre</th><th scope="col">Nivel(%)</th>'+tHead2+tableReqs+tEnd
+                },
+                {
+                  title: 'Integrantes',
+                  html: tHead1+'<th scope="col">Nombre</th>'+tHead2+tableColabs+tEnd,
+                  confirmButtonText: 'Ver mas &rarr;'
+                },
+                {
+                  title: 'Total de tareas',
+                  text: project.tareas,
+                  showCancelButton: false,
+                  confirmButtonText: 'Cerrar'
+                }
+              ])
         }
 
     },

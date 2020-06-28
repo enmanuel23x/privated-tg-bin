@@ -547,7 +547,7 @@
 								</tr>
 							</thead>
 								<tbody>
-									<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100">
+									<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100"  @click="viewProject2(project)">
 										<td>{{project.Nombre}}</td>
 										<td>{{project.Descripcion}}</td>
 										<td>{{project.tareas}}</td>
