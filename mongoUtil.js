@@ -669,6 +669,7 @@ module.exports = {
             },
       insertTask: function(db,req,res,next) {
         const {projectID, name, description, colabID} = req.body
+        let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
           //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
               db.collection('tareas').insertMany([{id_proyecto: ObjectID(projectID), nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: 0}], function(err, result) {
                   assert.equal(err, null);
@@ -685,7 +686,7 @@ module.exports = {
       updateTask: function(db,req,res,next) {
         const {id, name, description, colabID, status, adminID} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
-          //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
+          //Status=> 0:Asignado/rechazado, 1: en progreso, 2:Para evaluar, 3:Aprobado/finalizado, 4: eliminado
               db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
                   assert.equal(err, null);
                   not = [];
@@ -725,7 +726,7 @@ module.exports = {
               assert.equal(err, null);
               db.collection('tareas').find({id_proyecto: ObjectID(projectID)}).toArray((err, tasks)=>{
                 assert.equal(err, null);
-                res.json({users: users, project: projects[0], tasks: tasks})
+                res.json({userID: req.session.userID,users: users, project: projects[0], tasks: tasks})
               });
             });
           });
