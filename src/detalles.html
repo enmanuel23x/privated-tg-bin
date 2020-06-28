@@ -113,6 +113,29 @@
 						<fieldset>
 							<legend>Información del Proyecto</legend>
 							<hr>
+							<ul class="list-group" v-if="projectData!=null">
+								<li class="list-group-item list-group-item-dark">
+									<h3 class="list-group-item-heading">Nombre del proyecto:</h3>
+					 	 			<p class="list-group-item-text">{{projectData.Nombre}}</p>
+								</li>
+								<li class="list-group-item list-group-item-dark">
+									<h3 class="list-group-item-heading">Descripcion del proyecto:</h3>
+					 	 			<p class="list-group-item-text">{{projectData.Descripcion}}</p>
+								</li>
+								<li class="list-group-item list-group-item-dark">
+									<h3 class="list-group-item-heading">Integrantes del pryecto proyecto:</h3>
+									<ul>
+										<li v-for="user in users">{{user.nombres}} - {{ user.rol == 1 ? "Administrador" : "Desarrollador" }}</li>
+									</ul>
+								</li>
+								<li class="list-group-item list-group-item-dark">
+									<h3 class="list-group-item-heading">Requisitos en el proyecto:</h3>
+									<ul>
+										<li v-for="req in projectData.Requisitos" v-if="req[1]!=0">{{req[0]}}: {{req[1]}}%</li>
+									</ul>
+								</li>
+								
+							</ul>
 						</fieldset>
 				</div>
 			</div>
@@ -134,7 +157,11 @@
 		  type:2,
 		  task_name: "",
 		  task_responsable: "",
-		  task_description: ""
+		  task_description: "",
+		  project_id: window.location.pathname.split('/')[2],
+		  projectData: null,
+		  tasks: [],
+		  users:[]
 	  },
 	  mounted(){
 	  },
@@ -150,7 +177,18 @@
 		  },
 		},
 	  created(){
-  
+		  axios.post('/getTaskInProject', {projectID: this.project_id})
+		  .then((res)=>{
+			  let Reqs= []
+			  this.projectData= res.data.project;
+			  for (let [key, value] of Object.entries(JSON.parse(this.projectData.Requisitos))) {
+                Reqs.push([key,value])
+            	}
+			  this.projectData.Requisitos = Reqs
+			  this.tasks =	res.data.tasks;
+			  this.users = res.data.users;
+			  console.log(this.users)
+		  })
 	  }
   });
   </script>
