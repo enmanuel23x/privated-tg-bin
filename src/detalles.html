@@ -79,16 +79,16 @@
 							<form>
 							<div class="form-group">
 								<label for="exampleFormControlInput1">Nombre de tarea</label>
-								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%">
+								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%" v-model="task_name">
 							</div>
 							<div class="form-group">
 								<label for="exampleFormControlInput2">Responsable</label>
-								<input type="text" class="form-control" id="exampleFormControlInput2" placeholder="..." style="width: 50%">
+								<input type="text" class="form-control" id="exampleFormControlInput2" placeholder="..." style="width: 50%" v-model="task_responsable">
 							</div>
 
 							<div class="form-group">
 								<label for="exampleFormControlTextarea1">Descripcion de tarea</label>
-								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%"></textarea>
+								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%" v-model="task_description"></textarea>
 							</div>
 								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask">
 									Crear tarea
@@ -131,7 +131,10 @@
 		  'slide': VueCarousel.Slide
 		},
 	  data: {
-		  type:2
+		  type:2,
+		  task_name: "",
+		  task_responsable: "",
+		  task_description: ""
 	  },
 	  mounted(){
 	  },
@@ -141,7 +144,9 @@
 		  },
 
 		  createTask(){
-		  	console.log("Ok")
+		  	console.log(vm.$data.task_name)
+		  	console.log(vm.$data.task_responsable)
+		  	console.log(vm.$data.task_description)
 		  },
 		},
 	  created(){
