@@ -284,6 +284,7 @@ const vm = new Vue({
 
             ]).then(async (result) => {
                 if (result.value) {
+                    vm.progress();
                     const answers = result.value
                     const devs = vm.$data.selected.map( (el)=> vm.$data.dev_ids[el])
                     console.log(devs)
@@ -352,8 +353,13 @@ const vm = new Vue({
                         teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round((json.result/8)/experience.length)}.
                         Esto basado en el estandar de 8 horas de trabajo al dia.
                         `,
-                        confirmButtonText: 'ok'
-                    })
+                        confirmButtonText: 'Crear proyecto',
+                        cancelButtonText: 'Cancelar'
+                    }).then( (res)=>{
+                        if (res.value) {
+                            vm.insert()
+                        }
+                    });
 
 
                 }
@@ -371,7 +377,7 @@ const vm = new Vue({
                       cancelButtonText: 'No realizar prediccion'
                 }).then((result) => {
                     if (result.value) {
-                        // vm.progress();
+                        //vm.progress();
                         this.predictSuccess()
                             //Primero funcion de prediccion
                             //Aqui modal con la predicion xd
