@@ -121,9 +121,9 @@
                                 <tr><th scope="col">Descripcion</th><th scope="col">Fecha/Hora</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr scope="row" v-for="data in rows">
+                                    <tr scope="row" v-for="data in rows"  v-if="data.tipo!=10 || (data.id_user_emisor!=id && data.tipo==10)">
                                         <td>
-                                            <div v-if="data.id_user_emisor==id">
+                                            <div v-if="data.id_user_emisor==id && data.tipo!=10">
                                                 <div v-if="data.tipo==2">Aceptaste la invitacion de {{data.nombre_receptor}}</div>
                                                 <div v-if="data.tipo==3">Rechazaste la invitacion de {{data.nombre_receptor}}</div>
                                                 <div v-if="data.tipo==4">Añadiste a {{data.nombre_receptor}}en la organizacion</div>
@@ -138,6 +138,7 @@
                                                 <div v-if="data.tipo==5">Sacado de la organizacion por {{data.nombre_receptor}}</div>
                                                 <div v-if="data.tipo==6">Ascendido en la organizacion por {{data.nombre_receptor}}</div>
                                                 <div v-if="data.tipo==7">Descendido en la organizacion por {{data.nombre_receptor}}</div>
+                                                <div v-if="data.id_user_emisor!=id && data.tipo==10">{{data.nombre_emisor}} te añadio a un proyecto</div>
                                             </div>
                                             <div v-if="data.tipo==8 && data.id_user_receptor==id">Saliste de la organizacion</div>
                                             <div v-if="data.tipo==9 && data.id_user_receptor==id">

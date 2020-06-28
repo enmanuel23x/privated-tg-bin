@@ -243,6 +243,33 @@ app.get('/adminpanel', isSysAdmin,function(req,res) {
 });
 /* /GET METHODS */
 /* POST METHODS */
+app.post('/insertTask',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.insertTask(db,req,res);
+    });
+	}
+});
+app.post('/updateTask',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.updateTask(db,req,res);
+    });
+	}
+});
+app.post('/getTaskInProject',configStats, auth ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.getTaskInProject(db,req,res);
+    });
+	}
+});
 app.post('/insertProject',configStats, auth , isAdmin ,function(req,res) {
 	if(req.session.type==2){
 		MongoClient.connect(url, function(err, client) {

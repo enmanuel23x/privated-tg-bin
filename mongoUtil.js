@@ -1,5 +1,6 @@
 const assert = require('assert');
 var CryptoJS = require("crypto-js");
+const { Console } = require('console');
 var ObjectID = require('mongodb').ObjectID;
 module.exports = {
     insertOrg: function(db,req,res, callback) {
@@ -608,19 +609,35 @@ module.exports = {
     });
     },
     insertProject: async function(db,req,res) {
-      // Get the documents collection
-      const collection = db.collection('proyecto');
       let {adminID,DevsIDs,name, description, Requeriments, OrgID} = req.body
+      let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
       OrgID= ObjectID(OrgID);
       adminID= ObjectID(adminID);
-      DevsIDs= await JSON.stringify(JSON.parse(DevsIDs).map( (el)=> ObjectID(el)));
+      DevsIDs= JSON.parse(DevsIDs);
+      str= JSON.stringify(await DevsIDs.map( (el)=> ObjectID(el)));
+      let nots = []
+      for(i=0;i<DevsIDs.length;i++){
+        nots.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+          id_user_receptor:ObjectID(DevsIDs[i]),nombre_receptor:"",tipo:10,status:0,fecha:dia,hora:hora
+          })
+      }
+      console.log(nots)
+      console.log(DevsIDs)
       // Insert some documents
-      collection.insertMany([
-        {admin: adminID, Desarrolladores: DevsIDs, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
+      db.collection('proyecto').insertMany([
+        {admin: adminID, Desarrolladores: str, Nombre: name, Descripcion: description, Requisitos: Requeriments, Organizacion: OrgID, tareas: 0, Completado: 0}
       ], function(err, result) {
           assert.equal(null, err);
-          res.send("0");
-      });
+          db.collection('notificaciones').insertMany(nots, function(err, result) {
+            assert.equal(null, err);
+            res.send("0")
+            for(i=0;i<DevsIDs.length;i++){
+              db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[i]) },{ $set:{activo:0}}, function(err, result) {
+                if (err) throw err;
+              });
+            };
+          });
+        });
       },
       detalles: async function(db,req,res) {
         const { id } = req.params
@@ -647,7 +664,67 @@ module.exports = {
                       res.redirect('/inicio')
                   }
               });
-            }
+            },
+      insertTask: function(db,req,res,next) {
+        const {projectID, name, description, colabID} = req.body
+          //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
+              db.collection('tareas').insertMany([{id_proyecto: ObjectID(projectID), nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: 0}], function(err, result) {
+                  assert.equal(err, null);
+                  //tipo 11 asignada
+                  not = [{id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+                    id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:11,status:0,fecha:dia,hora:hora
+                    }];
+                  db.collection('notificaciones').insertMany(not, function(err, result) {
+                    assert.equal(null, err);
+                    res.send("0")
+                  });
+              });
+            },
+      updateTask: function(db,req,res,next) {
+        const {id, name, description, colabID, status, adminID} = req.body
+        let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
+          //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
+              db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
+                  assert.equal(err, null);
+                  not = [];
+                  //tipo 12 para evaluar
+                  //tipo 13 aprobada
+                  //tipo 14 rechazada
+                  if(status==0){
+                    not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+                      id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:14,status:0,fecha:dia,hora:hora
+                      })
+                  }else if(status==1){
+                    not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+                      id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:12,status:0,fecha:dia,hora:hora
+                      })
+                  }else{
+                    not.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+                      id_user_receptor:ObjectID(colabID),nombre_receptor:"",tipo:13,status:0,fecha:dia,hora:hora
+                      })
+                  }
+                  db.collection('notificaciones').insertMany(not, function(err, result) {
+                    assert.equal(null, err);
+                    res.send("0")
+                  });
+              });
+            },
+      getTaskInProject: function(db,req,res,next) {
+        const {projectID} = req.body
+        db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+          assert.equal(err, null);
+          db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(rows[0].id_organizacion)}).toArray((err, users) => {
+            assert.equal(err, null);
+            db.collection('proyecto').find({_id: ObjectID(projectID)}).toArray((err, projects)=>{
+              assert.equal(err, null);
+              db.collection('tareas').find({id_proyecto: ObjectID(projectID)}).toArray((err, tasks)=>{
+                assert.equal(err, null);
+                res.json({users: users, project: projects[0], tasks: tasks})
+              });
+            });
+          });
+        });
+            },
     }
     function ajuste(data){
         if(data<10){
