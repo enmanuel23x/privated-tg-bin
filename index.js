@@ -257,6 +257,15 @@ function returnGit(exist, commits, url){
     });
 }
 /* POST METHODS */
+app.post('/endProject',configStats, auth , isAdmin ,function(req,res) {
+	if(req.session.type==2){
+		MongoClient.connect(url, function(err, client) {
+      assert.equal(null, err);
+      const db = client.db(dbName);
+      mongoUtil.endProject(db,req,res);
+    });
+	}
+});
 app.post('/gitToArray',configStats, async function(req,res) {
   const {github} = req.body;
   const arr = github.split('/')

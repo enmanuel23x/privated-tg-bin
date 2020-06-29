@@ -791,6 +791,30 @@ module.exports = {
             res.send("0")
         });
             },
+            endProject: async function(db,req,res) {
+              let {projectID,DevsIDs} = req.body
+              let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
+              let nots = []
+              for(i=0;i<DevsIDs.length;i++){
+                nots.push({id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
+                  id_user_receptor:ObjectID(DevsIDs[i]),nombre_receptor:"",tipo:16,status:0,fecha:dia,hora:hora
+                  })
+              }
+              db.collection('proyecto').updateOne(
+                {_id: ObjectID(projectID)},{ $set:{Completado: 100}}
+              , function(err, result) {
+                  assert.equal(null, err);
+                  db.collection('notificaciones').insertMany(nots, function(err, result) {
+                    assert.equal(null, err);
+                    res.send("0")
+                    for(i=0;i<DevsIDs.length;i++){
+                      db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[i]) },{ $set:{activo:1}}, function(err, result) {
+                        if (err) throw err;
+                      });
+                    };
+                  });
+                });
+              }
     }
     function ajuste(data){
         if(data<10){

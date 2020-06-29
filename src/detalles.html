@@ -312,7 +312,8 @@
 		  colab_id: "",
 		  userID: 0,
 		  advancePerc: 0,
-		  devs4API:[]
+		  devs4API:[],
+		  commits:[]
 	  },
 	  mounted(){
 	  },
@@ -322,7 +323,6 @@
 		  },
 
 		  async connectGHRepo(){
-		  	// Ruta: /setGitUrl, parametros: const {projectID, url} = req.body //Recuerda que debe ser publico el repo-->
 			  const { value: url } = await Swal.fire({
 				  input: 'url',
 				  title: 'Enlace del repositorio',
@@ -407,7 +407,10 @@
 				showCancelButton: true,
 				cancelButtonText: "No"})
 				.then( (res)=>{
-					console.log("yes")//End method here
+					axios.post('/endProject',{projectID: vm.$data.project_id,DevsIDs: vm.$data.users.filter( (f)=> f.rol == 4).map( (el)=>el.id_usuario)})
+					.then((res)=>{
+						vm.fillData()
+					})
 				});
 		},
 		validate(type, task){
@@ -434,9 +437,28 @@
 					}
 				})
 		},
+		returnGit(exist, commits, url){
+  return new Promise(async (resolve,reject) => {
+      try {
+		const result = await axios.get(url);
+        const data = result.data;
+        const parent = data.parents.length==0 ? undefined : data.parents[0].url;
+        commits.push([data.committer.login, data.commit.message, data.commit.committer.date, data.html_url, parent])
+        resolve(commits)
+      } catch (error) {
+        reject(error)
+      }
+    });
+},
 		fillData(){
 			axios.post('/getTaskInProject', {projectID: this.project_id})
-		  .then((res)=>{
+		  .then(async(res)=>{
+			  if(res.data.project.Completado == 100){
+				  Swal.fire({title:"El proyecto esta finalizado", html:"No puedes ver mas detalles del mismo<br>Se te redirigirá a la vista de proyectos",
+				confirmButtonText:"Ok!"}).then( (res)=>{
+					window.location.href = '/proyectos';
+				})
+			  }
 			  let Reqs= []
 			  this.projectData= res.data.project;
 			  for (let [key, value] of Object.entries(JSON.parse(this.projectData.Requisitos))) {
@@ -450,6 +472,41 @@
 			  this.devs4API = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || (el.rol == 4 && el.activo == 1))
 			  this.users = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || el._id== res.data.project.admin)
 			  this.userID = res.data.userID
+			  if(this.projectData.github!=''){
+				const arr = this.projectData.github.split('/')
+  				const owner = arr[arr.length-2], repo = arr[arr.length-1]
+				const firstURL = 'https://api.github.com/repos/'+owner+'/'+repo+'/commits'
+				  let commits = []
+				  consult = await axios.get('https://api.github.com/rate_limit')
+				  remaining = consult.data.rate.remaining
+				  if( remaining != 0){
+					axios.get(firstURL)
+    				.then( async (response) => {
+      					if(response.data.message != "Not Found"){
+        				const data = response.data[0];
+        				commits.push([data.committer.login,
+          					data.commit.message, data.commit.committer.date, data.html_url, data.parents[0].url])
+        				let exist = data.parents[0].url!=undefined ? true : false
+        				while (exist){
+							consult = await axios.get('https://api.github.com/rate_limit')
+				  			remaining = consult.data.rate.remaining
+				  			if( remaining != 0){
+								commits = await returnGit(exist, commits, commits[commits.length-1][4]);
+          						exist = commits[commits.length-1][4]!=undefined ? true : false
+							  }else{
+								commits = "ERROR"
+								exist = false
+							  }
+							}
+						this.commits= commits
+      					}else{
+							this.commits= "ERROR"
+						  }
+    				});
+				  }else{
+					this.commits= "ERROR"
+				  }
+			  }
 		  })
 		}
 		},
