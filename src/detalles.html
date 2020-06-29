@@ -311,7 +311,8 @@
 		  AllUsers:[],
 		  colab_id: "",
 		  userID: 0,
-		  advancePerc: 0
+		  advancePerc: 0,
+		  devs4API:[]
 	  },
 	  mounted(){
 	  },
@@ -400,7 +401,6 @@
 				})
 		},
 		endProject(){
-			console.log(vm.$data.projectData)
 			const text = vm.$data.projectData.Completado != 100 ? "¿Quieres finalizar el proyecto?\nAun faltan tareas por finalizar":"¿Quieres finalizar el proyecto?"
 			Swal.fire({title:"Advertencia", text: "¿Quieres finalizar el proyecto?", icon: "warning", 
 				confirmButtonText: 'Si',
@@ -447,9 +447,9 @@
 			  this.tasks =	res.data.tasks;
 			  this.AllUsers = res.data.users;
 			  const devs = JSON.parse(res.data.project.Desarrolladores);
+			  this.devs4API = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || (el.rol == 4 && el.activo == 1))
 			  this.users = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || el._id== res.data.project.admin)
 			  this.userID = res.data.userID
-			  console.log((vm.$data.tasks.filter((el)=> el.status == 0 && el.id_desarrollador == "5ef8ec0f290176228c79db6b")))
 		  })
 		}
 		},
