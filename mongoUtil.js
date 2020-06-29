@@ -733,21 +733,34 @@ module.exports = {
             },
       getTaskInProject: function(db,req,res,next) {
         const {projectID} = req.body
-        db.collection('aptitudes').find({}).toArray((err, apt)=>{
-          db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
-            assert.equal(err, null);
-            db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(rows[0].id_organizacion)}).toArray((err, users) => {
-              assert.equal(err, null);
-              db.collection('proyecto').find({_id: ObjectID(projectID)}).toArray((err, projects)=>{
-                assert.equal(err, null);
-                db.collection('tareas').find({id_proyecto: ObjectID(projectID)}).toArray((err, tasks)=>{
-                  assert.equal(err, null);
-                  res.json({userID: req.session.userID,users: users, project: projects[0], tasks: tasks, type: req.session.type, apt: apt})
-                });
-              });
-            });
-          });
-          });
+        db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, devs)=>{
+          let ID_devs=[]
+          if(devs.length!=0){
+              let ID_devs=[]
+              db.collection('integrantes_organizacion').find({rol: 4}).forEach(function(element){
+                  db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
+                      ID_devs.push(apt)
+                      if(ID_devs.length==devs.length){
+                        db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
+                          assert.equal(err, null);
+                          db.collection('integrantes_organizacion').find({id_organizacion:ObjectID(rows[0].id_organizacion)}).toArray((err, users) => {
+                            assert.equal(err, null);
+                            db.collection('proyecto').find({_id: ObjectID(projectID)}).toArray((err, projects)=>{
+                              assert.equal(err, null);
+                              db.collection('tareas').find({id_proyecto: ObjectID(projectID)}).toArray((err, tasks)=>{
+                                assert.equal(err, null);
+                                res.json({userID: req.session.userID,users: users, project: projects[0], tasks: tasks, type: req.session.type, apt: ID_devs})
+                              });
+                            });
+                          });
+                        });
+                      }
+                      });
+                  });
+              }else{
+                  res.json({devs:[],apt:[],type:req.session.type})
+              }
+        })
             },
             editProject: async function(db,req,res) {
       let {ProjectID,DevsIDs,Requeriments, prevDevsIDs} = req.body
