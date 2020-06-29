@@ -259,6 +259,7 @@
 								Cambiar por Otro Repositorio Público <i class="fab fa-github"></i>
 							</button>
 						 </div>
+						 <hr>
 						 <div class="container">
 							<table class="table table-dark">
 								<br>Tareas para revision
@@ -277,6 +278,10 @@
 									</tbody>
 							</table>
 						 </div>
+						 <hr>
+						 <button  class="btn btn-success" type="button" v-if="type==2" @click="endProject">
+							Finalizar el proyecto
+						</button>
 					</fieldset>
 				</div>
 			</div>
@@ -338,14 +343,14 @@
 
 			},
 		  createTask(){
-			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.filter((el)=> el.status != 4 && el.status != 3).length+1))*100)
+			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.length+1))*100)
 			  axios.post('/insertTask', {
 			  	  projectID: this.project_id,
 				  name:vm.$data.task_name,
 				  description: vm.$data.task_description,
 				  colabID: vm.$data.colab_id,
-				  cantidad: vm.$data.tasks.length+1, 
-				  projectID: vm.$data.projectData._id, cantidad: vm.$data.advancePerc
+				  cantidad: (vm.$data.tasks.length+1), 
+				  projectID: vm.$data.projectData._id,Completado: vm.$data.advancePerc
 			  })
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Proyecto inicializado con exito",icon:"success"})
@@ -354,10 +359,10 @@
 
 		  },
 		  init(task){
-			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.filter((el)=> el.status != 4 && el.status != 3).length))*100)
+			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.length))*100)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 1, adminID: vm.$data.projectData.admin,
-				  cantidad: vm.$data.tasks.length, 
-				  projectID: vm.$data.projectData._id, cantidad: vm.$data.advancePerc}
+				  cantidad: (vm.$data.tasks.length), 
+				  projectID: vm.$data.projectData._id, Completado: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Ahora la tarea esta en progreso de desarrollo",icon:"success"})
@@ -365,10 +370,10 @@
 					  })
 		},
 		advance(task, val){
-			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.filter((el)=> el.status != 4 && el.status != 3).length))*100)
+			vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.length))*100)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 2, adminID: vm.$data.projectData.admin,
-				  cantidad: vm.$data.tasks.length, 
-				  projectID: vm.$data.projectData._id, cantidad: vm.$data.advancePerc}
+				  cantidad: (vm.$data.tasks.length), 
+				  projectID: vm.$data.projectData._id, Completado: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"Solicitud de revision enviada con exito",icon:"success"})
@@ -382,10 +387,10 @@
 				cancelButtonText: "No"})
 				.then( (res)=>{
 					if(res.value){
-						vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.filter((el)=> el.status != 4 && el.status != 3).length+1))*100)
+						vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length+1)/(vm.$data.tasks.length))*100)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 4, adminID: vm.$data.projectData.admin,
-				  cantidad: vm.$data.tasks.length, 
-				  projectID: vm.$data.projectData._id, cantidad: vm.$data.advancePerc}
+				  cantidad: (vm.$data.tasks.length), 
+				  projectID: vm.$data.projectData._id, Completado: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"La tarea se marco como detenida/eliminada",icon:"success"})
@@ -393,6 +398,17 @@
 					  })
 					}
 				})
+		},
+		endProject(){
+			console.log(vm.$data.projectData)
+			const text = vm.$data.projectData.Completado != 100 ? "¿Quieres finalizar el proyecto?\nAun faltan tareas por finalizar":"¿Quieres finalizar el proyecto?"
+			Swal.fire({title:"Advertencia", text: "¿Quieres finalizar el proyecto?", icon: "warning", 
+				confirmButtonText: 'Si',
+				showCancelButton: true,
+				cancelButtonText: "No"})
+				.then( (res)=>{
+					console.log("yes")//End method here
+				});
 		},
 		validate(type, task){
 			const text = type ==2 ? "¿Quieres rechazar el avance de esta tarea?": "¿Quieres aprobar el avance de esta tarea?"
@@ -403,10 +419,10 @@
 				.then( (res)=>{
 					if(res.value){
 						if(type==1){
-							vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length)/(vm.$data.tasks.filter((el)=> el.status != 4 && el.status != 3).length+1))*100)
+							vm.$data.advancePerc = Math.round(((vm.$data.tasks.filter((el)=> el.status == 4 || el.status == 3).length+1)/(vm.$data.tasks.length))*100)
 			const params = {id: task._id, name: task.nombre, description: task.descripcion, colabID: task.id_desarrollador, status: 3, adminID: vm.$data.projectData.admin,
-				  cantidad: vm.$data.tasks.length, 
-				  projectID: vm.$data.projectData._id, cantidad: vm.$data.advancePerc}
+				  cantidad: (vm.$data.tasks.length), 
+				  projectID: vm.$data.projectData._id, Completado: vm.$data.advancePerc}
 			axios.post('/updateTask', params)
 					  .then((res)=>{
 						  Swal.fire({title:"Exito!",text:"La tarea se marco como finalizada",icon:"success"})
@@ -433,6 +449,7 @@
 			  const devs = JSON.parse(res.data.project.Desarrolladores);
 			  this.users = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || el._id== res.data.project.admin)
 			  this.userID = res.data.userID
+			  console.log((vm.$data.tasks.filter((el)=> el.status == 0 && el.id_desarrollador == "5ef8ec0f290176228c79db6b")))
 		  })
 		}
 		},
