@@ -763,11 +763,9 @@ module.exports = {
         })
             },
             editProject: async function(db,req,res) {
-      let {ProjectID,DevsIDs,Requeriments, prevDevsIDs} = req.body
+      let {projectID,DevsIDs, prevDevsIDs} = req.body
       let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
-      OrgID= ObjectID(OrgID);
       adminID= ObjectID(req.session.userID);
-      DevsIDs= JSON.parse(DevsIDs);
       str= JSON.stringify(await DevsIDs.map( (el)=> ObjectID(el)));
       let nots = []
       for(i=0;i<DevsIDs.length;i++){
@@ -776,22 +774,21 @@ module.exports = {
           })
       }
       db.collection('proyecto').updateOne(
-        {_id: ObjectID(projectID)},{ $set:{Desarrolladores: str, Requisitos: Requeriments}}
+        {_id: ObjectID(projectID)},{ $set:{Desarrolladores: str}}
       , function(err, result) {
           assert.equal(null, err);
           db.collection('notificaciones').insertMany(nots, function(err, result) {
             assert.equal(null, err);
             res.send("0")
             for(i=0;i<prevDevsIDs.length;i++){
-              db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(prevDevsIDs[i]) },{ $set:{activo:1}}, function(err, result) {
+              act = DevsIDs.includes(String(prevDevsIDs[i])) ? 0 : 1
+              db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(prevDevsIDs[i]) },{ $set:{activo: act}}, function(err, result) {
                 if (err) throw err;
-                if(i ==(prevDevsIDs.length-1) ){
-                  for(j=0;j<DevsIDs.length;j++){
-                    db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[j]) },{ $set:{activo:0}}, function(err, result) {
-                      if (err) throw err;
-                    });
-                  };
-                }
+              });
+            };
+            for(j=0;j<DevsIDs.length;j++){
+              db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[j]) },{ $set:{activo:0}}, function(err, result) {
+                if (err) throw err;
               });
             };
           });

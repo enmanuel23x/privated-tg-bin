@@ -83,6 +83,8 @@
 			font-style: italic;
 			text-decoration: line-through;
 		}
+		
+		
 	</style>
 </head>
 <div id="projects">
@@ -123,6 +125,46 @@
 		  </nav>
 		</div>
 		<section id="content-wrapper">
+									<!-- Devs Modal -->
+									<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-lg">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title text-dark">Desarrolladores disponibles</h5>
+													<button type="button" class="close" data-dismiss="modal" @click="showModal = false" aria-label="Close">
+														<span aria-hidden="true" >&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<div v-if="rows.length === 0" class="loader">
+														<div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+													</div>
+													<table v-else class="table table-striped table-bordered" style="position: relative; right: 30px;">
+														<thead>
+														<tr>
+															<th >Nombre</th>
+															<th>Prediccion</th>
+															<th >Seleccion</th>
+														</tr>
+														</thead>
+														<tbody>
+														<tr v-for="(row, index) in rows" :key="index">
+															<td>{{devs4API[index].nombres}}</td>
+															<td>{{row.result == 1 ? " Recomendado" : "No recomendado"}}</td>
+															<td><input class="form-check-input" type="checkbox" v-model="selected" :value="index" number></td>
+														</tr>
+														</tbody>
+													</table>
+			
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" @click="showModal = false"  data-dismiss="modal">Atrás</button>
+													<button type="button" class="btn btn-primary" @click="testing"  data-dismiss="modal">Continuar</button>
+												</div>
+											</div>
+										</div>
+									</div>
+			
 			<div >
 				<ul class="nav nav-tabs">
 					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
@@ -259,7 +301,7 @@
 								Cambiar por Otro Repositorio Público <i class="fab fa-github"></i>
 							</button>
 						 </div>
-                        <button type="button" class="btn btn-success" style="margin-top: 5px" @click="reevaluateProject">Reevaluar proyecto</button>
+                        <button type="button" class="btn btn-success" style="margin-top: 5px" @click="reevaluateProject" data-toggle="modal" data-target=".bd-example-modal-lg">Reevaluar proyecto</button>
 						 <hr>
 						 <div class="container">
 							<table class="table table-dark">
@@ -295,7 +337,6 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script>
 	async function f(url) {
-		console.log("Okk")
 		let respuesta = await fetch(url)
 		let json = await respuesta.json();
 
@@ -322,7 +363,9 @@
 		  advancePerc: 0,
 		  apt: [],
 		  devs4API:[],
-		  commits:[]
+		  commits:[],
+		  rows: [],
+		  selected: []
 	  },
 	  mounted(){
 	  },
@@ -340,7 +383,7 @@
 		  	let quality = 0
 		  	let chemistry = 0
 			  dev_apts = []
-
+			let rows = []
 
 			  let projectReqsIndex= [];
 			  let aptReqsIndex= [];
@@ -356,7 +399,6 @@
 			  for (let i = 0; i < vm.$data.apt.length; i++) {
 				  for (let j = 0; j < available_devs_ids.length; j++) {
 					  if (vm.$data.apt[i][0].id_usuario === available_devs_ids[j]){
-					  	console.log("ok")
 						  quality = vm.$data.apt[i][0].dev_quality
 						  on_time = vm.$data.apt[i][0].dev_on_time
 						  chemistry = vm.$data.apt[i][0].team_chemistry
@@ -372,19 +414,14 @@
 							  	aptReqsIndex.push(k)
 							  }
 						  }
-					  console.log(aptReqsIndex)
-
 						  let intersection = aptReqsIndex.filter(value => projectReqsIndex.includes(value))
 						  let prom = 0
-						  console.log(intersection)
 						  for (let k = 0; k < intersection.length; k++) {
 							prom += (parseInt(dev_apts[intersection[k]]) + vm.$data.projectData.Requisitos[intersection[k]][1] ) / 2
 
 						  }
-						  console.log(prom)
 						  let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=1&arg1="+quality+"&arg2="+on_time+"&arg3="+chemistry+"&arg4="+exp+"&arg5="+prom+"&arg6="+i+"";
-						  console.log(await f(url))
-
+						  rows.push(await f(url))
 
 						  intersection = []
 						  prom = 0
@@ -392,10 +429,142 @@
 					  }
 				  }
 			  }
-
-
+			  
+			  vm.$data.rows= rows.sort(function(a,b) {
+    			return a.num - b.num;
+				});
           },
+		  testing(){
+			  Swal.fire({
+                    title: "Alerta",
+                      text: "¿Quiere realizar una prediccion del exito del proyecto?",
+                      icon: "warning",
+                      showCancelButton: true,
+                      confirmButtonText: 'Realizar prediccion',
+                      cancelButtonText: 'No realizar prediccion'
+                }).then((result) => {
+                    if (result.value) {
+                        //vm.progress();
+                        this.predictSuccess()
+                            //Primero funcion de prediccion
+                            //Aqui modal con la predicion xd
+                            //Recuerda dar la opcion de cancelar, que cierre el modal nada mas  ya los datos se reinician
 
+                    }else{
+                        vm.editProject()
+                    }
+                  });
+		},
+		editProject(){
+			vm.progress();
+			const params = {projectID: vm.$data.project_id, DevsIDs: vm.$data.selected.map( (el)=> vm.$data.devs4API[el].id_usuario), prevDevsIDs: JSON.parse(vm.$data.projectData.Desarrolladores)};
+			axios.post('/editProject', params)
+                .then((res)=>{
+                    Swal.fire({title:"Exito!",text:"Proyecto editado con exito",icon:"success"})
+                    vm.fillData();
+                })
+		},
+		predictSuccess(){
+            Swal.mixin({
+                input: 'text',
+                confirmButtonText: 'Next &rarr;',
+                showCancelButton: true,
+                progressSteps: ['1', '2', '3']
+            }).queue([
+                {
+                    title: 'Experiencia',
+                    text: 'Experiencia de Manager del equipo',
+                    input: 'select',
+                    inputOptions: {
+                        1: 'Muy Baja',
+                        2: 'Baja',
+                        3: 'Media',
+                        4: 'Alta',
+                        5: 'Muy Alta',
+                        }
+                },
+                {
+                    title: 'Duración del proyecto',
+                    text: 'Estimación de la duración del proyecto en dias',
+                    input: 'number',
+                    inputValue: 0
+                },
+                {
+                    title: 'Entidades',
+                    text: 'Estimación de entidades en la base de datos (En el caso de existencia)',
+                    input: 'number',
+                    inputValue: 0
+                },
+
+            ]).then(async (result) => {
+                if (result.value) {
+                    vm.progress();
+                    const answers = result.value
+                    const devs = vm.$data.selected.map( (el)=> vm.$data.devs4API[el])
+                    let experience = [];
+                    for (let i = 0; i < vm.$data.apt.length; i++) {
+                        for (let j = 0; j < devs.length; j++) {
+                            if (devs[j].id_usuario === vm.$data.apt[i][0].id_usuario){
+							   experience.push(vm.$data.apt[i][0].dev_exp)
+                            }
+                        }
+                    }
+                    let mgr_exp = 0
+                    if (answers[0] === "1"){
+                        mgr_exp = 5
+                    } else if (answers[0] === "2"){
+                        mgr_exp = 10
+                    } else if (answers[0] === "3"){
+                        mgr_exp = 25
+                    } else if (answers[0] === "4"){
+                        mgr_exp = 35
+                    } else if (answers[0] === "5") {
+                        mgr_exp = 50
+
+                    }
+
+                    let total = 0;
+                    for (let i = 0; i < experience.length; i++) {
+                        total += experience[i];
+					}
+                    let avg = total / experience.length;
+                    let avg2 = 0;
+                    for(let i = 0; i<vm.$data.projectData.Requisitos.length;i++){
+                        avg2+=vm.$data.projectData.Requisitos[i][1];
+                    }
+                    avg2 = avg2/vm.$data.projectData.Requisitos.filter( (el)=> el[1]!=0).length
+                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(answers[1]/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
+                    let json = await f(url)
+                    //Se estimo que el proyecto tendría una duración de 538 horas, contando con los 2 desarrolladores trabajando 8h al dia se estiman 34 dias apox
+                    Swal.fire({
+                        title: 'Se estima un exito',
+                        html: `La duracion estimada del proyecto por el usuario es ${answers[1]} dias y el valor predicho es ${json.result} horas,
+                        teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round((json.result/8)/experience.length)} dias.
+                        Esto basado en el estandar de 8 horas de trabajo al dia.
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Editar proyecto',
+                        cancelButtonText: 'Cancelar'
+                    }).then( (res)=>{
+                        if (res.value) {
+                            vm.editProject()
+                        }
+                    });
+
+
+                }
+            })
+		},
+        progress(){
+            Swal.fire({
+                title: 'Espera un segundo',
+				html: 'Procesando...',
+				showCancelButton: false,
+				showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true
+                })
+        },
 		  async connectGHRepo(){
 			  const { value: url } = await Swal.fire({
 				  input: 'url',
@@ -566,7 +735,7 @@
 							consult = await axios.get('https://api.github.com/rate_limit')
 				  			remaining = consult.data.rate.remaining
 				  			if( remaining != 0){
-								commits = await returnGit(exist, commits, commits[commits.length-1][4]);
+								commits = await vm.returnGit(exist, commits, commits[commits.length-1][4]);
           						exist = commits[commits.length-1][4]!=undefined ? true : false
 							  }else{
 								commits = "ERROR"

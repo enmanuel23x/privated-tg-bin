@@ -287,8 +287,6 @@ const vm = new Vue({
                     vm.progress();
                     const answers = result.value
                     const devs = vm.$data.selected.map( (el)=> vm.$data.dev_ids[el])
-                    console.log(devs)
-                    console.log(available_developers.apt)
                     let experience = [];
                     for (let i = 0; i < available_developers.apt.length; i++) {
                         for (let j = 0; j < devs.length; j++) {
@@ -297,9 +295,6 @@ const vm = new Vue({
                             }
                         }
                     }
-
-
-                    console.log(answers)
                     let mgr_exp = 0
                     if (answers[0] === "1"){
                         mgr_exp = 5
@@ -323,10 +318,8 @@ const vm = new Vue({
 
                     if (vm.$data.radio_btn1 === null){
                         answers[1] = answers[1] * 1.1
-                        console.log("Way 1")
                     }  else if (vm.$data.radio_btn3 === null){
                         answers[1] = answers[1] * 0.9
-                        console.log("Way 2")
 
                     }
 
@@ -336,7 +329,6 @@ const vm = new Vue({
                         total += experience[i];
                     }
                     let avg = total / experience.length;
-                    console.log(avg)
                     let avg2 = 0;
                     for(let i = 0; i<vm.$data.global_reqs.length;i++){
                         avg2+=vm.$data.global_reqs[i][1];
@@ -344,8 +336,6 @@ const vm = new Vue({
                     avg2 = avg2/vm.$data.global_reqs.length
                     let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(answers[1]/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
                     let json = await f(url)
-                    console.log("Ingresado", answers[1])
-                    console.log("Calculado", json.result)
                     //Se estimo que el proyecto tendría una duración de 538 horas, contando con los 2 desarrolladores trabajando 8h al dia se estiman 34 dias apox
                     Swal.fire({
                         title: 'Se estima un exito',
@@ -410,7 +400,9 @@ const vm = new Vue({
         progress(){
             Swal.fire({
                 title: 'Espera un segundo',
-                html: 'Procesando...',
+				html: 'Procesando...',
+				showCancelButton: false,
+				showConfirmButton: false,
                 timer: 5000,
                 timerProgressBar: true
                 })
@@ -518,7 +510,6 @@ const vm = new Vue({
                 Reqs.push([key,value])
             }
             Reqs = Reqs.filter( (el)=> el[1]!=0);
-            console.log(Colabs)
             const tableColabs = Colabs.map( (el)=> '<tr scope="row"><td>'+el.nombres+'</td></tr>')
             const tableReqs = Reqs.map( (el)=> '<tr scope="row"><td>'+el[0]+'</td><td>'+el[1]+'</td></tr>')
             const tHead1= '<table class="table-hover" style="border:2px solid #545454;margin:auto"><thead  style="border:2px solid #545454;"><tr>',tHead2= '</tr></thead><tbody>',tEnd= '</tbody></table>'
