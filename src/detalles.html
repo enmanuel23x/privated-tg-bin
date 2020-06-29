@@ -259,6 +259,7 @@
 								Cambiar por Otro Repositorio Público <i class="fab fa-github"></i>
 							</button>
 						 </div>
+                        <button type="button" class="btn btn-success" style="margin-top: 5px" @click="reevaluateProject">Reevaluar proyecto</button>
 						 <hr>
 						 <div class="container">
 							<table class="table table-dark">
@@ -293,6 +294,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script>
+	async function f(url) {
+		console.log("Okk")
+		let respuesta = await fetch(url)
+		let json = await respuesta.json();
+
+		return  json
+	}
   const vm = new Vue({
 	  el: '#projects',
 	  components: {
@@ -312,6 +320,7 @@
 		  colab_id: "",
 		  userID: 0,
 		  advancePerc: 0,
+		  apt: [],
 		  devs4API:[],
 		  commits:[]
 	  },
@@ -321,6 +330,71 @@
 		  sidebar(){
 			  $("#wrapper").toggleClass("toggled");
 		  },
+
+
+          async reevaluateProject(){
+		  	let available_devs_ids = [];
+		  	let errors = 0
+		  	let exp = 0
+		  	let on_time = 0
+		  	let quality = 0
+		  	let chemistry = 0
+			  dev_apts = []
+
+
+			  let projectReqsIndex= [];
+			  let aptReqsIndex= [];
+
+			  for (let i = 0; i < vm.$data.projectData.Requisitos.length; i++) {
+					if (vm.$data.projectData.Requisitos[i][1] !== 0){
+						projectReqsIndex.push(i)
+					}
+			  }
+			  for (let i = 0; i < vm.$data.devs4API.length ; i++) {
+				  available_devs_ids.push(vm.$data.devs4API[i].id_usuario)
+			  }
+			  for (let i = 0; i < vm.$data.apt.length; i++) {
+				  for (let j = 0; j < available_devs_ids.length; j++) {
+					  if (vm.$data.apt[i][0].id_usuario === available_devs_ids[j]){
+					  	console.log("ok")
+						  quality = vm.$data.apt[i][0].dev_quality
+						  on_time = vm.$data.apt[i][0].dev_on_time
+						  chemistry = vm.$data.apt[i][0].team_chemistry
+						  exp = vm.$data.apt[i][0].dev_exp
+						  dev_apts.push(vm.$data.apt[i][0].exp_python, vm.$data.apt[i][0].exp_java, vm.$data.apt[i][0].exp_cpp,
+								  vm.$data.apt[i][0].exp_php, vm.$data.apt[i][0].exp_c, vm.$data.apt[i][0].exp_ruby, vm.$data.apt[i][0].exp_objective,
+								  vm.$data.apt[i][0].exp_go, vm.$data.apt[i][0].exp_visual, vm.$data.apt[i][0].exp_scala,
+								  vm.$data.apt[i][0].exp_sql, vm.$data.apt[i][0].exp_nosql, vm.$data.apt[i][0].exp_kotlin,
+								  vm.$data.apt[i][0].exp_r, vm.$data.apt[i][0].exp_swift, vm.$data.apt[i][0].exp_clojure,
+								  vm.$data.apt[i][0].exp_perl, vm.$data.apt[i][0].exp_rust, vm.$data.apt[i][0].exp_java, vm.$data.apt[i][0].exp_html_css)
+						  for (let k = 0; k < dev_apts.length ; k++) {
+							  if (parseInt(dev_apts[k]) !== 0){
+							  	aptReqsIndex.push(k)
+							  }
+						  }
+					  console.log(aptReqsIndex)
+
+						  let intersection = aptReqsIndex.filter(value => projectReqsIndex.includes(value))
+						  let prom = 0
+						  console.log(intersection)
+						  for (let k = 0; k < intersection.length; k++) {
+							prom += (parseInt(dev_apts[intersection[k]]) + vm.$data.projectData.Requisitos[intersection[k]][1] ) / 2
+
+						  }
+						  console.log(prom)
+						  let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=1&arg1="+quality+"&arg2="+on_time+"&arg3="+chemistry+"&arg4="+exp+"&arg5="+prom+"&arg6="+i+"";
+						  console.log(await f(url))
+
+
+						  intersection = []
+						  prom = 0
+						  dev_apts = []
+					  }
+				  }
+			  }
+
+
+          },
 
 		  async connectGHRepo(){
 			  const { value: url } = await Swal.fire({
@@ -468,6 +542,7 @@
 			  this.projectData.Requisitos = Reqs
 			  this.tasks =	res.data.tasks;
 			  this.AllUsers = res.data.users;
+			  this.apt = res.data.apt;
 			  const devs = JSON.parse(res.data.project.Desarrolladores);
 			  this.devs4API = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || (el.rol == 4 && el.activo == 1))
 			  this.users = this.AllUsers.filter((el)=> devs.includes(String(el.id_usuario)) || el._id== res.data.project.admin)
