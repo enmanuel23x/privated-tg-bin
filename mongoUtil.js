@@ -670,7 +670,7 @@ module.exports = {
               });
             },
       insertTask: function(db,req,res,next) {
-        const {projectID, name, description, colabID, cantidad, projectID} = req.body
+        const {projectID, name, description, colabID, cantidad} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
           //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
               db.collection('tareas').insertMany([{id_proyecto: ObjectID(projectID), nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: 0}], function(err, result) {
@@ -788,6 +788,7 @@ module.exports = {
           {_id: ObjectID(projectID)},{ $set:{github: url}}
         , function(err, result) {
             assert.equal(null, err);
+            res.send("0")
         });
             },
     }

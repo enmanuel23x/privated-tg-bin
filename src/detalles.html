@@ -234,8 +234,12 @@
 				</div>
 				<div class="tab-pane" role="tabpanel" id="tab-5">
 					<fieldset>
-						<legend>Gestion</legend>
+						<legend>Gestión</legend>
 						<hr>
+						<button  class="btn btn-success" type="button" @click="connectGHRepo">
+							Enlazar Repositorio Público <i class="fab fa-github"></i>
+						</button>
+
 					</fieldset>
 				</div>
 			</div>
@@ -272,6 +276,25 @@
 	  methods: {
 		  sidebar(){
 			  $("#wrapper").toggleClass("toggled");
+		  },
+
+		  async connectGHRepo(){
+		  	// Ruta: /setGitUrl, parametros: const {projectID, url} = req.body //Recuerda que debe ser publico el repo-->
+			  const { value: url } = await Swal.fire({
+				  input: 'url',
+				  title: 'Enlace del repositorio',
+				  text: 'El repositorio debe ser de GitHub y Público',
+				  inputPlaceholder: 'Ingrese la URL'
+			  })
+			  if (url) {
+				  axios.post('/setGitUrl', {
+				  	projectID: vm.$data.projectID,
+					  url: url
+				  })
+				  .then((res)=>{
+					  Swal.fire({title:"Exito!",text:"Se ha enlazado el Repositorio",icon:"success"})
+				  })
+			  }
 		  },
 			selected() {
 					vm.$data.colab_id = vm.$data.users[vm.$data.task_responsable].id_usuario

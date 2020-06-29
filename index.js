@@ -73,6 +73,7 @@ var configStats = function(req, res, next) {
 const MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 const assert = require('assert');
+const { default: Axios } = require('axios');
 const url = 'mongodb+srv://root:uJLzJOjlONYVVZJV@cluster0-m5ujz.mongodb.net/test';
 const dbName = 'devology';
 //Validacion de estado del servidor
@@ -242,7 +243,43 @@ app.get('/adminpanel', isSysAdmin,function(req,res) {
   res.sendFile(__dirname+'/src/adminpanel.html');
 });
 /* /GET METHODS */
-/* POST METHODS */setGitUrl
+function returnGit(exist, commits, url){
+  return new Promise(async (resolve,reject) => {
+      try {
+        const result = await Axios.get(url);
+        const data = result.data;
+        const parent = data.parents.length==0 ? undefined : data.parents[0].url;
+        commits.push([data.committer.login, data.commit.message, data.commit.committer.date, data.html_url, parent])
+        resolve(commits)
+      } catch (error) {
+        reject(error)
+      }
+    });
+}
+/* POST METHODS */
+app.post('/gitToArray',configStats, async function(req,res) {
+  const {github} = req.body;
+  const arr = github.split('/')
+  const owner = arr[arr.length-2], repo = arr[arr.length-1]
+  const firstURL = 'https://api.github.com/repos/'+owner+'/'+repo+'/commits'
+  let commits = []
+  Axios.get(firstURL)
+    .then( async (response) => {
+      if(response.data.message != "Not Found"){
+        const data = response.data[0];
+        commits.push([data.committer.login,
+          data.commit.message, data.commit.committer.date, data.html_url, data.parents[0].url])
+        let exist = data.parents[0].url!=undefined ? true : false
+        while (exist){
+          commits = await returnGit(exist, commits, commits[commits.length-1][4]);
+          exist = commits[commits.length-1][4]!=undefined ? true : false
+        }
+        res.json({commits})
+      }else{
+        res.send("ERROR")
+      }
+    });
+});
 app.post('/setGitUrl',configStats, auth , isAdmin ,function(req,res) {
 	if(req.session.type==2){
 		MongoClient.connect(url, function(err, client) {
