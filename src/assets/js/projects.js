@@ -6,9 +6,8 @@ let dev_names = [];
 
 async function f(url) {
     let respuesta = await axios.get(url)
-    let json = await respuesta.json();
 
-    return  json
+    return  respuesta.data
 }
 
 
