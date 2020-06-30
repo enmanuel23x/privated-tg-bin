@@ -35,6 +35,7 @@
 		  margin: 0;
 		}
 		.container {
+	  position: absolute;
 	  height: 300px;
 	  width: 600px;
 	  top: 60px;
@@ -499,12 +500,14 @@
 										</label>
 									</div>
 								</fieldset>
-								<button v-if="type==2 && mode!=null" class="btn btn-success" type="button" @click="createProject" data-toggle="modal" data-target="#exampleModal">
+								<hr>
+								<button v-if="type==2 && mode!=null && devs.length!=0" class="btn btn-success" type="button" @click="createProject" data-toggle="modal" data-target="#exampleModal">
 									Crear proyecto
 								</button>
 								<button v-else class="btn btn-success" type="button"  disabled>
 									Crear proyecto
 								</button>
+								<span v-if="devs.length==0">No hay desarrolladores disponibles en este momentos</span>
 							</fieldset>
 						</form>
 
@@ -513,52 +516,46 @@
 						<fieldset>
 							<legend>Proyectos activos</legend>
 							<hr>
-							<br>
-							<div class="container">
-								<table class="table table-hover table-dark">
-									<thead>
-										<tr>
-											<th scope="col">Nombre</th>
-											<th scope="col">Descripcion</th>
-											<th scope="col">Tareas</th>
-											<th scope="col">Completado (%)</th>
-										</tr>
-									</thead>
-										<tbody>
-											<tr scope="row" v-for="project in projectsRows" v-if="project.Completado!=100" @click="viewProject(project)">
-												<td>{{project.Nombre}}</td>
-												<td>{{project.Descripcion}}</td>
-												<td>{{project.tareas}}</td>
-												<td>{{project.Completado}}%</td>
-											</tr>
-										</tbody>
-								</table>
-							</div>
-						</fieldset>
-				</div>
-				<div class="tab-pane" role="tabpanel" id="tab-3">
-					<fieldset>
-						<legend>Historico de proyectos</legend>
-						<hr>
-						<br>
-						<div class="container">
 							<table class="table table-hover table-dark">
 								<thead>
 									<tr>
 										<th scope="col">Nombre</th>
 										<th scope="col">Descripcion</th>
 										<th scope="col">Tareas</th>
+										<th scope="col">Completado (%)</th>
 									</tr>
 								</thead>
 									<tbody>
-										<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100"  @click="viewProject2(project)">
+										<tr scope="row" v-for="project in projectsRows" v-if="project.Completado!=100" @click="viewProject(project)">
 											<td>{{project.Nombre}}</td>
 											<td>{{project.Descripcion}}</td>
 											<td>{{project.tareas}}</td>
+											<td>{{project.Completado}}%</td>
 										</tr>
 									</tbody>
 							</table>
-						</div>
+						</fieldset>
+				</div>
+				<div class="tab-pane" role="tabpanel" id="tab-3">
+					<fieldset>
+						<legend>Historico de proyectos</legend>
+						<hr>
+						<table class="table table-hover table-dark">
+							<thead>
+								<tr>
+									<th scope="col">Nombre</th>
+									<th scope="col">Descripcion</th>
+									<th scope="col">Tareas</th>
+								</tr>
+							</thead>
+								<tbody>
+									<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100"  @click="viewProject2(project)">
+										<td>{{project.Nombre}}</td>
+										<td>{{project.Descripcion}}</td>
+										<td>{{project.tareas}}</td>
+									</tr>
+								</tbody>
+						</table>
 					</fieldset>
 				</div>
 			</div>

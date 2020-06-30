@@ -5,7 +5,7 @@ let dev_names = [];
 
 
 async function f(url) {
-    let respuesta = await fetch(url)
+    let respuesta = await axios.get(url)
     let json = await respuesta.json();
 
     return  json
@@ -62,6 +62,7 @@ const vm = new Vue({
         radio_btn1: false,
         radio_btn2: false,
         radio_btn3: false,
+        devs:[]
 
 
     },
@@ -159,6 +160,7 @@ const vm = new Vue({
             let apt_req = [];
             let dev_exp = []
             for (let i = 0; i < available_developers.devs.length ; i++) {
+                console.log(available_developers)
                 let skill = available_developers.apt[i][0];
                 vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
 
@@ -419,6 +421,7 @@ const vm = new Vue({
                 axios.get('/dev_data', {
                 }).then(function (response) {
                     available_developers = response.data;
+                    currenObj.$data.devs = response.data.devs
                     currenObj.$data.type=response.data.type;
                     currenObj.$data.admin_id=response.data.admin_id;
                     currenObj.$data.id_organizacion= response.data.id_organizacion

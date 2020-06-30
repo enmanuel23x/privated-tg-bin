@@ -575,20 +575,29 @@ module.exports = {
     getDev: function(db,req,res,next, callback) {
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
+                console.log(rows)
                 if(rows.length!=0){
                     db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, allDevs)=>{
+                      console.log(allDevs)
                       db.collection('integrantes_organizacion').find({rol: 4, activo:1}).toArray((err, devs)=>{
+                        console.log(devs)
                         let ID_devs=[]
-                        if(devs.length!=0){
+                        if(allDevs.length!=0){
                             let ID_devs=[]
-                            db.collection('integrantes_organizacion').find({rol: 4, activo:1}).forEach(function(element){
-                                db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
-                                    ID_devs.push(apt)
-                                    if(ID_devs.length==devs.length){
-                                      res.json({allDevs: allDevs, devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion, userID: req.session.userID})
-                                        }
-                                    });
-                                });
+                            if(devs.length!=0){
+                              db.collection('integrantes_organizacion').find({rol: 4, activo:1}).forEach(function(element){
+                                console.log(element)
+                                  db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
+                                      ID_devs.push(apt)
+                                      if(ID_devs.length==devs.length){
+                                        res.json({allDevs: allDevs, devs:devs,apt:ID_devs,type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion, userID: req.session.userID})
+                                          }
+                                      });
+                                  });
+                            }else{
+                              res.json({allDevs: allDevs, devs:[],apt:[],type:req.session.type, id: req.session.userID, admin_id: rows[0]._id, id_organizacion: rows[0].id_organizacion, userID: req.session.userID})
+                            }
+                            
                             }else{
                                 res.json({devs:[],apt:[],type:req.session.type})
                             }
