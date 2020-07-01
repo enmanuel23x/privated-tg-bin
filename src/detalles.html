@@ -171,7 +171,7 @@
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Eliminadas/Detenidas</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Info</a></li>
-					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">Gestion</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5" v-if="type==2">Gestion</a></li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" role="tabpanel" id="tab-1">
@@ -185,7 +185,7 @@
 							</div>
 							<div class="form-group">
 								<label for="exampleFormControlSelect1">Responsable</label>
-								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.selected">
+								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.onSelected">
 									<option v-for="(user, index) in users" v-if="user.rol == 4" v-bind:value="index">{{ user.nombres }}</option>
 								</select>
 							</div>
@@ -293,7 +293,7 @@
 					<fieldset>
 						<legend>Gestión</legend>
 						<hr>
-						 <div v-if="projectData!=null">
+						 <div v-if="false!=false"><!--projectData!=null-->
 							<button  class="btn btn-success" type="button" @click="connectGHRepo" v-if="projectData.github==''">
 								Enlazar Repositorio Público <i class="fab fa-github"></i>
 							</button>
@@ -302,8 +302,8 @@
 							</button>
 						 </div>
                         <button type="button" class="btn btn-success" style="margin-top: 5px" @click="reevaluateProject" data-toggle="modal" data-target=".bd-example-modal-lg">Reevaluar proyecto</button>
-						 <hr>
-						 <div class="container">
+						 <hr  v-if="tasks.filter( (el)=>el.status == 2).length!=0">
+						 <div class="container"  v-if="tasks.filter( (el)=>el.status == 2).length!=0">
 							<table class="table table-dark">
 								<br>Tareas para revision
 								<thead>
@@ -582,7 +582,7 @@
 				  })
 			  }
 		  },
-			selected() {
+			onSelected() {
 					vm.$data.colab_id = vm.$data.users[vm.$data.task_responsable].id_usuario
 
 			},
@@ -650,10 +650,12 @@
 				showCancelButton: true,
 				cancelButtonText: "No"})
 				.then( (res)=>{
-					axios.post('/endProject',{projectID: vm.$data.project_id,DevsIDs: vm.$data.users.filter( (f)=> f.rol == 4).map( (el)=>el.id_usuario)})
-					.then((res)=>{
-						vm.fillData()
-					})
+					if(res.value){
+						axios.post('/endProject',{projectID: vm.$data.project_id,DevsIDs: vm.$data.users.filter( (f)=> f.rol == 4).map( (el)=>el.id_usuario)})
+							.then((res)=>{
+							vm.fillData()
+						})
+					}
 				});
 		},
 		validate(type, task){
