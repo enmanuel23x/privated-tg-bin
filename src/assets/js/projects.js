@@ -341,7 +341,7 @@ const vm = new Vue({
                     Swal.fire({
                         title: 'Se estima un exito',
                         html: `La duracion estimada del proyecto por el usuario es ${answers[1]} dias y el valor predicho es ${json.result} horas,
-                        teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round((json.result/8)/experience.length)} dias.
+                        teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round(((json.result/8)/experience.length) * 100) / 100} dias.
                         Esto basado en el estandar de 8 horas de trabajo al dia.
                         `,
                         showCancelButton: true,
