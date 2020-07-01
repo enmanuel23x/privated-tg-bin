@@ -675,7 +675,7 @@ module.exports = {
               });
             },
       insertTask: function(db,req,res,next) {
-        const {projectID, name, description, colabID, cantidad, Completado} = req.body
+        const {projectID, name, description, colabID} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
           //Status=> 0:Asignado/rechazado, 1:Para evaluar, 2:Aprobado/finalizado
               db.collection('tareas').insertMany([{id_proyecto: ObjectID(projectID), nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: 0}], function(err, result) {
@@ -686,20 +686,26 @@ module.exports = {
                     }];
                   db.collection('notificaciones').insertMany(not, function(err, result) {
                     assert.equal(null, err);
-                    db.collection('proyecto').updateOne(
-                      {_id: ObjectID(projectID)},{ $set:{tareas: cantidad, Completado: Completado}}
-                    , function(err, result) {
-                        assert.equal(null, err);
-                        res.send("0")
+                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                      if (err) throw err;
+                      const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
+                      const total = task.length;
+                      const prom = Math.round((completed/total) * 100) / 100
+                      db.collection('proyecto').updateOne(
+                        {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
+                      , function(err, result) {
+                          assert.equal(null, err);
+                          res.send("0")
+                      });
                     });
                   });
               });
             },
       updateTask: function(db,req,res,next) {
-        const {id, name, description, colabID, status, adminID, projectID, cantidad, Completado} = req.body
+        const {id, name, description, colabID, status, adminID, projectID} = req.body
         let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
-          //Status=> 0:Asignado/rechazado, 1: en progreso, 2:Para evaluar, 3:Aprobado/finalizado, 4: eliminado
-              db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
+          //Status=> 0:Asignado/rechazado, 1: en progreso, 2:Para evaluar, 3:Aprobado/finalizado, 4: eliminado 
+          db.collection('tareas').updateOne({_id: ObjectID(id) },{ $set:{nombre: name, descripcion:description, id_desarrollador: ObjectID(colabID), status: status}}, function(err, result) {
                   assert.equal(err, null);
                   not = [];
                   if(status==1 && req.session.userID == adminID){
@@ -728,10 +734,17 @@ module.exports = {
                     res.send("0")
                   }
                   if(status ==3 || status == 4){
-                    db.collection('proyecto').updateOne(
-                      {_id: ObjectID(projectID)},{ $set:{tareas: cantidad, Completado: Completado}}
-                    , function(err, result) {
-                        assert.equal(null, err);
+                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                      if (err) throw err;
+                      const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
+                      const total = task.length;
+                      const prom = Math.round((completed/total) * 100) / 100
+                      db.collection('proyecto').updateOne(
+                        {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
+                      , function(err, result) {
+                          assert.equal(null, err);
+                          res.send("0")
+                      });
                     });
                   }
               });
@@ -790,6 +803,26 @@ module.exports = {
               db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(prevDevsIDs[i]) },{ $set:{activo: act}}, function(err, result) {
                 if (err) throw err;
               });
+              //=> IF 0,2,3, 4 
+              if(act == 0){
+                db.collection('tareas').deleteMany({$and:[{id_desarrollador:ObjectID(prevDevsIDs[j])},{id_proyecto:ObjectID(projectID)}]}, function(err, result) {
+                  if (err) throw err;
+                  
+                });
+              }
+              if(i ==(prevDevsIDs.length-1)){
+                db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                  if (err) throw err;
+                  const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
+                  const total = task.length;
+                  const prom = Math.round((completed/total) * 100) / 100
+                  db.collection('proyecto').updateOne(
+                    {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
+                  , function(err, result) {
+                      assert.equal(null, err);
+                  });
+                });
+              }
             };
             for(j=0;j<DevsIDs.length;j++){
               db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[j]) },{ $set:{activo:0}}, function(err, result) {
