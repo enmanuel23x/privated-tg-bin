@@ -576,13 +576,13 @@ module.exports = {
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, rows) => {
                 assert.equal(err, null);
                 if(rows.length!=0){
-                    db.collection('integrantes_organizacion').find({rol: 4}).toArray((err, allDevs)=>{
-                      db.collection('integrantes_organizacion').find({rol: 4, activo:1}).toArray((err, devs)=>{
+                    db.collection('integrantes_organizacion').find({rol: 4, id_organizacion: ObjectID(rows[0].id_organizacion)}).toArray((err, allDevs)=>{
+                      db.collection('integrantes_organizacion').find({rol: 4, activo:1, id_organizacion: ObjectID(rows[0].id_organizacion)}).toArray((err, devs)=>{
                         let ID_devs=[]
                         if(allDevs.length!=0){
                             let ID_devs=[]
                             if(devs.length!=0){
-                              db.collection('integrantes_organizacion').find({rol: 4, activo:1}).forEach(function(element){
+                              db.collection('integrantes_organizacion').find({rol: 4, activo:1, id_organizacion: ObjectID(rows[0].id_organizacion)}).forEach(function(element){
                                   db.collection('aptitudes').find({ id_usuario: ObjectID(element.id_usuario) }).toArray((err, apt)=>{
                                       ID_devs.push(apt)
                                       if(ID_devs.length==devs.length){
@@ -686,11 +686,11 @@ module.exports = {
                     }];
                   db.collection('notificaciones').insertMany(not, function(err, result) {
                     assert.equal(null, err);
-                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}).toArray((err, tasks)=>{
                       if (err) throw err;
                       const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
-                      const total = task.length;
-                      const prom = Math.round((completed/total) * 100) / 100
+                      const total = tasks.length;
+                      const prom = Math.round((completed/total) * 10000) / 100
                       db.collection('proyecto').updateOne(
                         {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
                       , function(err, result) {
@@ -734,16 +734,15 @@ module.exports = {
                     res.send("0")
                   }
                   if(status ==3 || status == 4){
-                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                    db.collection('tareas').find({id_proyecto:ObjectID(projectID)}).toArray((err, tasks)=>{
                       if (err) throw err;
                       const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
-                      const total = task.length;
-                      const prom = Math.round((completed/total) * 100) / 100
+                      const total = tasks.length;
+                      const prom = Math.round((completed/total) * 10000) / 100
                       db.collection('proyecto').updateOne(
                         {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
                       , function(err, result) {
                           assert.equal(null, err);
-                          res.send("0")
                       });
                     });
                   }
@@ -804,18 +803,19 @@ module.exports = {
                 if (err) throw err;
               });
               //=> IF 0,2,3, 4 
-              if(act == 0){
-                db.collection('tareas').deleteMany({$and:[{id_desarrollador:ObjectID(prevDevsIDs[j])},{id_proyecto:ObjectID(projectID)}]}, function(err, result) {
+              if(act == 1){
+                console.log({$and:[{id_desarrollador:ObjectID(prevDevsIDs[i])},{id_proyecto:ObjectID(projectID)}]})
+                db.collection('tareas').deleteMany({$and:[{id_desarrollador:ObjectID(prevDevsIDs[i])},{id_proyecto:ObjectID(projectID)}]}, function(err, result) {
                   if (err) throw err;
                   
                 });
               }
               if(i ==(prevDevsIDs.length-1)){
-                db.collection('tareas').find({id_proyecto:ObjectID(projectID)}, function(err, tasks) {
+                db.collection('tareas').find({id_proyecto:ObjectID(projectID)}).toArray((err, tasks)=>{
                   if (err) throw err;
                   const completed = tasks.filter( (el)=>el.status ==3 || el.status == 4).length;
-                  const total = task.length;
-                  const prom = Math.round((completed/total) * 100) / 100
+                  const total = tasks.length;
+                  const prom = Math.round((completed/total) * 10000) / 100
                   db.collection('proyecto').updateOne(
                     {_id: ObjectID(projectID)},{ $set:{tareas: total, Completado: prom}}
                   , function(err, result) {
@@ -858,6 +858,7 @@ module.exports = {
                     assert.equal(null, err);
                     res.send("0")
                     for(i=0;i<DevsIDs.length;i++){
+                      console.log(DevsIDs[i])
                       db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[i]) },{ $set:{activo:1}}, function(err, result) {
                         if (err) throw err;
                       });

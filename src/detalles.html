@@ -167,43 +167,15 @@
 			
 			<div >
 				<ul class="nav nav-tabs">
-					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
-					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
-					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Eliminadas/Detenidas</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-1">Activos</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2" v-if="tasks.filter( (el)=> el.status  == 4).length!=0">Eliminadas/Detenidas</a></li>
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-3" v-if="type==2">Nuevo</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Info</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5" v-if="type==2">Gestion</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-6" v-if="commits-length!=0">Historico de versiones</a></li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" role="tabpanel" id="tab-1">
-						<fieldset>
-							<legend>Creacion de tareas</legend>
-							<hr>
-							<form>
-							<div class="form-group">
-								<label for="exampleFormControlInput1">Nombre de tarea</label>
-								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%" v-model="task_name">
-							</div>
-							<div class="form-group">
-								<label for="exampleFormControlSelect1">Responsable</label>
-								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.onSelected">
-									<option v-for="(user, index) in users" v-if="user.rol == 4" v-bind:value="index">{{ user.nombres }}</option>
-								</select>
-							</div>
-
-							<div class="form-group">
-								<label for="exampleFormControlTextarea1">Descripcion de tarea</label>
-								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%" v-model="task_description"></textarea>
-							</div>
-								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask" v-if="type ==2">
-									Crear tarea
-								</button>
-								<button  class="btn btn-success" type="button" v-else disabled>
-									Crear tarea
-								</button>
-							</form>
-						</fieldset>
-					</div>
-					<div class="tab-pane" role="tabpanel" id="tab-2">
 						<fieldset>
 							<legend>Tares activas/pendientes</legend>
 							<hr>
@@ -240,7 +212,7 @@
 							</div>
 						</fieldset>
 					</div>
-					<div class="tab-pane" role="tabpanel" id="tab-3">
+					<div class="tab-pane" role="tabpanel" id="tab-2">
 						<fieldset>
 							<legend>Eliminadas/Detenidas</legend>
 							<hr>
@@ -258,6 +230,35 @@
 								</table>
 							</div>
 							
+						</fieldset>
+					</div>
+					<div class="tab-pane" role="tabpanel" id="tab-3">
+						<fieldset>
+							<legend>Creacion de tareas</legend>
+							<hr>
+							<form>
+							<div class="form-group">
+								<label for="exampleFormControlInput1">Nombre de tarea</label>
+								<input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Ingrese nombre de la tarea" style="width: 50%" v-model="task_name">
+							</div>
+							<div class="form-group">
+								<label for="exampleFormControlSelect1">Responsable</label>
+								<select class="form-control" id="exampleFormControlSelect1" style="width: 50%" v-model="task_responsable" @change="this.onSelected">
+									<option v-for="(user, index) in users" v-if="user.rol == 4" v-bind:value="index">{{ user.nombres }}</option>
+								</select>
+							</div>
+
+							<div class="form-group">
+								<label for="exampleFormControlTextarea1">Descripcion de tarea</label>
+								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="width: 50%" v-model="task_description"></textarea>
+							</div>
+								<button  class="btn btn-success" type="button"  data-toggle="modal" data-target="#exampleModal" @click="this.createTask" v-if="type ==2">
+									Crear tarea
+								</button>
+								<button  class="btn btn-success" type="button" v-else disabled>
+									Crear tarea
+								</button>
+							</form>
 						</fieldset>
 				</div>
 					<div class="tab-pane" role="tabpanel" id="tab-4">
@@ -293,7 +294,7 @@
 					<fieldset>
 						<legend>Gestión</legend>
 						<hr>
-						 <div v-if="false!=false"><!--projectData!=null-->
+						 <div v-if="projectData!=null"><!--projectData!=null-->
 							<button  class="btn btn-success" type="button" @click="connectGHRepo" v-if="projectData.github==''">
 								Enlazar Repositorio Público <i class="fab fa-github"></i>
 							</button>
@@ -325,6 +326,27 @@
 						 <button  class="btn btn-success" type="button" v-if="type==2" @click="endProject">
 							Finalizar el proyecto
 						</button>
+					</fieldset>
+				</div>
+				<div class="tab-pane" role="tabpanel" id="tab-6">
+					<fieldset>
+						<legend>Historico de versiones</legend>
+						<hr>
+						<div class="container">
+							<table class="table table-dark">
+								<thead>
+									<tr><th scope="col">Usuario</th><th scope="col">Nombre</th><th scope="col">Fecha</th></tr>
+									</thead>
+									<tbody>
+										<tr scope="row" v-for="com in commits" :href="com[3]">
+											<td>{{ com[0] }}</td>
+											<td>{{ com[1] }}</td>
+											<td>{{ com[2] }}</td>
+										</tr>
+									</tbody>
+							</table>
+						</div>
+						
 					</fieldset>
 				</div>
 			</div>
@@ -460,8 +482,8 @@
 			const params = {projectID: vm.$data.project_id, DevsIDs: vm.$data.selected.map( (el)=> vm.$data.devs4API[el].id_usuario), prevDevsIDs: JSON.parse(vm.$data.projectData.Desarrolladores)};
 			axios.post('/editProject', params)
                 .then((res)=>{
+					vm.fillData();
                     Swal.fire({title:"Exito!",text:"Proyecto editado con exito",icon:"success"})
-                    vm.fillData();
                 })
 		},
 		predictSuccess(){
