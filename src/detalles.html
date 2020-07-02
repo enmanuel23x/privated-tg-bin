@@ -167,9 +167,9 @@
 			
 			<div >
 				<ul class="nav nav-tabs">
-					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-1">Activos</a></li>
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Activos</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2" v-if="tasks.filter( (el)=> el.status  == 4).length!=0">Eliminadas/Detenidas</a></li>
-					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-3" v-if="type==2">Nuevo</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3" v-if="type==2">Nuevo</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Info</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5" v-if="type==2">Gestion</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-6" v-if="commits-length!=0">Historico de versiones</a></li>
