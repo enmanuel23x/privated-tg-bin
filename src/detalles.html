@@ -438,10 +438,14 @@
 						  }
 						  let intersection = aptReqsIndex.filter(value => projectReqsIndex.includes(value))
 						  let prom = 0
-						  for (let k = 0; k < intersection.length; k++) {
-							prom += (parseInt(dev_apts[intersection[k]]) + vm.$data.projectData.Requisitos[intersection[k]][1] ) / 2
+						  uniqueArray = intersection.filter(function(item, pos) {
+    						return intersection.indexOf(item) == pos;
+							})
+						  for (let k = 0; k < uniqueArray.length; k++) {
+							prom += vm.$data.projectData.Requisitos[uniqueArray[k]][1] 
 
 						  }
+						  prom = prom/uniqueArray.length
 						  let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=1&arg1="+quality+"&arg2="+on_time+"&arg3="+chemistry+"&arg4="+exp+"&arg5="+prom+"&arg6="+i+"";
 						  rows.push(await f(url))
 
@@ -550,9 +554,9 @@
                         total += experience[i];
 					}
                     let avg = total / experience.length;
-                    let avg2 = 0;
-                    for(let i = 0; i<vm.$data.projectData.Requisitos.length;i++){
-                        avg2+=vm.$data.projectData.Requisitos[i][1];
+					let avg2 = 0;
+                    for(let i = 0; i<vm.$data.projectData.Requisitos.filter( (el)=> el[1]!=0).length;i++){
+                        avg2+=vm.$data.projectData.Requisitos.filter( (el)=> el[1]!=0)[i][1];
                     }
                     avg2 = avg2/vm.$data.projectData.Requisitos.filter( (el)=> el[1]!=0).length
                     let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(answers[1]/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
