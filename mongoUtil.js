@@ -1,6 +1,7 @@
 const assert = require('assert');
 var CryptoJS = require("crypto-js");
 const { Console } = require('console');
+const { verify } = require('crypto');
 var ObjectID = require('mongodb').ObjectID;
 module.exports = {
     insertOrg: function(db,req,res, callback) {
@@ -329,7 +330,14 @@ module.exports = {
             //Query a la tabla de integrantes_organizacion con filtro id_usuario
             db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.body.id)}).toArray(function(err, rows2) {
               assert.equal(err, null);
-              //Se verificar que no se eliminen los mas altos roles
+              db.collection('integrantes_organizacion').find({id_usuario:ObjectID(req.session.userID)}).toArray((err, us) => {
+                assert.equal(err, null);
+                db.collection('proyecto').find({Organizacion: ObjectID(us[0].id_organizacion)}).toArray((err, projects)=>{
+                  assert.equal(err, null);
+                  const ColabsArr = projects.filter( (element) => element.Completado != 100).map((el) => JSON.parse(el.Desarrolladores) );
+                  const validate = ColabsArr.map( (el) => el.includes(String(req.body.id)) ? true : false).filter( (element) => element != false);
+                  if(validate.length == 0){
+                    //Se verificar que no se eliminen los mas altos roles
               if((rows2[0].rol!=1 && rows2[0].rol!=2) || (rows[0].rol==1 && rows2[0].rol==2)){
                 let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
                 db.collection('notificaciones').insertMany([{id_user_emisor:ObjectID(req.session.userID),nombre_emisor:req.session.names,
@@ -343,6 +351,11 @@ module.exports = {
                 }else{
                   res.send("1")
                   }
+                  }else{
+                    res.send("3")
+                  }
+                });
+              });
               });
                   }else{
               res.send("2")

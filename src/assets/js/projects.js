@@ -159,7 +159,7 @@ const vm = new Vue({
             let apt_req = [];
             let dev_exp = []
             for (let i = 0; i < available_developers.devs.length ; i++) {
-                console.log(available_developers)
+                //console.log(available_developers)
                 let skill = available_developers.apt[i][0];
                 vm.$data.dev_ids.push(available_developers.devs[i].id_usuario)
 

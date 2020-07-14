@@ -163,7 +163,13 @@
 											let currentObj = this;
 											axios.post('/eliminar_user_org', {
                 								id: index
-  											}).then(function (response) {
+  											}).then(function (response) {										
+													if(response.data == "3"){
+													  swal({
+														  title: "Alerta",
+  															text: "No puedes eliminar a "+n+".\nEl usuario es integrante de un proyecto en proceso",
+															  icon: "warning"})
+													  }
 												v.update()
 											}).catch(function (error) {
                     							console.log(error)
@@ -210,6 +216,12 @@
 											axios.post('/eliminar_user_org', {
                 								id: index
   											}).then(function (response) {
+												if(response.data == "3"){
+													  swal({
+														  title: "Alerta",
+  															text: "No puedes eliminar a "+n+".\nEl usuario es integrante de un proyecto en proceso",
+															  icon: "warning"})
+													  }
 												v.update()
 											}).catch(function (error) {
                     							console.log(error)
@@ -291,6 +303,12 @@
 											axios.post('/eliminar_user_org', {
                 								id: index
   											}).then(function (response) {
+												if(response.data == "3"){
+													  swal({
+														  title: "Alerta",
+  															text: "No puedes eliminar a "+n+".\nEl usuario es integrante de un proyecto en proceso",
+															  icon: "warning"})
+													  }
 												v.update()
 											}).catch(function (error) {
                     							console.log(error)
