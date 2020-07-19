@@ -411,7 +411,6 @@ const vm = new Vue({
         },
         Calc(val){
             const t = val == undefined ? Math.round(Math.random() * (5 - 1) + 1) : Math.round(val);
-            console.log(t)
             switch (t){
                 case 1:
                     return "Baja";
@@ -432,7 +431,6 @@ const vm = new Vue({
         },
         chartLoad(){
             const data = vm.$data.projectsRows.filter( (el) => el.Completado == 100).map( (dat,index) => {return {x: 1+index, y: vm.Calc(dat.opinion)} })
-            console.log(data)
             vm.chart = JSC.Chart("chartDiv", {
                 type: 'spline', 
                 title_label_text: 'Historico de proyectos', 
