@@ -817,7 +817,6 @@ module.exports = {
               });
               //=> IF 0,2,3, 4 
               if(act == 1){
-                console.log({$and:[{id_desarrollador:ObjectID(prevDevsIDs[i])},{id_proyecto:ObjectID(projectID)}]})
                 db.collection('tareas').deleteMany({$and:[{id_desarrollador:ObjectID(prevDevsIDs[i])},{id_proyecto:ObjectID(projectID)}]}, function(err, result) {
                   if (err) throw err;
                   
@@ -871,7 +870,6 @@ module.exports = {
                     assert.equal(null, err);
                     res.send("0")
                     for(i=0;i<DevsIDs.length;i++){
-                      console.log(DevsIDs[i])
                       db.collection('integrantes_organizacion').updateOne({ id_usuario: ObjectID(DevsIDs[i]) },{ $set:{activo:1}}, function(err, result) {
                         if (err) throw err;
                       });

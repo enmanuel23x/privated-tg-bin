@@ -413,10 +413,10 @@ const vm = new Vue({
             const t = val == undefined ? Math.round(Math.random() * (5 - 1) + 1) : Math.round(val);
             switch (t){
                 case 1:
-                    return "Baja";
+                    return "Muy baja";
                     break;
                 case 2:
-                    return "Muy baja";
+                    return "Baja";
                     break;
                 case 3:
                     return "Media";
