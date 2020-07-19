@@ -61,7 +61,8 @@ const vm = new Vue({
         radio_btn1: false,
         radio_btn2: false,
         radio_btn3: false,
-        devs:[]
+        devs:[],
+        chart: undefined
 
 
     },
@@ -409,7 +410,8 @@ const vm = new Vue({
                 })
         },
         Calc(val){
-            const t = Math.round(Math.random() * (5 - 1) + 1);
+            const t = val == undefined ? Math.round(Math.random() * (5 - 1) + 1) : Math.round(val);
+            console.log(t)
             switch (t){
                 case 1:
                     return "Baja";
@@ -428,15 +430,26 @@ const vm = new Vue({
                     break;
             }
         },
+        chartLoad(){
+            const data = vm.$data.projectsRows.filter( (el) => el.Completado == 100).map( (dat,index) => {return {x: 1+index, y: vm.Calc(dat.opinion)} })
+            console.log(data)
+            vm.chart = JSC.Chart("chartDiv", {
+                type: 'spline', 
+                title_label_text: 'Historico de proyectos', 
+                legend_position: 'inside bottom right', 
+                yAxis: { label_text: 'Calidad' }, 
+                xAxis: { label_text: 'Proyectos' }, 
+                legend_visible: false,
+                series: [
+                    {
+                        name: 'Proyectos', 
+                        points: data
+                    }
+                    ]
+                });
+        },
         fillData(){
-            let timerInterval
-        Swal.fire({
-            title: 'Espera un segundo',
-            html: 'Evaluando la informacion diponible...',
-            timer: 5000,
-            timerProgressBar: true,
-            onBeforeOpen: () => {
-                let currenObj = this;
+            let currenObj = this;
                 axios.get('/dev_data', {
                 }).then(function (response) {
                     available_developers = response.data;
@@ -448,32 +461,18 @@ const vm = new Vue({
                     axios.get('/getProjects', {
                     }).then(function (res) {
                         vm.$data.projectsRows = res.data.projects;
-                        const data = res.data.projects.filter( (el) => el.Completado == 100).map( (dat,index) => {return {x: index, y: vm.Calc(dat.opinion)} })
-                        console.log(data)
-                        JSC.Chart("chartDiv", {
-                            series: [
-                              {
-                                points: data
-                              }
-                            ]
-                          });
+                        Swal.close();
+                        vm.chartLoad();
                     });
                 }).catch(function (error) {
                     console.log(error)
                 });
+            let timerInterval
+        Swal.fire({
+            title: 'Espera un segundo',
+            html: 'Evaluando la informacion diponible...',
+            onBeforeOpen: () => {
                 Swal.showLoading()
-                timerInterval = setInterval(() => {
-                    const content = Swal.getContent()
-                    if (content) {
-                        const b = content.querySelector('b')
-                        if (b) {
-                            b.textContent = Swal.getTimerLeft()
-                        }
-                    }
-                }, 250)
-            },
-            onClose: () => {
-                clearInterval(timerInterval)
             }
         }).then((result) => {
             /* Read more about handling dismissals below */

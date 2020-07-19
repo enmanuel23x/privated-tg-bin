@@ -25,6 +25,12 @@
 	<link rel="shortcut icon" type="image/ico" href="img/favicon.ico"/>
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<style>
+		table{
+			margin: 0!important;
+		}
+		#brandingLogo{
+			display: none;
+		}
 		.VueCarousel-pagination{
 		  display: none;
 		}
@@ -238,12 +244,12 @@
 		<section id="content-wrapper">
 			<div >
 				<ul class="nav nav-tabs">
-					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Nuevo</a></li>
+					<li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Historico</a></li>
 					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Activos</a></li>
-					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Historico</a></li>
+					<li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Nuevo</a></li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane active" role="tabpanel" id="tab-1">
+					<div class="tab-pane" role="tabpanel" id="tab-3">
 
 
 						<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -516,48 +522,52 @@
 						<fieldset>
 							<legend>Proyectos activos</legend>
 							<hr>
+							<div style="width: 80%; margin: auto;">
+								<table class="table table-hover table-dark">
+									<thead>
+										<tr>
+											<th scope="col">Nombre</th>
+											<th scope="col">Descripcion</th>
+											<th scope="col">Tareas</th>
+											<th scope="col">Completado (%)</th>
+										</tr>
+									</thead>
+										<tbody>
+											<tr scope="row" v-for="project in projectsRows" v-if="project.Completado!=100" @click="viewProject(project)">
+												<td>{{project.Nombre}}</td>
+												<td>{{project.Descripcion}}</td>
+												<td>{{project.tareas}}</td>
+												<td>{{project.Completado}}%</td>
+											</tr>
+										</tbody>
+								</table>
+							</div>
+						</fieldset>
+				</div>
+				<div class="tab-pane active" role="tabpanel" id="tab-1">
+					<fieldset>
+						<legend>Historico de proyectos</legend>
+						<hr>
+						<div  style="width: 80%; margin: auto;">
 							<table class="table table-hover table-dark">
 								<thead>
 									<tr>
 										<th scope="col">Nombre</th>
 										<th scope="col">Descripcion</th>
 										<th scope="col">Tareas</th>
-										<th scope="col">Completado (%)</th>
 									</tr>
 								</thead>
 									<tbody>
-										<tr scope="row" v-for="project in projectsRows" v-if="project.Completado!=100" @click="viewProject(project)">
+										<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100"  @click="viewProject2(project)">
 											<td>{{project.Nombre}}</td>
 											<td>{{project.Descripcion}}</td>
 											<td>{{project.tareas}}</td>
-											<td>{{project.Completado}}%</td>
 										</tr>
 									</tbody>
 							</table>
-						</fieldset>
-				</div>
-				<div class="tab-pane" role="tabpanel" id="tab-3">
-					<fieldset>
-						<legend>Historico de proyectos</legend>
+						</div>
 						<hr>
-						<table class="table table-hover table-dark">
-							<thead>
-								<tr>
-									<th scope="col">Nombre</th>
-									<th scope="col">Descripcion</th>
-									<th scope="col">Tareas</th>
-								</tr>
-							</thead>
-								<tbody>
-									<tr scope="row" v-for="project in projectsRows" v-if="project.Completado==100"  @click="viewProject2(project)">
-										<td>{{project.Nombre}}</td>
-										<td>{{project.Descripcion}}</td>
-										<td>{{project.tareas}}</td>
-									</tr>
-								</tbody>
-						</table>
-						<hr>
-						<div id="chartDiv" style="width: 100%; height: 400px;"></div>
+						<div id="chartDiv" style="height: 600px;width: 80%; margin: auto;"></div>
 					</fieldset>
 				</div>
 			</div>
