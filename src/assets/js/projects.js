@@ -62,7 +62,7 @@ const vm = new Vue({
         radio_btn2: false,
         radio_btn3: false,
         devs:[],
-        chart: undefined
+        chart: false
 
 
     },
@@ -430,8 +430,9 @@ const vm = new Vue({
             }
         },
         chartLoad(){
-            const data = vm.$data.projectsRows.filter( (el) => el.Completado == 100).map( (dat,index) => {return {x: 1+index, y: vm.Calc(dat.opinion)} })
-            vm.chart = JSC.Chart("chartDiv", {
+            const data = vm.$data.projectsRows.filter( (el) => el.Completado == 100).map( (dat) => {return {x: dat.Nombre, y: vm.Calc(dat.opinion)} })
+            vm.chart = true;
+            JSC.Chart("chartDiv", {
                 type: 'spline', 
                 title_label_text: 'Historico de proyectos', 
                 legend_position: 'inside bottom right', 
@@ -460,7 +461,9 @@ const vm = new Vue({
                     }).then(function (res) {
                         vm.$data.projectsRows = res.data.projects;
                         Swal.close();
-                        vm.chartLoad();
+                        if(!vm.chart){
+                            vm.chartLoad();
+                        }
                     });
                 }).catch(function (error) {
                     console.log(error)
