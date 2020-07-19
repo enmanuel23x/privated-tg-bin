@@ -855,7 +855,7 @@ module.exports = {
         });
             },
             endProject: async function(db,req,res) {
-              let {projectID,DevsIDs} = req.body
+              let {opinion, projectID,DevsIDs} = req.body
               let d = new Date(),dia=ajuste(d.getDate())+"/"+ajuste((d.getMonth()+1))+"/"+ajuste(d.getFullYear()),hora=ajuste(d.getHours())+":"+ajuste(d.getMinutes())
               let nots = []
               for(i=0;i<DevsIDs.length;i++){
@@ -864,7 +864,7 @@ module.exports = {
                   })
               }
               db.collection('proyecto').updateOne(
-                {_id: ObjectID(projectID)},{ $set:{Completado: 100}}
+                {_id: ObjectID(projectID)},{ $set:{ Completado: 100, opinion: opinion, fecha_final: dia, hora_final: hora }}
               , function(err, result) {
                   assert.equal(null, err);
                   db.collection('notificaciones').insertMany(nots, function(err, result) {

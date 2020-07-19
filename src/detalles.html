@@ -18,7 +18,6 @@
 
 
 
-
 	<link href="/css/main.css" rel="stylesheet" />
 	<link href="/css/modal.css" rel="stylesheet" />
 	<link rel="stylesheet" href="/css/styles.min.css">
@@ -669,18 +668,45 @@
 					}
 				})
 		},
-		endProject(){
+		async endProject(){
 			const text = vm.$data.projectData.Completado != 100 ? "¿Quieres finalizar el proyecto?\nAun faltan tareas por finalizar":"¿Quieres finalizar el proyecto?"
 			Swal.fire({title:"Advertencia", text: "¿Quieres finalizar el proyecto?", icon: "warning", 
 				confirmButtonText: 'Si',
 				showCancelButton: true,
 				cancelButtonText: "No"})
-				.then( (res)=>{
+				.then( async (res)=>{
 					if(res.value){
-						axios.post('/endProject',{projectID: vm.$data.project_id,DevsIDs: vm.$data.users.filter( (f)=> f.rol == 4).map( (el)=>el.id_usuario)})
-							.then((res)=>{
-							vm.fillData()
+						const { value: opinion } = await Swal.fire({
+	  						title: '¿Qué tan precisas resultaron las predicciones? ',
+  							input: 'select',
+  							inputOptions: {
+								1: 'Muy baja',
+							  	2: 'Baja',
+      							3: 'Media',
+								4:'Alta',
+								5:'Muy alta'
+  								},
+	  						inputPlaceholder: 'Seleccione la calidad',
+  							showCancelButton: true,
+							confirmButtonText: 'Continuar',
+                        	cancelButtonText: 'Cancelar',
+  							inputValidator: (value) => {
+    							return new Promise((resolve) => {
+      								if (value) {
+        								resolve()
+      								} else {
+        								resolve('Es necesario escoger una opcion')
+     								}
+    							})
+	  						}
 						})
+
+						if (opinion) {
+							axios.post('/endProject',{opinion: opinion, projectID: vm.$data.project_id,DevsIDs: vm.$data.users.filter( (f)=> f.rol == 4).map( (el)=>el.id_usuario)})
+							.then((res)=>{
+								vm.fillData()
+							})
+						}
 					}
 				});
 		},

@@ -408,6 +408,26 @@ const vm = new Vue({
                 timerProgressBar: true
                 })
         },
+        Calc(val){
+            const t = Math.round(Math.random() * (5 - 1) + 1);
+            switch (t){
+                case 1:
+                    return "Baja";
+                    break;
+                case 2:
+                    return "Muy baja";
+                    break;
+                case 3:
+                    return "Media";
+                    break;
+                case 4:
+                    return "Alta";
+                    break;
+                case 5:
+                    return "Muy alta";
+                    break;
+            }
+        },
         fillData(){
             let timerInterval
         Swal.fire({
@@ -428,6 +448,15 @@ const vm = new Vue({
                     axios.get('/getProjects', {
                     }).then(function (res) {
                         vm.$data.projectsRows = res.data.projects;
+                        const data = res.data.projects.filter( (el) => el.Completado == 100).map( (dat,index) => {return {x: index, y: vm.Calc(dat.opinion)} })
+                        console.log(data)
+                        JSC.Chart("chartDiv", {
+                            series: [
+                              {
+                                points: data
+                              }
+                            ]
+                          });
                     });
                 }).catch(function (error) {
                     console.log(error)
