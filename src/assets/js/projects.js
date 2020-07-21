@@ -386,7 +386,6 @@ const vm = new Vue({
                         const count = res.value.filter((el) => el == true)
                         if (coun.length == Psteps.length) {
                             vm.insert()
-                            alert('insert')
                         }
                     });
 
