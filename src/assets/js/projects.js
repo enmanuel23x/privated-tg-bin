@@ -255,7 +255,7 @@ const vm = new Vue({
         predictSuccess(){
             Swal.mixin({
                 input: 'text',
-                confirmButtonText: 'Next &rarr;',
+                confirmButtonText: 'Siguiente &rarr;',
                 showCancelButton: true,
                 progressSteps: ['1', '2', '3']
             }).queue([
@@ -317,11 +317,11 @@ const vm = new Vue({
                     // console.log(vm.$data.radio_btn1)
                     // console.log(vm.$data.radio_btn2)
                     // console.log(vm.$data.radio_btn3)
-
+                    let ans = answers[1]
                     if (vm.$data.radio_btn1 === null){
-                        answers[1] = answers[1] * 1.1
+                        ans = answers[1] * 1.1
                     }  else if (vm.$data.radio_btn3 === null){
-                        answers[1] = answers[1] * 0.9
+                        ans = answers[1] * 0.9
 
                     }
 
@@ -336,21 +336,57 @@ const vm = new Vue({
                         avg2+=vm.$data.global_reqs[i][1];
                     }
                     avg2 = avg2/vm.$data.global_reqs.length
-                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(answers[1]/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
+                    let url = "https://cors-anywhere.herokuapp.com/http://dev-performance.herokuapp.com/?model=2&arg1="+avg2+"&arg2="+mgr_exp+"&arg3="+(ans/365)+"&arg4="+answers[2]+"&arg5="+avg+"";
                     let json = await f(url)
                     //Se estimo que el proyecto tendría una duración de 538 horas, contando con los 2 desarrolladores trabajando 8h al dia se estiman 34 dias apox
-                    Swal.fire({
-                        title: 'Se estima un exito',
-                        html: `La duracion estimada del proyecto por el usuario es ${answers[1]} dias y el valor predicho es ${json.result} horas,
-                        teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${Math.round(((json.result/8)/experience.length) * 100) / 100} dias.
-                        Esto basado en el estandar de 8 horas de trabajo al dia.
-                        `,
+                    const resultProm = Math.round(((json.result/8)/experience.length) * 100) / 100;
+                    const t = answers[1] < resultProm ? 'dificultad para desarrollar el proyecto' : 'un exito'
+                    const Psteps =  answers[1] < resultProm ? ['1', '2', '3'] : ['1', '2']
+                    const desvNum = answers[1] - resultProm
+                    const desvPerc = Math.round((answers[1]/desvNum ) * 100) / 100
+                    const t2 = desvNum > 0 ? 
+                            `Se estima una desviacion de tiempo a favor de ${desvPerc}%, con respecto a los ${answers[1]} dias planteados.\n
+                            Esto representa ${desvNum} dias de holgura.`
+                        : 
+                            `Se estima una desviacion de tiempo en contra de ${desvPerc*-1}%, con respecto a los ${answers[1]} dias planteados.\n
+                            Esto representa ${desvNum*-1} dias mas a lo planificado.`
+                    let Pqueue = [
+                        {
+                            title: 'Se estima ' + t,
+                            text: `La duracion estimada del proyecto por el usuario es ${answers[1]} dias y el valor predicho es ${json.result} horas,
+                            teniendo en cuenta que se tienen ${experience.length} desarrolladores se tardarian ${resultProm} dias.
+                            Esto basado en el estandar de 8 horas de trabajo al dia.
+                            `,
+                        },
+                        {
+                            title: 'Desviacion del proyecto',
+                            text: t2
+                        }
+        
+                    ]
+                    if(desvNum < 0){
+                        Pqueue.push(
+                            {
+                                title: 'Recomendaciones',
+                                html: `<ul style="text-align: left;">
+                                    <li>Reanalizar el proyecto</li>
+                                    <li>Aumentar el numero de desarrolladores</li>
+                                    <li>Seleccionar desarrolladores con mayor rendimiento</li>
+                                    <li>Volver a plantear el proyecto, para validar la informacion ingresada</li>
+                                </ul>
+                                `
+                            }
+                        )
+                    }
+                    Swal.mixin({
+                        confirmButtonText: 'Siguiente &rarr;',
                         showCancelButton: true,
-                        confirmButtonText: 'Crear proyecto',
-                        cancelButtonText: 'Cancelar'
-                    }).then( (res)=>{
-                        if (res.value) {
+                        progressSteps: Psteps
+                    }).queue(Pqueue).then( (res)=>{
+                        const count = res.value.filter((el) => el == true)
+                        if (coun.length == Psteps.length) {
                             vm.insert()
+                            alert('insert')
                         }
                     });
 
