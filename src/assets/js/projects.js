@@ -343,7 +343,7 @@ const vm = new Vue({
                     const t = answers[1] < resultProm ? 'dificultad para desarrollar el proyecto' : 'un exito'
                     const Psteps =  answers[1] < resultProm ? ['1', '2', '3'] : ['1', '2']
                     const desvNum = answers[1] - resultProm
-                    const desvPerc = Math.round((answers[1]/desvNum ) * 100) / 100
+                    const desvPerc = Math.round((answers[1]/desvNum ) * 10000) / 100
                     const t2 = desvNum > 0 ? 
                             `Se estima una desviacion de tiempo a favor de ${desvPerc}%, con respecto a los ${answers[1]} dias planteados.\n
                             Esto representa ${desvNum} dias de holgura.`
